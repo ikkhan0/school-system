@@ -42,8 +42,7 @@ const Navbar = () => {
         { path: '/students', label: t('students'), icon: Users },
         { path: '/evaluation', label: t('attendance'), icon: Calendar },
         { path: '/fee-menu', label: t('fees'), icon: DollarSign },
-        { path: '/marks', label: 'Marks Entry', icon: BookOpen },
-        { path: '/exams', label: t('exams'), icon: FileText },
+        { path: '/exam-menu', label: t('exams'), icon: BookOpen },
         { path: '/reports', label: t('reports'), icon: FileText }
     ];
 
