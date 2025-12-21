@@ -42,7 +42,8 @@ const Navbar = () => {
         { path: '/students', label: t('students'), icon: Users },
         { path: '/evaluation', label: t('attendance'), icon: Calendar },
         { path: '/fee-menu', label: t('fees'), icon: DollarSign },
-        { path: '/exams', label: t('exams'), icon: BookOpen },
+        { path: '/marks', label: 'Marks Entry', icon: BookOpen },
+        { path: '/exams', label: t('exams'), icon: FileText },
         { path: '/reports', label: t('reports'), icon: FileText }
     ];
 
@@ -65,8 +66,8 @@ const Navbar = () => {
                                     key={link.path}
                                     to={link.path}
                                     className={`flex items-center gap-2 px-3 py-2 rounded-lg transition ${isActive(link.path)
-                                            ? 'text-blue-600 bg-blue-50 font-bold'
-                                            : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                                        ? 'text-blue-600 bg-blue-50 font-bold'
+                                        : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
                                         }`}
                                 >
                                     <link.icon size={18} />
@@ -139,8 +140,8 @@ const Navbar = () => {
                                 key={link.path}
                                 to={link.path}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${isActive(link.path)
-                                        ? 'text-blue-600 bg-blue-50 font-bold'
-                                        : 'text-gray-700 hover:bg-gray-50'
+                                    ? 'text-blue-600 bg-blue-50 font-bold'
+                                    : 'text-gray-700 hover:bg-gray-50'
                                     }`}
                             >
                                 <link.icon size={20} />
