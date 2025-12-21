@@ -84,7 +84,15 @@ router.get('/', protect, async (req, res) => {
 
 router.get('/list', protect, async (req, res) => {
     try {
-        const students = await Student.find({ school_id: req.user.school_id }).populate('family_id');
+        const { class_id, section_id } = req.query;
+
+        let query = { school_id: req.user.school_id, is_active: true };
+
+        // Add filters if provided
+        if (class_id) query.class_id = class_id;
+        if (section_id) query.section_id = section_id;
+
+        const students = await Student.find(query).populate('family_id').sort({ roll_no: 1 });
         res.json(students);
     } catch (error) {
         res.status(500).json({ message: error.message });
