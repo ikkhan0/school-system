@@ -1,4 +1,5 @@
-// In production (Vercel), we explicitly point to our domain to avoid any env var confusion
-const API_URL = import.meta.env.PROD ? 'https://soft-school-management.vercel.app' : 'http://localhost:5000';
+// In production (Vercel), we use relative path '' to proxy via vercel.json rewrites.
+// This avoids CORS issues and ensures we use the correct domain automatically.
+const API_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
 
 export default API_URL;
