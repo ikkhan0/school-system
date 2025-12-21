@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Printer, MessageCircle, User } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
+import API_URL from '../config';
 
 const ResultGeneration = () => {
     const { user } = useContext(AuthContext);
@@ -22,7 +23,7 @@ const ResultGeneration = () => {
         if (!user) return;
 
         // Fetch Exams
-        fetch('${API_URL}/api/exams', {
+        fetch(`${API_URL}/api/exams`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
@@ -32,7 +33,7 @@ const ResultGeneration = () => {
             });
 
         // Fetch Classes
-        fetch('${API_URL}/api/classes', {
+        fetch(`${API_URL}/api/classes`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())

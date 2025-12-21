@@ -24,7 +24,7 @@ const FeeCollection = () => {
     // Load Classes on mount
     useEffect(() => {
         if (!user) return;
-        fetch('${API_URL}/api/classes', { headers: { Authorization: `Bearer ${user.token}` } })
+        fetch(`${API_URL}/api/classes`, { headers: { Authorization: `Bearer ${user.token}` } })
             .then(res => res.json())
             .then(data => {
                 setClasses(data);
@@ -108,7 +108,7 @@ const FeeCollection = () => {
         if (payments.length === 0) return alert("No payments entered.");
 
         try {
-            const res = await fetch('${API_URL}/api/fees/collect', {
+            const res = await fetch(`${API_URL}/api/fees/collect`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -213,7 +213,7 @@ const FeeCollection = () => {
                                                 <td className="p-3 text-right text-red-600 font-bold">{rec.balance}</td>
                                                 <td className="p-3 text-center">
                                                     <span className={`px-2 py-1 rounded text-xs text-white ${rec.status === 'Paid' ? 'bg-green-500' :
-                                                            rec.status === 'Partial' ? 'bg-yellow-500' : 'bg-red-500'
+                                                        rec.status === 'Partial' ? 'bg-yellow-500' : 'bg-red-500'
                                                         }`}>
                                                         {rec.status}
                                                     </span>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Plus, Trash2, Calendar, CheckCircle, XCircle } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
+import API_URL from '../config';
 
 const ExamManager = () => {
     const { user } = useContext(AuthContext);
@@ -27,7 +28,7 @@ const ExamManager = () => {
             // We might need a different endpoint for "all" exams or just use this one.
             // If existing returns only active, we should fix that in backend first for this page.
             // Let's just fetch for now.
-            const res = await fetch('${API_URL}/api/exams', {
+            const res = await fetch(`${API_URL}/api/exams`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const data = await res.json();
@@ -41,7 +42,7 @@ const ExamManager = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch('${API_URL}/api/exams', {
+            const res = await fetch(`${API_URL}/api/exams`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Printer } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
+import API_URL from '../config';
 
 const BulkFeeSlips = () => {
     const { user } = useContext(AuthContext); // Add user context which was missing!
@@ -13,7 +14,7 @@ const BulkFeeSlips = () => {
         if (!user) return;
         const fetchClasses = async () => {
             try {
-                const res = await fetch('${API_URL}/api/classes', {
+                const res = await fetch(`${API_URL}/api/classes`, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 });
                 const data = await res.json();

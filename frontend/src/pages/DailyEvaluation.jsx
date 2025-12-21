@@ -21,7 +21,7 @@ const DailyEvaluation = () => {
         if (!user) return;
         const fetchClasses = async () => {
             try {
-                const res = await fetch('${API_URL}/api/classes', {
+                const res = await fetch(`${API_URL}/api/classes`, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 });
                 const data = await res.json();
@@ -123,7 +123,7 @@ const DailyEvaluation = () => {
                 }))
             };
 
-            await fetch('${API_URL}/api/evaluation/save', {
+            await fetch(`${API_URL}/api/evaluation/save`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -219,10 +219,10 @@ const DailyEvaluation = () => {
                                                     key={status}
                                                     onClick={() => handleStatusChange(student.student_id, status)}
                                                     className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs transition-all ${student.status === status
-                                                            ? (status === 'Present' ? 'bg-green-600 text-white shadow-lg scale-110'
-                                                                : status === 'Absent' ? 'bg-red-600 text-white shadow-lg scale-110'
-                                                                    : 'bg-yellow-500 text-white shadow-lg scale-110')
-                                                            : 'bg-white border text-gray-400 hover:border-gray-400'
+                                                        ? (status === 'Present' ? 'bg-green-600 text-white shadow-lg scale-110'
+                                                            : status === 'Absent' ? 'bg-red-600 text-white shadow-lg scale-110'
+                                                                : 'bg-yellow-500 text-white shadow-lg scale-110')
+                                                        : 'bg-white border text-gray-400 hover:border-gray-400'
                                                         }`}
                                                     title={status}
                                                 >
@@ -235,8 +235,8 @@ const DailyEvaluation = () => {
                                         <button
                                             onClick={() => openEvaluationModal(student.student_id)}
                                             className={`px-3 py-1 rounded text-xs font-semibold flex items-center justify-center gap-1 mx-auto ${getViolationCount(student) > 0
-                                                    ? 'bg-red-100 text-red-700 border border-red-200'
-                                                    : 'text-gray-400 hover:bg-gray-100'
+                                                ? 'bg-red-100 text-red-700 border border-red-200'
+                                                : 'text-gray-400 hover:bg-gray-100'
                                                 }`}
                                         >
                                             {getViolationCount(student) > 0 ? (

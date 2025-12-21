@@ -22,7 +22,7 @@ const MarksEntry = () => {
         if (!user) return;
 
         // Fetch Exams
-        fetch('${API_URL}/api/exams', {
+        fetch(`${API_URL}/api/exams`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
@@ -32,7 +32,7 @@ const MarksEntry = () => {
             });
 
         // Fetch Classes
-        fetch('${API_URL}/api/classes', {
+        fetch(`${API_URL}/api/classes`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
@@ -68,7 +68,7 @@ const MarksEntry = () => {
         }));
 
         try {
-            const res = await fetch('${API_URL}/api/exams/marks', {
+            const res = await fetch(`${API_URL}/api/exams/marks`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
