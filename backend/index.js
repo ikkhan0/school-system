@@ -5,8 +5,6 @@ const connectDB = require('./config/db');
 
 dotenv.config();
 
-connectDB();
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -18,12 +16,31 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Connection Guard: Prevent "buffering timed out" errors by checking connection state
-app.use((req, res, next) => {
+// Connection Guard: Ensure DB is connected before processing requests
+app.use(async (req, res, next) => {
     // Skip for health check so we can always debug
     if (req.path === '/api/health') return next();
 
     const mongoose = require('mongoose');
+
+    // If not connected, try to connect (important for serverless cold starts)
+    if (mongoose.connection.readyState !== 1) {
+        try {
+            console.log('🔄 Database not connected, attempting connection...');
+            await connectDB();
+            console.log('✅ Database connected successfully');
+        } catch (error) {
+            console.error('❌ Failed to connect to database:', error.message);
+            return res.status(503).json({
+                success: false,
+                message: 'Service Unavailable: Database connection failed.',
+                error: 'DB_CONNECTION_FAILED',
+                details: error.message
+            });
+        }
+    }
+
+    // Double-check connection state
     if (mongoose.connection.readyState !== 1) {
         return res.status(503).json({
             success: false,
@@ -31,6 +48,7 @@ app.use((req, res, next) => {
             error: 'DB_DISCONNECTED'
         });
     }
+
     next();
 });
 
