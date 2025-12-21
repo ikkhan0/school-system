@@ -17,9 +17,17 @@ const connectDB = async () => {
     }
 
 
+    // Hardcoded Fallback for Vercel Deployment (User Requested Implementation)
+    // Replace 'YOUR_PASSWORD_HERE' with your actual password
+    const manual_uri = "mongodb+srv://imran_db_user:YOUR_PASSWORD_HERE@school.ubwky7x.mongodb.net/?appName=school";
+
+    // Check if URI is valid (i.e., user has replaced the placeholder)
+    const isManualConfigured = manual_uri.includes("YOUR_PASSWORD_HERE") === false;
+    const final_uri = process.env.MONGO_URI || (isManualConfigured ? manual_uri : null) || 'mongodb://localhost:27017/school_db';
+
     try {
-        const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/school_db', {
-            serverSelectionTimeoutMS: 5000 // Fail fast if no ID
+        const conn = await mongoose.connect(final_uri, {
+            serverSelectionTimeoutMS: 5000
         });
         console.log(`MongoDB Connected: ${conn.connection.host}`);
         cachedConn = conn;
