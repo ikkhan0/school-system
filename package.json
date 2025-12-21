@@ -4,7 +4,7 @@
     "scripts": {
         "install-backend": "cd backend && npm install",
         "install-frontend": "cd frontend && npm install",
-        "build": "echo 'No root build script needed for Vercel, handled by vercel.json overrides'"
+        "build": "cd frontend && npm install && npm run build"
     },
     "engines": {
         "node": "18.x"
