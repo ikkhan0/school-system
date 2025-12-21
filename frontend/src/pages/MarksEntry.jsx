@@ -4,8 +4,7 @@ import AuthContext from '../context/AuthContext';
 import API_URL from '../config';
 
 const MarksEntry = () => {
-    const { user } = useContext(AuthContext); // Get user token
-    // Mock Selections
+    const { user } = useContext(AuthContext);
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedSection, setSelectedSection] = useState('');
     const [classes, setClasses] = useState([]);
@@ -17,6 +16,7 @@ const MarksEntry = () => {
     const [marks, setMarks] = useState({}); // { studentId: obtainedMarks }
     const [totalMarks, setTotalMarks] = useState(100);
     const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -45,21 +45,70 @@ const MarksEntry = () => {
             });
     }, [user]);
 
+    // Fetch students when class/section changes
     useEffect(() => {
-        // Fetch students
-        if (!user) return;
+        if (!user || !selectedClass || !selectedSection) return;
+
+        setLoading(true);
         fetch(`${API_URL}/api/students/list?class_id=${selectedClass}&section_id=${selectedSection}`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
-            .then(data => setStudents(data));
+            .then(data => {
+                setStudents(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setLoading(false);
+            });
     }, [selectedClass, selectedSection, user]);
+
+    // Load existing marks when exam/class/section/subject changes
+    useEffect(() => {
+        if (!user || !examId || !selectedClass || !selectedSection || !selectedSubject || students.length === 0) return;
+
+        setLoading(true);
+
+        // Fetch existing results for this exam/class/section
+        fetch(`${API_URL}/api/exams/results?exam_id=${examId}&class_id=${selectedClass}&section_id=${selectedSection}`, {
+            headers: { Authorization: `Bearer ${user.token}` }
+        })
+            .then(res => res.json())
+            .then(results => {
+                // Extract marks for the selected subject
+                const existingMarks = {};
+
+                results.forEach(result => {
+                    const subjectData = result.subjects.find(s => s.subject_name === selectedSubject);
+                    if (subjectData) {
+                        existingMarks[result.student_id._id] = subjectData.obtained_marks;
+                        // Also update total marks if available
+                        if (subjectData.total_marks) {
+                            setTotalMarks(subjectData.total_marks);
+                        }
+                    }
+                });
+
+                setMarks(existingMarks);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('Error loading marks:', err);
+                setMarks({}); // Clear marks on error
+                setLoading(false);
+            });
+    }, [examId, selectedClass, selectedSection, selectedSubject, students, user]);
 
     const handleMarkChange = (studentId, val) => {
         setMarks(prev => ({ ...prev, [studentId]: val }));
     };
 
     const handleSave = async () => {
+        if (!examId || !selectedClass || !selectedSection || !selectedSubject) {
+            return alert('Please select Exam, Class, Section, and Subject');
+        }
+
         setSaving(true);
         const marksData = students.map(s => ({
             student_id: s._id,
@@ -83,7 +132,7 @@ const MarksEntry = () => {
                 })
             });
             const data = await res.json();
-            alert(data.message);
+            alert(data.message || 'Marks saved successfully!');
         } catch (error) {
             console.error(error);
             alert('Error Saving Marks');
@@ -102,82 +151,149 @@ const MarksEntry = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-4">
-            <header className="bg-white shadow rounded-lg p-4 mb-6">
-                <h1 className="text-xl font-bold mb-4">Marks Entry</h1>
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                    <select className="border p-2 rounded" value={examId} onChange={e => setExamId(e.target.value)}>
-                        {exams.map(ex => <option key={ex._id} value={ex._id}>{ex.title}</option>)}
-                    </select>
+        <div className="max-w-6xl mx-auto p-4">
+            <h1 className="text-2xl font-bold mb-6">Marks Entry</h1>
 
-                    <select
-                        className="border p-2 rounded"
-                        value={selectedClass}
-                        onChange={e => {
-                            setSelectedClass(e.target.value);
-                            const cls = classes.find(c => c.name === e.target.value);
-                            if (cls && cls.sections.length > 0) setSelectedSection(cls.sections[0]);
-                        }}
+            {/* Selection Controls */}
+            <div className="bg-white p-6 rounded shadow mb-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div>
+                        <label className="block text-sm font-bold mb-2">Exam</label>
+                        <select
+                            value={examId}
+                            onChange={e => setExamId(e.target.value)}
+                            className="w-full border p-2 rounded"
+                        >
+                            {exams.map(ex => <option key={ex._id} value={ex._id}>{ex.title}</option>)}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold mb-2">Class</label>
+                        <select
+                            value={selectedClass}
+                            onChange={e => {
+                                setSelectedClass(e.target.value);
+                                const cls = classes.find(c => c.name === e.target.value);
+                                if (cls && cls.sections.length > 0) setSelectedSection(cls.sections[0]);
+                            }}
+                            className="w-full border p-2 rounded"
+                        >
+                            {classes.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold mb-2">Section</label>
+                        <select
+                            value={selectedSection}
+                            onChange={e => setSelectedSection(e.target.value)}
+                            className="w-full border p-2 rounded"
+                        >
+                            {classes.find(c => c.name === selectedClass)?.sections.map(sec => (
+                                <option key={sec} value={sec}>{sec}</option>
+                            )) || <option value="A">A</option>}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold mb-2">Subject</label>
+                        <input
+                            type="text"
+                            value={selectedSubject}
+                            onChange={e => setSelectedSubject(e.target.value)}
+                            className="w-full border p-2 rounded"
+                            placeholder="e.g., Math, English"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold mb-2">Total Marks</label>
+                        <input
+                            type="number"
+                            value={totalMarks}
+                            onChange={e => setTotalMarks(e.target.value)}
+                            className="w-full border p-2 rounded"
+                        />
+                    </div>
+                </div>
+
+                <div className="flex justify-end">
+                    <button
+                        onClick={handleSave}
+                        disabled={saving || loading}
+                        className="bg-blue-600 text-white px-6 py-2 rounded flex items-center gap-2 hover:bg-blue-700 disabled:bg-gray-400"
                     >
-                        {classes.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
-                    </select>
-
-                    <select className="border p-2 rounded" value={selectedSection} onChange={e => setSelectedSection(e.target.value)}>
-                        {classes.find(c => c.name === selectedClass)?.sections.map(sec => (
-                            <option key={sec} value={sec}>{sec}</option>
-                        )) || <option value="A">A</option>}
-                    </select>
-
-                    <select className="border p-2 rounded" value={selectedSubject} onChange={e => setSelectedSubject(e.target.value)}>
-                        <option>Math</option>
-                        <option>English</option>
-                        <option>Science</option>
-                        <option>Urdu</option>
-                        <option>Islamiyat</option>
-                        <option>Social Studies</option>
-                        <option>Computer</option>
-                    </select>
-                    <input
-                        type="number"
-                        placeholder="Total Marks"
-                        value={totalMarks}
-                        onChange={e => setTotalMarks(e.target.value)}
-                        className="border p-2 rounded"
-                    />
-                    <button onClick={handleSave} disabled={saving} className="bg-green-600 text-white rounded p-2 flex justify-center items-center gap-2">
-                        <Save size={18} /> {saving ? 'Saving...' : 'Save'}
+                        <Save size={18} />
+                        {saving ? 'Saving...' : 'Save Marks'}
                     </button>
                 </div>
-            </header>
+            </div>
 
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-                <table className="w-full">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-4 py-3 text-left">Roll No</th>
-                            <th className="px-4 py-3 text-left">Student</th>
-                            <th className="px-4 py-3 text-left">Marks (Out of {totalMarks})</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                        {students.map((student, index) => (
-                            <tr key={student._id}>
-                                <td className="px-4 py-3">{student.roll_no}</td>
-                                <td className="px-4 py-3">{student.full_name}</td>
-                                <td className="px-4 py-3">
-                                    <input
-                                        id={`mark-input-${index}`}
-                                        type="number"
-                                        className="border rounded p-1 w-24 text-center focus:ring-2 focus:ring-blue-500 outline-none"
-                                        value={marks[student._id] || ''}
-                                        onChange={(e) => handleMarkChange(student._id, e.target.value)}
-                                        onKeyDown={(e) => handleKeyDown(e, index)}
-                                    />
-                                </td>
+            {/* Loading State */}
+            {loading && (
+                <div className="text-center py-8">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <p className="mt-2 text-gray-600">Loading...</p>
+                </div>
+            )}
+
+            {/* Marks Entry Table */}
+            {!loading && students.length > 0 && (
+                <div className="bg-white rounded shadow overflow-hidden">
+                    <table className="w-full">
+                        <thead className="bg-gray-100">
+                            <tr>
+                                <th className="p-3 text-left">#</th>
+                                <th className="p-3 text-left">Roll No</th>
+                                <th className="p-3 text-left">Student Name</th>
+                                <th className="p-3 text-center">Obtained Marks (out of {totalMarks})</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {students.map((student, index) => (
+                                <tr key={student._id} className="border-t hover:bg-gray-50">
+                                    <td className="p-3">{index + 1}</td>
+                                    <td className="p-3 font-semibold">{student.roll_no}</td>
+                                    <td className="p-3">{student.full_name}</td>
+                                    <td className="p-3">
+                                        <input
+                                            id={`mark-input-${index}`}
+                                            type="number"
+                                            min="0"
+                                            max={totalMarks}
+                                            value={marks[student._id] || ''}
+                                            onChange={e => handleMarkChange(student._id, e.target.value)}
+                                            onKeyDown={e => handleKeyDown(e, index)}
+                                            className="w-full border p-2 rounded text-center font-bold text-lg"
+                                            placeholder="0"
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {/* Empty State */}
+            {!loading && students.length === 0 && (
+                <div className="bg-white rounded shadow p-8 text-center text-gray-500">
+                    <p>No students found for the selected class and section.</p>
+                    <p className="text-sm mt-2">Please select a different class or section.</p>
+                </div>
+            )}
+
+            {/* Instructions */}
+            <div className="mt-6 bg-blue-50 p-4 rounded border border-blue-200">
+                <h3 className="font-bold text-blue-800 mb-2">Instructions:</h3>
+                <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
+                    <li>Select Exam, Class, Section, and Subject</li>
+                    <li>Existing marks will load automatically if available</li>
+                    <li>Enter marks for each student (press Enter to move to next)</li>
+                    <li>Click "Save Marks" to save all entries</li>
+                    <li>You can edit and re-save marks anytime</li>
+                </ul>
             </div>
         </div>
     );
