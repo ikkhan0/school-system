@@ -83,7 +83,19 @@ const Settings = () => {
         } catch (error) {
             console.error('Settings save error:', error);
             console.error('Error response:', error.response?.data);
-            alert(`Failed to update settings: ${error.response?.data?.message || error.message}`);
+
+            // Show detailed error message
+            let errorMsg = 'Failed to update settings';
+            if (error.response?.data?.error) {
+                console.error('Detailed error:', error.response.data.error);
+                errorMsg += ': ' + JSON.stringify(error.response.data.error);
+            } else if (error.response?.data?.message) {
+                errorMsg += ': ' + error.response.data.message;
+            } else if (error.message) {
+                errorMsg += ': ' + error.message;
+            }
+
+            alert(errorMsg);
         } finally {
             setLoading(false);
         }
