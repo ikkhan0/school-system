@@ -1,0 +1,17 @@
+@import "tailwindcss";
+/* If used, otherwise just the import */
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+/* Custom Print Styles */
+@media print {
+  @page {
+    margin: 5mm;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+  }
+}
