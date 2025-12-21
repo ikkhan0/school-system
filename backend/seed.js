@@ -88,6 +88,7 @@ const seedData = async () => {
                 is_active: true,
                 family_id: randomFamily._id,
                 father_name: randomFamily.father_name, // Denormalized
+                monthly_fee: 3000 + Math.floor(Math.random() * 5) * 500, // Random fee between 3000 and 5000
                 school_id: school._id
             });
         }

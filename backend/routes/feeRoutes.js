@@ -35,7 +35,7 @@ router.get('/family-view', protect, async (req, res) => {
             siblings = [student];
         }
 
-        const currentMonth = "Dec-2025"; // In real app, dynamic
+        const currentMonth = req.query.month || "Dec-2025"; // In real app, dynamic
 
         const familyData = await Promise.all(siblings.map(async (sib) => {
             let fee = await Fee.findOne({ student_id: sib._id, month: currentMonth, school_id: req.user.school_id });
@@ -159,10 +159,10 @@ router.get('/bulk-slips', protect, async (req, res) => {
                 // Mock Preview
                 fee = {
                     month,
-                    tuition_fee: 5000,
+                    tuition_fee: student.monthly_fee || 5000,
                     arrears: 0,
-                    gross_amount: 5000,
-                    balance: 5000
+                    gross_amount: student.monthly_fee || 5000,
+                    balance: student.monthly_fee || 5000
                 };
             }
             return {
@@ -173,6 +173,22 @@ router.get('/bulk-slips', protect, async (req, res) => {
         }));
 
         res.json(slips);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Get Student Fee Ledger (History)
+// @route   GET /api/fees/ledger/:student_id
+router.get('/ledger/:student_id', protect, async (req, res) => {
+    try {
+        const fees = await Fee.find({
+            student_id: req.params.student_id,
+            school_id: req.user.school_id
+        }).sort({ createdAt: -1 }); // Latest first
+
+        // Calculate running balance or totals if needed
+        res.json(fees);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

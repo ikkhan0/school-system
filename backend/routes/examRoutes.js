@@ -87,6 +87,9 @@ router.post('/marks', protect, async (req, res) => {
     }
 });
 
+const DailyLog = require('../models/DailyLog');
+const Fee = require('../models/Fee'); // Add Fee model import
+
 // @desc    Get Result Card Data for Class
 // @route   GET /api/exams/results?exam_id=X&class_id=Y&section_id=Z
 router.get('/results', protect, async (req, res) => {
@@ -95,7 +98,42 @@ router.get('/results', protect, async (req, res) => {
         const results = await Result.find({ exam_id, class_id, section_id, school_id: req.user.school_id })
             .populate('student_id')
             .populate('exam_id');
-        res.json(results);
+
+        // Aggregate Stats (Attendance, Fees, Behavior)
+        const detailedResults = await Promise.all(results.map(async (r) => {
+            const studentId = r.student_id._id;
+
+            // 1. Attendance Stats (All logs for this student)
+            const logs = await DailyLog.find({ student_id: studentId });
+            const present = logs.filter(l => l.status === 'Present').length;
+            const absent = logs.filter(l => l.status === 'Absent').length;
+            const leave = logs.filter(l => l.status === 'Leave').length;
+
+            // 2. Fee Stats (Total Balance)
+            const fees = await Fee.find({ student_id: studentId });
+            const totalBalance = fees.reduce((sum, f) => sum + f.balance, 0);
+
+            // 3. Behavior Stats (Violations Count)
+            const behavior = {
+                uniform: logs.filter(l => l.uniform_violation).length,
+                hygiene: logs.filter(l => l.hygiene_violation).length,
+                homework: logs.filter(l => l.homework_violation).length,
+                late: logs.filter(l => l.late_violation).length,
+                books: logs.filter(l => l.books_violation).length,
+                shoes: logs.filter(l => l.shoes_violation).length
+            };
+
+            return {
+                ...r.toObject(),
+                stats: {
+                    attendance: { present, absent, leave },
+                    fees: { balance: totalBalance },
+                    behavior
+                }
+            };
+        }));
+
+        res.json(detailedResults);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

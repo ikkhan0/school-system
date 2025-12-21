@@ -18,6 +18,7 @@ app.get('/', (req, res) => {
 });
 
 // Routes
+app.use('/uploads', express.static('uploads'));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/students', require('./routes/studentRoutes'));
 app.use('/api/evaluation', require('./routes/evaluationRoutes'));
@@ -25,6 +26,7 @@ app.use('/api/exams', require('./routes/examRoutes'));
 app.use('/api/fees', require('./routes/feeRoutes'));
 app.use('/api/classes', require('./routes/classRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+app.use('/api/reports', require('./routes/reportsRoutes')); // New Route
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

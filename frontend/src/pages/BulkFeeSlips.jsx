@@ -1,16 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Printer } from 'lucide-react';
+import AuthContext from '../context/AuthContext';
 
 const BulkFeeSlips = () => {
+    const { user } = useContext(AuthContext); // Add user context which was missing!
     const [slips, setSlips] = useState([]);
     const [selectedClass, setSelectedClass] = useState('1');
     const [month, setMonth] = useState('Dec-2025');
     const [classes, setClasses] = useState([]);
 
     useEffect(() => {
+        if (!user) return;
         const fetchClasses = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/classes');
+                const res = await fetch('http://localhost:5000/api/classes', {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                });
                 const data = await res.json();
                 setClasses(data);
                 if (data.length > 0) setSelectedClass(data[0].name);
@@ -19,11 +24,13 @@ const BulkFeeSlips = () => {
             }
         };
         fetchClasses();
-    }, []);
+    }, [user]);
 
     const fetchSlips = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/fees/bulk-slips?class_id=${selectedClass}&month=${month}`);
+            const res = await fetch(`http://localhost:5000/api/fees/bulk-slips?class_id=${selectedClass}&month=${month}`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
             const data = await res.json();
             setSlips(data);
         } catch (error) {

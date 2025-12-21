@@ -1,33 +1,54 @@
 import { useState, useEffect, useContext } from 'react';
-import { Printer, MessageCircle } from 'lucide-react';
+import { Printer, MessageCircle, User } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 
 const ResultGeneration = () => {
     const { user } = useContext(AuthContext);
     const [results, setResults] = useState([]);
-    const [mockStats, setMockStats] = useState({
-        attendance: { presents: 3, absents: 5, leaves: 0, percentage: 38 },
-        fees: { month: 2000, arrears: 4000, paid: 0, balance: 5750 },
-        behavior: {
-            issues: [
-                { name: "Uniform", count: 1 },
-                { name: "Books", count: 1 },
-                { name: "Shoes", count: 2 },
-                { name: "Late", count: 2 },
-                { name: "Homework", count: 1 }
-            ]
-        }
-    });
+
+    // Dynamic Selections
+    const [exams, setExams] = useState([]);
+    const [classes, setClasses] = useState([]);
+    const [selectedExam, setSelectedExam] = useState('');
+    const [selectedClass, setSelectedClass] = useState('');
+    const [selectedSection, setSelectedSection] = useState('');
+
+    // Toggles
+    const [showAttendance, setShowAttendance] = useState(true);
+    const [showFees, setShowFees] = useState(true);
+    const [showBehavior, setShowBehavior] = useState(true);
+
+    useEffect(() => {
+        if (!user) return;
+
+        // Fetch Exams
+        fetch('http://localhost:5000/api/exams', {
+            headers: { Authorization: `Bearer ${user.token}` }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setExams(data);
+                if (data.length > 0) setSelectedExam(data[0]._id);
+            });
+
+        // Fetch Classes
+        fetch('http://localhost:5000/api/classes', {
+            headers: { Authorization: `Bearer ${user.token}` }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setClasses(data);
+                if (data.length > 0) {
+                    setSelectedClass(data[0].name);
+                    setSelectedSection(data[0].sections[0] || 'A');
+                }
+            });
+    }, [user]);
 
     const fetchResults = async () => {
-        // Hardcoded for demo
-        const examRes = await fetch('http://localhost:5000/api/exams', {
-            headers: { Authorization: `Bearer ${user.token}` }
-        });
-        const exams = await examRes.json();
-        if (exams.length === 0) return alert("No Exams Found");
+        if (!selectedExam || !selectedClass || !selectedSection) return alert("Please select Exam, Class, and Section");
 
-        const res = await fetch(`http://localhost:5000/api/exams/results?exam_id=${exams[0]._id}&class_id=1&section_id=A`, {
+        const res = await fetch(`http://localhost:5000/api/exams/results?exam_id=${selectedExam}&class_id=${selectedClass}&section_id=${selectedSection}`, {
             headers: { Authorization: `Bearer ${user.token}` }
         });
         const data = await res.json();
@@ -51,12 +72,46 @@ const ResultGeneration = () => {
 
     return (
         <div className="max-w-6xl mx-auto p-4">
-            <div className="no-print mb-6 bg-white p-4 shadow rounded flex justify-between items-center">
-                <h1 className="text-xl font-bold">Result Card Generation</h1>
-                <div className="flex gap-4">
-                    <button onClick={fetchResults} className="bg-blue-600 text-white px-4 py-2 rounded">Load Results</button>
-                    <button onClick={() => window.print()} className="bg-gray-800 text-white px-4 py-2 rounded flex gap-2 items-center">
-                        <Printer size={18} /> Print
+            <div className="no-print mb-6 bg-white p-4 shadow rounded space-y-4">
+                <div className="flex justify-between items-center">
+                    <h1 className="text-xl font-bold">Result Card Generation</h1>
+                    <div className="flex gap-4">
+                        <select className="border p-2 rounded" value={selectedExam} onChange={e => setSelectedExam(e.target.value)}>
+                            {exams.map(ex => <option key={ex._id} value={ex._id}>{ex.title}</option>)}
+                        </select>
+                        <select className="border p-2 rounded" value={selectedClass} onChange={e => {
+                            setSelectedClass(e.target.value);
+                            const cls = classes.find(c => c.name === e.target.value);
+                            if (cls && cls.sections.length > 0) setSelectedSection(cls.sections[0]);
+                        }}>
+                            {classes.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
+                        </select>
+                        <select className="border p-2 rounded" value={selectedSection} onChange={e => setSelectedSection(e.target.value)}>
+                            {classes.find(c => c.name === selectedClass)?.sections.map(sec => (
+                                <option key={sec} value={sec}>{sec}</option>
+                            )) || <option value="A">A</option>}
+                        </select>
+                        <button onClick={fetchResults} className="bg-blue-600 text-white px-4 py-2 rounded">Load Results</button>
+                    </div>
+                </div>
+
+                {/* Toggles */}
+                <div className="flex gap-6 items-center border-t pt-4">
+                    <label className="flex items-center gap-2 font-semibold text-sm cursor-pointer">
+                        <input type="checkbox" checked={showAttendance} onChange={e => setShowAttendance(e.target.checked)} className="w-4 h-4" />
+                        Attendance Report
+                    </label>
+                    <label className="flex items-center gap-2 font-semibold text-sm cursor-pointer">
+                        <input type="checkbox" checked={showFees} onChange={e => setShowFees(e.target.checked)} className="w-4 h-4" />
+                        Fee Status
+                    </label>
+                    <label className="flex items-center gap-2 font-semibold text-sm cursor-pointer">
+                        <input type="checkbox" checked={showBehavior} onChange={e => setShowBehavior(e.target.checked)} className="w-4 h-4" />
+                        Evaluation Report
+                    </label>
+
+                    <button onClick={() => window.print()} className="ml-auto bg-gray-800 text-white px-4 py-2 rounded flex gap-2 items-center">
+                        <Printer size={18} /> Print Cards
                     </button>
                 </div>
             </div>
@@ -73,25 +128,32 @@ const ResultGeneration = () => {
                         </div>
 
                         {/* Header */}
-                        <div className="text-center mb-6">
-                            <h1 className="text-3xl font-bold uppercase tracking-wider">BISMILLAH EDUCATIONAL COMPLEX</h1>
-                            <p className="text-sm">Chak No 223 Jb Tehsil Bhowana [0300-7989915]</p>
-                            <div className="mt-4 flex justify-between items-center border-2 border-black p-1 px-4">
-                                <div className="text-left text-sm">
-                                    <span className="font-bold">Result Card</span>
+                        <div className="flex items-start justify-between mb-6">
+                            {/* Left: Logo/Info */}
+                            <div className="flex-1 text-center">
+                                <h1 className="text-3xl font-bold uppercase tracking-wider">BISMILLAH EDUCATIONAL COMPLEX</h1>
+                                <p className="text-sm">Chak No 223 Jb Tehsil Bhowana [0300-7989915]</p>
+                                <div className="mt-2 inline-block border-2 border-black px-4 py-1 font-bold text-sm uppercase bg-black text-white">
+                                    Result Card
                                 </div>
-                                <div className="text-right">
-                                    <span className="border border-black px-2 text-sm font-bold">RESULT CARD</span>
-                                </div>
+                            </div>
+
+                            {/* Right: Photo */}
+                            <div className="w-24 h-24 border-2 border-black ml-4 bg-gray-100 flex items-center justify-center overflow-hidden">
+                                {result.student_id.image ? (
+                                    <img src={`http://localhost:5000${result.student_id.image}`} alt="Student" className="w-full h-full object-cover" />
+                                ) : (
+                                    <User className="text-gray-400" size={48} />
+                                )}
                             </div>
                         </div>
 
                         {/* Student Info */}
-                        <div className="flex justify-between text-sm border-b-2 border-black pb-2 mb-4 font-bold uppercase">
-                            <div>Name: {result.student_id.full_name}</div>
-                            <div>Father: {result.student_id.father_name}</div>
-                            <div>Class: {result.class_id} ({result.section_id})</div>
-                            <div>Roll No: <span className="border border-black px-2">{result.student_id.roll_no}</span></div>
+                        <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm border-t-2 border-b-2 border-black py-2 mb-4 font-bold uppercase">
+                            <div className="flex justify-between border-b border-gray-300"><span>Name:</span> <span>{result.student_id.full_name}</span></div>
+                            <div className="flex justify-between border-b border-gray-300"><span>Roll No:</span> <span>{result.student_id.roll_no}</span></div>
+                            <div className="flex justify-between border-b border-gray-300"><span>Father:</span> <span>{result.student_id.father_name}</span></div>
+                            <div className="flex justify-between border-b border-gray-300"><span>Class:</span> <span>{result.class_id} ({result.section_id})</span></div>
                         </div>
 
                         <div className="text-center font-bold bg-gray-200 border border-black mb-2 py-1 text-sm">Exam: {result.exam_id.title}</div>
@@ -128,54 +190,72 @@ const ResultGeneration = () => {
                             </tbody>
                         </table>
 
-                        {/* USP Bottom Section (3 Boxes) */}
-                        <div className="grid grid-cols-3 gap-2 h-48">
-                            {/* Box 1: Attendance */}
-                            <div className="border-2 border-black rounded-lg overflow-hidden flex flex-col">
-                                <div className="bg-gray-200 border-b border-black font-bold text-center py-1 text-xs uppercase">Attendance (2025-12)</div>
-                                <div className="p-2 text-xs space-y-2 flex-1">
-                                    <div className="flex justify-between border-b border-gray-300 pb-1"><span>Presents:</span> <span>{mockStats.attendance.presents}</span></div>
-                                    <div className="flex justify-between border-b border-gray-300 pb-1"><span>Absents:</span> <span>{mockStats.attendance.absents}</span></div>
-                                    <div className="flex justify-between border-b border-gray-300 pb-1"><span>Leaves:</span> <span>{mockStats.attendance.leaves}</span></div>
-                                    <div className="flex justify-between font-bold pt-1"><span>Percentage:</span> <span>{mockStats.attendance.percentage}%</span></div>
-                                </div>
-                            </div>
+                        {/* USP Bottom Section (3 Boxes) - Conditional Rendering */}
+                        {(showAttendance || showFees || showBehavior) && (
+                            <div className="grid grid-cols-3 gap-2 h-40">
+                                {/* Box 1: Attendance */}
+                                {showAttendance && (
+                                    <div className="border-2 border-black rounded-lg overflow-hidden flex flex-col">
+                                        <div className="bg-gray-200 border-b border-black font-bold text-center py-1 text-xs uppercase">Attendance</div>
+                                        <div className="p-2 text-xs space-y-2 flex-1">
+                                            <div className="flex justify-between border-b border-gray-300 pb-1"><span>Presents:</span> <span>{result.stats?.attendance?.present || 0}</span></div>
+                                            <div className="flex justify-between border-b border-gray-300 pb-1"><span>Absents:</span> <span>{result.stats?.attendance?.absent || 0}</span></div>
+                                            <div className="flex justify-between border-b border-gray-300 pb-1"><span>Leaves:</span> <span>{result.stats?.attendance?.leave || 0}</span></div>
+                                            <div className="flex justify-between font-bold pt-1"><span>Percentage:</span> <span>
+                                                {result.stats?.attendance ? Math.round((result.stats.attendance.present / ((result.stats.attendance.present + result.stats.attendance.absent + result.stats.attendance.leave) || 1)) * 100) : 0}%
+                                            </span></div>
+                                        </div>
+                                    </div>
+                                )}
 
-                            {/* Box 2: Fee Status */}
-                            <div className="border-2 border-black rounded-lg overflow-hidden flex flex-col">
-                                <div className="bg-gray-200 border-b border-black font-bold text-center py-1 text-xs uppercase">Fee Status (2025-12)</div>
-                                <div className="p-2 text-xs space-y-2 flex-1">
-                                    <div className="flex justify-between border-b border-gray-300 pb-1"><span>Monthly Fee:</span> <span>{mockStats.fees.month}</span></div>
-                                    <div className="flex justify-between border-b border-gray-300 pb-1"><span>Arrears/Old:</span> <span>{mockStats.fees.arrears}</span></div>
-                                    <div className="flex justify-between border-b border-gray-300 pb-1"><span>Paid:</span> <span>{mockStats.fees.paid}</span></div>
-                                    <div className="flex justify-between font-bold pt-1 text-red-600"><span>Balance:</span> <span>{mockStats.fees.balance}</span></div>
-                                </div>
-                            </div>
+                                {/* Box 2: Fee Status */}
+                                {showFees && (
+                                    <div className="border-2 border-black rounded-lg overflow-hidden flex flex-col">
+                                        <div className="bg-gray-200 border-b border-black font-bold text-center py-1 text-xs uppercase">Fee Status</div>
+                                        <div className="p-2 text-xs space-y-2 flex-1">
+                                            <div className="flex justify-between border-b border-gray-300 pb-1"><span>Monthly Fee:</span> <span>{result.student_id?.monthly_fee || 5000}</span></div>
+                                            <div className="flex justify-between border-b border-gray-300 pb-1"><span>Arrears:</span> <span>{(result.stats?.fees?.balance || 0) - (result.student_id?.monthly_fee || 5000)}</span></div>
+                                            <div className="flex justify-between font-bold pt-1 text-red-600"><span>Balance:</span> <span>{result.stats?.fees?.balance || 0}</span></div>
+                                        </div>
+                                    </div>
+                                )}
 
-                            {/* Box 3: Behavior */}
-                            <div className="border-2 border-black rounded-lg overflow-hidden flex flex-col">
-                                <div className="bg-gray-200 border-b border-black font-bold text-center py-1 text-xs uppercase">Behavior / Points</div>
-                                <div className="p-2 text-xs flex-1">
-                                    <table className="w-full">
-                                        <thead>
-                                            <tr className="text-left text-gray-500"><th>ISSUE</th><th className="text-right">COUNT</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            {mockStats.behavior.issues.map((issue, i) => (
-                                                <tr key={i} className="border-b border-gray-100 last:border-0">
-                                                    <td className="py-1">{issue.name}</td>
-                                                    <td className="text-right font-bold">{issue.count}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                {/* Box 3: Behavior */}
+                                {showBehavior && (
+                                    <div className="border-2 border-black rounded-lg overflow-hidden flex flex-col">
+                                        <div className="bg-gray-200 border-b border-black font-bold text-center py-1 text-xs uppercase">Evaluation Report</div>
+                                        <div className="p-2 text-xs flex-1">
+                                            <table className="w-full">
+                                                <tbody>
+                                                    {Object.entries(result.stats?.behavior || {}).map(([key, count]) => (
+                                                        count > 0 && (
+                                                            <tr key={key} className="border-b border-gray-100 last:border-0">
+                                                                <td className="py-1 capitalize">{key.replace('_', ' ')}</td>
+                                                                <td className="text-right font-bold text-red-600">{count}</td>
+                                                            </tr>
+                                                        )
+                                                    ))}
+                                                    {Object.values(result.stats?.behavior || {}).every(v => v === 0) && (
+                                                        <tr><td className="text-center text-green-600 italic py-4">Excellent Behavior!</td></tr>
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                        </div>
+                        )}
 
                         {/* Signatures */}
-                        <div className="flex justify-between mt-8 pt-8">
-                            {/* Empty for now as per image logic usually having space */}
+                        <div className="flex justify-between mt-8 pt-8 px-8">
+                            <div className="text-center">
+                                <div className="border-t border-black w-32 mx-auto"></div>
+                                <span className="text-sm font-bold">Class Teacher</span>
+                            </div>
+                            <div className="text-center">
+                                <div className="border-t border-black w-32 mx-auto"></div>
+                                <span className="text-sm font-bold">Principal</span>
+                            </div>
                         </div>
                     </div>
                 ))}

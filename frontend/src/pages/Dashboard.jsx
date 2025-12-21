@@ -31,6 +31,12 @@ const Dashboard = () => {
         setAbsents(data);
     };
 
+    const fetchWarnings = async () => {
+        const res = await fetch('http://localhost:5000/api/dashboard/warnings');
+        const data = await res.json();
+        setWarnings(data);
+    };
+
     const sendWhatsApp = (mobile, message) => {
         if (!mobile) return alert("Parent Mobile Number not found!");
         let num = mobile.replace(/\D/g, '');

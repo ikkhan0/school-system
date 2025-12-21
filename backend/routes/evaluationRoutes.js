@@ -4,9 +4,11 @@ const DailyLog = require('../models/DailyLog');
 const Student = require('../models/Student');
 const Family = require('../models/Family');
 
+const { protect } = require('../middleware/auth');
+
 // @desc    Get Daily Logs for a class (or initialize them)
 // @route   GET /api/evaluation/list?class_id=X&section_id=Y&date=YYYY-MM-DD
-router.get('/list', async (req, res) => {
+router.get('/list', protect, async (req, res) => {
     try {
         const { class_id, section_id, date } = req.query;
         if (!class_id || !section_id || !date) {
@@ -17,7 +19,7 @@ router.get('/list', async (req, res) => {
         queryDate.setHours(0, 0, 0, 0);
 
         // 1. Get all students
-        const students = await Student.find({ class_id, section_id, is_active: true }).populate('family_id');
+        const students = await Student.find({ class_id, section_id, is_active: true, school_id: req.user.school_id }).populate('family_id'); // Added school_id check
 
         // 2. Get existing logs
         const existingLogs = await DailyLog.find({
@@ -58,7 +60,7 @@ router.get('/list', async (req, res) => {
 
 // @desc    Save/Update Bulk Evaluation
 // @route   POST /api/evaluation/save
-router.post('/save', async (req, res) => {
+router.post('/save', protect, async (req, res) => {
     try {
         const { date, evaluations } = req.body;
         const logDate = new Date(date);

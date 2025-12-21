@@ -13,6 +13,7 @@ const studentSchema = mongoose.Schema({
     class_id: { type: String, required: true },
     section_id: { type: String, required: true },
     category: { type: String, default: 'Regular' },
+    monthly_fee: { type: Number, default: 5000 },
     is_active: { type: Boolean, default: true }
 }, { timestamps: true });
 

@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Save, AlertTriangle, X, MessageCircle } from 'lucide-react';
+import { useState, useEffect, useContext } from 'react';
+import { Save, AlertTriangle, X, MessageCircle, Check, Search } from 'lucide-react';
+import AuthContext from '../context/AuthContext';
 
 const DailyEvaluation = () => {
+    const { user } = useContext(AuthContext); // Added AuthContext
     const [classes, setClasses] = useState([]);
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedSection, setSelectedSection] = useState('');
@@ -14,17 +16,17 @@ const DailyEvaluation = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [currentStudentId, setCurrentStudentId] = useState(null);
 
-    // 1. Fetch Classes on Mount
     useEffect(() => {
+        if (!user) return;
         const fetchClasses = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/classes');
+                const res = await fetch('http://localhost:5000/api/classes', {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                });
                 const data = await res.json();
                 setClasses(data);
                 if (data.length > 0) {
-                    setSelectedClass(data[0].name); // Default to first class name
-                    // Assuming sections are uniform or just picking 'A' default
-                    // In a real app, we'd pick data[0].sections[0]
+                    setSelectedClass(data[0].name);
                     setSelectedSection(data[0].sections[0] || 'A');
                 }
             } catch (error) {
@@ -32,18 +34,20 @@ const DailyEvaluation = () => {
             }
         };
         fetchClasses();
-    }, []);
+    }, [user]);
 
     useEffect(() => {
-        if (selectedClass && selectedSection) {
+        if (selectedClass && selectedSection && user) {
             fetchStudents();
         }
-    }, [selectedClass, selectedSection, date]);
+    }, [selectedClass, selectedSection, date, user]);
 
     const fetchStudents = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/evaluation/list?class_id=${selectedClass}&section_id=${selectedSection}&date=${date}`);
+            const response = await fetch(`http://localhost:5000/api/evaluation/list?class_id=${selectedClass}&section_id=${selectedSection}&date=${date}`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
             const data = await response.json();
             setStudents(data);
         } catch (error) {
@@ -55,8 +59,7 @@ const DailyEvaluation = () => {
 
     const sendWhatsApp = (mobile, message) => {
         if (!mobile) return alert("Father Mobile Number not found!");
-        // Remove leading 0 if 11 digits (0300...), add 92 (92300...)
-        let num = mobile.replace(/\D/g, ''); // strip non-digits
+        let num = mobile.replace(/\D/g, '');
         if (num.length === 11 && num.startsWith('0')) {
             num = '92' + num.substring(1);
         }
@@ -65,23 +68,7 @@ const DailyEvaluation = () => {
 
     const handleStatusChange = (id, newStatus) => {
         setStudents(prev => prev.map(s => s.student_id === id ? { ...s, status: newStatus } : s));
-
-        // Immediate WhatsApp Logic
-        const student = students.find(s => s.student_id === id);
-        if (student && student.father_mobile) {
-            let text = "";
-            if (newStatus === 'Absent') {
-                text = `Dear Parent,\n\n${student.name} is ABSENT today (${date}).\nPlease ensure regular attendance.\n\n- Bismillah Educational Complex`;
-            } else if (newStatus === 'Present') {
-                // Optional: Send Present message? Maybe too spammy, user can decide.
-                // Keeping it manual or only for Absent usually.
-                // text = `Dear Parent,\n\n${student.name} is PRESENT today (${date}).\n\n- Bismillah Educational Complex`;
-            }
-
-            if (text) {
-                sendWhatsApp(student.father_mobile, text);
-            }
-        }
+        // Removed auto-whatsapp on status change to prevent spam, can re-enable if requested
     };
 
     const openEvaluationModal = (id) => {
@@ -137,7 +124,10 @@ const DailyEvaluation = () => {
 
             await fetch('http://localhost:5000/api/evaluation/save', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${user.token}`
+                },
                 body: JSON.stringify(payload)
             });
             alert('Saved Successfully!');
@@ -148,7 +138,6 @@ const DailyEvaluation = () => {
         }
     };
 
-    // Helper to get active violation count for badge
     const getViolationCount = (s) => {
         let count = 0;
         if (s.uniform_violation) count++;
@@ -161,31 +150,27 @@ const DailyEvaluation = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-4">
-            <header className="bg-white shadow rounded-lg p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div>
-                    <h1 className="text-xl font-bold mb-2">Smart Attendance & Daily Log</h1>
-                    <div className="flex gap-2">
+        <div className="max-w-7xl mx-auto p-4">
+            <header className="bg-white shadow rounded-lg p-4 mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="flex items-center gap-4 w-full md:w-auto">
+                    <h1 className="text-xl font-bold whitespace-nowrap hidden md:block">Daily Evaluation</h1>
+                    <div className="flex gap-2 flex-1">
                         <select
                             value={selectedClass}
                             onChange={(e) => {
                                 setSelectedClass(e.target.value);
-                                // Update section to default of new class if needed, or keep 'A'
                                 const cls = classes.find(c => c.name === e.target.value);
                                 if (cls && cls.sections.length > 0) setSelectedSection(cls.sections[0]);
                             }}
-                            className="border rounded p-1 text-sm"
+                            className="border rounded p-2 text-sm flex-1"
                         >
-                            {classes.map(c => (
-                                <option key={c._id} value={c.name}>{c.name}</option>
-                            ))}
+                            {classes.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
                         </select>
                         <select
                             value={selectedSection}
                             onChange={(e) => setSelectedSection(e.target.value)}
-                            className="border rounded p-1 text-sm"
+                            className="border rounded p-2 text-sm w-24"
                         >
-                            {/* Logic to show sections for selected class */}
                             {classes.find(c => c.name === selectedClass)?.sections.map(sec => (
                                 <option key={sec} value={sec}>Sec {sec}</option>
                             )) || <option value="A">Sec A</option>}
@@ -194,106 +179,125 @@ const DailyEvaluation = () => {
                             type="date"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
-                            className="border rounded p-1 text-sm"
+                            className="border rounded p-2 text-sm"
                         />
                     </div>
                 </div>
-                <button onClick={handleSave} disabled={saving} className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2">
-                    <Save size={18} /> {saving ? 'Saving...' : 'Save All'}
+                <button onClick={handleSave} disabled={saving} className="bg-blue-600 text-white px-6 py-2 rounded shadow font-bold flex items-center gap-2 hover:bg-blue-700 w-full md:w-auto justify-center">
+                    <Save size={18} /> {saving ? 'Saving...' : 'Save All Changes'}
                 </button>
             </header>
 
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-                {students.map((student) => (
-                    <div key={student.student_id} className="border-b p-4 flex items-center justify-between hover:bg-gray-50">
-                        <div className="flex-1">
-                            <h3 className="font-bold text-lg">{student.name}</h3>
-                            <p className="text-sm text-gray-500">{student.roll_no}</p>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                            {/* Attendance Toggles */}
-                            <div className="flex bg-gray-100 rounded-lg p-1">
-                                {['Present', 'Absent', 'Leave'].map(status => (
-                                    <button
-                                        key={status}
-                                        onClick={() => handleStatusChange(student.student_id, status)}
-                                        className={`px-3 py-1 rounded-md text-sm font-medium transition ${student.status === status
-                                            ? (status === 'Present' ? 'bg-green-500 text-white shadow'
-                                                : status === 'Absent' ? 'bg-red-500 text-white shadow'
-                                                    : 'bg-yellow-500 text-white shadow')
-                                            : 'text-gray-500 hover:bg-gray-200'
-                                            }`}
-                                    >
-                                        {status.charAt(0)}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {/* Evaluation Button */}
-                            <button
-                                onClick={() => openEvaluationModal(student.student_id)}
-                                className={`px-3 py-1.5 rounded border text-sm flex items-center gap-2 ${getViolationCount(student) > 0 ? 'bg-red-50 text-red-600 border-red-200' : 'bg-white text-gray-600 border-gray-300'
-                                    }`}
-                            >
-                                <AlertTriangle size={16} />
-                                Eval
-                                {getViolationCount(student) > 0 && (
-                                    <span className="bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                                        {getViolationCount(student)}
-                                    </span>
-                                )}
-                            </button>
-
-                            {/* Quick WhatsApp Button */}
-                            <button
-                                onClick={() => handleSendReport(student)}
-                                className="p-2 rounded-full text-green-600 hover:bg-green-50 border border-green-200"
-                                title="Send Daily Report on WhatsApp"
-                            >
-                                <MessageCircle size={20} />
-                            </button>
-                        </div>
-                    </div>
-                ))}
+            <div className="bg-white shadow rounded-lg overflow-hidden border border-gray-200">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead className="bg-gray-100 text-gray-700 text-sm uppercase">
+                            <tr>
+                                <th className="p-3 border-b border-r w-16 text-center">Roll</th>
+                                <th className="p-3 border-b border-r">Student Name</th>
+                                <th className="p-3 border-b border-r text-center w-48">Attendance</th>
+                                <th className="p-3 border-b border-r text-center w-32">Violations</th>
+                                <th className="p-3 border-b border-r">Remarks</th>
+                                <th className="p-3 border-b text-center w-16">Notify</th>
+                            </tr>
+                        </thead>
+                        <tbody className="text-sm divide-y divide-gray-200">
+                            {students.map((student) => (
+                                <tr key={student.student_id} className="hover:bg-blue-50 transition-colors">
+                                    <td className="p-3 border-r text-center font-mono font-bold text-gray-600">
+                                        {student.roll_no}
+                                    </td>
+                                    <td className="p-3 border-r">
+                                        <div className="font-medium text-gray-900">{student.name}</div>
+                                        <div className="text-xs text-gray-500">Father: {student.father_mobile || 'N/A'}</div>
+                                    </td>
+                                    <td className="p-2 border-r text-center bg-gray-50">
+                                        <div className="flex justify-center gap-1">
+                                            {['Present', 'Absent', 'Leave'].map(status => (
+                                                <button
+                                                    key={status}
+                                                    onClick={() => handleStatusChange(student.student_id, status)}
+                                                    className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs transition-all ${student.status === status
+                                                            ? (status === 'Present' ? 'bg-green-600 text-white shadow-lg scale-110'
+                                                                : status === 'Absent' ? 'bg-red-600 text-white shadow-lg scale-110'
+                                                                    : 'bg-yellow-500 text-white shadow-lg scale-110')
+                                                            : 'bg-white border text-gray-400 hover:border-gray-400'
+                                                        }`}
+                                                    title={status}
+                                                >
+                                                    {status.charAt(0)}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </td>
+                                    <td className="p-2 border-r text-center">
+                                        <button
+                                            onClick={() => openEvaluationModal(student.student_id)}
+                                            className={`px-3 py-1 rounded text-xs font-semibold flex items-center justify-center gap-1 mx-auto ${getViolationCount(student) > 0
+                                                    ? 'bg-red-100 text-red-700 border border-red-200'
+                                                    : 'text-gray-400 hover:bg-gray-100'
+                                                }`}
+                                        >
+                                            {getViolationCount(student) > 0 ? (
+                                                <><AlertTriangle size={14} /> {getViolationCount(student)} Issues</>
+                                            ) : (
+                                                <span className="text-gray-400 font-normal">No Issues</span>
+                                            )}
+                                        </button>
+                                    </td>
+                                    <td className="p-2 border-r">
+                                        <input
+                                            type="text"
+                                            className="w-full bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 outline-none text-xs py-1"
+                                            placeholder="Type remarks..."
+                                            value={student.teacher_remarks || ''}
+                                            onChange={(e) => setStudents(prev => prev.map(s => s.student_id === student.student_id ? { ...s, teacher_remarks: e.target.value } : s))}
+                                        />
+                                    </td>
+                                    <td className="p-2 text-center">
+                                        <button
+                                            onClick={() => handleSendReport(student)}
+                                            className="text-green-600 hover:text-green-800 p-1 rounded hover:bg-green-50"
+                                            title="Send WhatsApp Report"
+                                        >
+                                            <MessageCircle size={18} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            {/* Modal */}
+            {/* Modal - Kept same logic but cleaner UI */}
             {modalOpen && currentStudent && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-sm">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-bold">Evaluation: {currentStudent.name}</h2>
-                            <button onClick={() => setModalOpen(false)} className="text-gray-500 hover:text-gray-700">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm transform transition-all">
+                        <div className="flex justify-between items-center mb-6 border-b pb-2">
+                            <div>
+                                <h2 className="text-lg font-bold text-gray-800">{currentStudent.name}</h2>
+                                <p className="text-xs text-gray-500">Roll No: {currentStudent.roll_no}</p>
+                            </div>
+                            <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600">
                                 <X size={24} />
                             </button>
                         </div>
 
-                        <div className="space-y-3">
-                            <CheckboxRow label="Improper Uniform" checked={currentStudent.uniform_violation} onChange={() => toggleViolation('uniform_violation')} />
-                            <CheckboxRow label="No Shoes / Dirty" checked={currentStudent.shoes_violation} onChange={() => toggleViolation('shoes_violation')} />
-                            <CheckboxRow label="Poor Hygiene" checked={currentStudent.hygiene_violation} onChange={() => toggleViolation('hygiene_violation')} />
-                            <CheckboxRow label="Late Arrival" checked={currentStudent.late_violation} onChange={() => toggleViolation('late_violation')} />
-                            <CheckboxRow label="Homework Incomplete" checked={currentStudent.homework_violation} onChange={() => toggleViolation('homework_violation')} />
-                            <CheckboxRow label="Books Missing" checked={currentStudent.books_violation} onChange={() => toggleViolation('books_violation')} />
+                        <div className="grid grid-cols-2 gap-3 mb-6">
+                            <CheckboxCard label="Improper Uniform" checked={currentStudent.uniform_violation} onChange={() => toggleViolation('uniform_violation')} />
+                            <CheckboxCard label="No/Dirty Shoes" checked={currentStudent.shoes_violation} onChange={() => toggleViolation('shoes_violation')} />
+                            <CheckboxCard label="Poor Hygiene" checked={currentStudent.hygiene_violation} onChange={() => toggleViolation('hygiene_violation')} />
+                            <CheckboxCard label="Late Arrival" checked={currentStudent.late_violation} onChange={() => toggleViolation('late_violation')} />
+                            <CheckboxCard label="No Homework" checked={currentStudent.homework_violation} onChange={() => toggleViolation('homework_violation')} />
+                            <CheckboxCard label="Missing Books" checked={currentStudent.books_violation} onChange={() => toggleViolation('books_violation')} />
                         </div>
 
-                        <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Teacher Remarks</label>
-                            <textarea
-                                className="w-full border rounded p-2 text-sm"
-                                rows="2"
-                                placeholder="Optional remarks..."
-                                value={currentStudent.teacher_remarks || ''}
-                                onChange={(e) => setStudents(prev => prev.map(s => s.student_id === currentStudentId ? { ...s, teacher_remarks: e.target.value } : s))}
-                            ></textarea>
-                        </div>
-
-                        <div className="mt-6 flex gap-2">
-                            <button onClick={() => { handleSendReport(currentStudent); setModalOpen(false); }} className="flex-1 bg-green-600 text-white py-2 rounded font-bold flex justify-center items-center gap-2">
-                                <MessageCircle size={18} /> Send & Close
+                        <div className="flex gap-3">
+                            <button onClick={() => { handleSendReport(currentStudent); setModalOpen(false); }} className="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700 transition shadow">
+                                Send WhatsApp
                             </button>
-                            <button onClick={() => setModalOpen(false)} className="flex-1 bg-gray-200 text-gray-800 py-2 rounded font-bold">
+                            <button onClick={() => setModalOpen(false)} className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg font-bold hover:bg-gray-200 transition">
                                 Done
                             </button>
                         </div>
@@ -304,17 +308,15 @@ const DailyEvaluation = () => {
     );
 };
 
-const CheckboxRow = ({ label, checked, onChange }) => (
+// New Checkbox Card Component
+const CheckboxCard = ({ label, checked, onChange }) => (
     <div
         onClick={onChange}
-        className={`flex items-center justify-between p-3 rounded cursor-pointer border ${checked ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'
+        className={`cursor-pointer p-3 rounded-lg border text-sm font-medium flex items-center justify-between transition-all ${checked ? 'bg-red-50 border-red-500 text-red-700 shadow-sm' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
             }`}
     >
-        <span className={checked ? 'text-red-700 font-medium' : 'text-gray-700'}>{label}</span>
-        <div className={`w-5 h-5 rounded border flex items-center justify-center ${checked ? 'bg-red-600 border-red-600' : 'bg-white border-gray-400'
-            }`}>
-            {checked && <span className="text-white text-xs">✓</span>}
-        </div>
+        {label}
+        {checked && <Check size={16} className="text-red-500" />}
     </div>
 );
 

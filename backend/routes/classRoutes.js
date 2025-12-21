@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
+const Class = require('../models/Class');
 
 // @route   GET /api/classes
 // @desc    Get all classes
