@@ -8,6 +8,14 @@ let cachedConn = null;
 const connectDB = async () => {
     if (cachedConn) return cachedConn;
 
+    if (!process.env.MONGO_URI) {
+        console.error('FATAL: MONGO_URI environment variable is not defined.');
+        // In production, we must have a real DB. 
+        if (process.env.NODE_ENV === 'production') {
+            throw new Error('MONGO_URI is missing in environment variables.');
+        }
+    }
+
     try {
         const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/school_db', {
             serverSelectionTimeoutMS: 5000 // Fail fast if no ID

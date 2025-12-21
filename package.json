@@ -1,0 +1,12 @@
+{
+    "name": "school-management-system",
+    "version": "1.0.0",
+    "scripts": {
+        "install-backend": "cd backend && npm install",
+        "install-frontend": "cd frontend && npm install",
+        "build": "echo 'No root build script needed for Vercel, handled by vercel.json overrides'"
+    },
+    "engines": {
+        "node": "18.x"
+    }
+}
