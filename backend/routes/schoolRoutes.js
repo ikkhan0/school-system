@@ -3,26 +3,9 @@ const router = express.Router();
 const { protect } = require('../middleware/auth');
 const School = require('../models/School');
 const multer = require('multer');
-const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-// Configure Cloudinary
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'demo',
-    api_key: process.env.CLOUDINARY_API_KEY || 'demo',
-    api_secret: process.env.CLOUDINARY_API_SECRET || 'demo'
-});
-
-// Cloudinary Storage for Multer
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'school-logos',
-        allowed_formats: ['jpg', 'jpeg', 'png'],
-        transformation: [{ width: 500, height: 500, crop: 'limit' }]
-    }
-});
-
+// Simple memory storage for base64 conversion
+const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
@@ -42,21 +25,29 @@ router.get('/', protect, async (req, res) => {
 
 // @desc    Update School Details
 // @route   PUT /api/school
-// Temporarily disabled logo upload - will fix Cloudinary separately
-router.put('/', protect, async (req, res) => {
+// Simple base64 upload - no external services needed
+router.put('/', protect, upload.single('logo'), async (req, res) => {
     try {
         console.log('=== SCHOOL UPDATE DEBUG ===');
         console.log('Body:', req.body);
+        console.log('File:', req.file ? 'File uploaded' : 'No file');
         console.log('User school_id:', req.user.school_id);
 
-        // Prepare update data (NO LOGO for now)
+        // Prepare update data
         const updateData = {};
         if (req.body.name !== undefined) updateData.name = req.body.name;
         if (req.body.address !== undefined) updateData.address = req.body.address;
         if (req.body.phone !== undefined) updateData.phone = req.body.phone;
         if (req.body.email !== undefined) updateData.email = req.body.email;
 
-        console.log('Update data:', updateData);
+        // Convert uploaded file to base64 if present
+        if (req.file) {
+            const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+            updateData.logo = base64Image;
+            console.log('Logo converted to base64, size:', base64Image.length);
+        }
+
+        console.log('Update data:', { ...updateData, logo: updateData.logo ? 'base64 image' : undefined });
 
         // Use findOneAndUpdate with upsert to create if doesn't exist
         const school = await School.findOneAndUpdate(
@@ -70,17 +61,13 @@ router.put('/', protect, async (req, res) => {
             }
         );
 
-        console.log('Updated/Created school:', school);
+        console.log('Updated/Created school successfully');
         res.json(school);
     } catch (error) {
         console.error('Error updating school:', error);
         console.error('Error stack:', error.stack);
-        console.error('Error name:', error.name);
-        console.error('Error code:', error.code);
         res.status(500).json({
             message: error.message,
-            name: error.name,
-            code: error.code,
             details: error.toString()
         });
     }

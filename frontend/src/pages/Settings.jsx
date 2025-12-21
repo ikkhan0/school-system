@@ -26,8 +26,9 @@ const Settings = () => {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const { name, address, phone, email, logo } = res.data;
-            setFormData(prev => ({ ...prev, name, address, phone, email, logoUrl: logo }));
-            if (logo) setPreview(`${API_URL}${logo}`);
+            setFormData(prev => ({ ...prev, name, address, phone, email }));
+            // Logo is now base64, display directly
+            if (logo) setPreview(logo);
         } catch (error) {
             console.error("Error fetching school details:", error);
         }
