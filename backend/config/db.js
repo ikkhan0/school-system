@@ -10,9 +10,10 @@ const connectDB = async () => {
 
     if (!process.env.MONGO_URI) {
         console.error('FATAL: MONGO_URI environment variable is not defined.');
-        // In production, we must have a real DB. 
-        console.warn('WARN: MONGO_URI is missing in production environment. Database features will fail.');
-        // throw new Error('MONGO_URI is missing in environment variables.');
+        if (process.env.NODE_ENV === 'production') {
+            console.warn('WARN: MONGO_URI is missing. Skipping connection to prevent crash.');
+            return;
+        }
     }
 }
 
