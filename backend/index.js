@@ -29,9 +29,13 @@ app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/reports', require('./routes/reportsRoutes'));
 app.use('/api/school', require('./routes/schoolRoutes')); // New Route
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
+
+module.exports = app;
 
 // Global Error Handling to prevent crashes
 process.on('unhandledRejection', (err) => {
