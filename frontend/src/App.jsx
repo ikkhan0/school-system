@@ -35,6 +35,7 @@ function App() {
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/evaluation" element={<ProtectedRoute><DailyEvaluation /></ProtectedRoute>} />
               <Route path="/fees" element={<ProtectedRoute><FeeCollection /></ProtectedRoute>} />
+              <Route path="/fee-collection" element={<ProtectedRoute><FeeCollection /></ProtectedRoute>} />
               <Route path="/marks" element={<ProtectedRoute><MarksEntry /></ProtectedRoute>} />
               <Route path="/results" element={<ProtectedRoute><ResultGeneration /></ProtectedRoute>} />
               <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
