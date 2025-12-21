@@ -50,53 +50,43 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
         console.log('File:', req.file);
         console.log('User school_id:', req.user.school_id);
 
-        let school = await School.findById(req.user.school_id);
-
-        // If school doesn't exist, create it
-        if (!school) {
-            console.log('School not found, creating new school document');
-            school = new School({
-                _id: req.user.school_id,
-                name: req.body.name || 'School',
-                address: req.body.address || '',
-                phone: req.body.phone || '',
-                email: req.body.email || ''
-            });
-        }
-
-        console.log('Current school:', school);
-
-        // Update fields - use !== undefined to allow empty strings
-        if (req.body.name !== undefined) {
-            console.log('Updating name:', req.body.name);
-            school.name = req.body.name;
-        }
-        if (req.body.address !== undefined) {
-            console.log('Updating address:', req.body.address);
-            school.address = req.body.address;
-        }
-        if (req.body.phone !== undefined) {
-            console.log('Updating phone:', req.body.phone);
-            school.phone = req.body.phone;
-        }
-        if (req.body.email !== undefined) {
-            console.log('Updating email:', req.body.email);
-            school.email = req.body.email;
-        }
+        // Prepare update data
+        const updateData = {};
+        if (req.body.name !== undefined) updateData.name = req.body.name;
+        if (req.body.address !== undefined) updateData.address = req.body.address;
+        if (req.body.phone !== undefined) updateData.phone = req.body.phone;
+        if (req.body.email !== undefined) updateData.email = req.body.email;
 
         if (req.file) {
-            console.log('Updating logo:', req.file.filename);
-            school.logo = `/uploads/${req.file.filename}`;
+            updateData.logo = `/uploads/${req.file.filename}`;
+            console.log('Logo file uploaded:', req.file.filename);
         }
 
-        const updatedSchool = await school.save();
-        console.log('Updated school:', updatedSchool);
-        res.json(updatedSchool);
+        console.log('Update data:', updateData);
+
+        // Use findOneAndUpdate with upsert to create if doesn't exist
+        const school = await School.findOneAndUpdate(
+            { _id: req.user.school_id },
+            { $set: updateData },
+            {
+                new: true, // Return updated document
+                upsert: true, // Create if doesn't exist
+                runValidators: true,
+                setDefaultsOnInsert: true
+            }
+        );
+
+        console.log('Updated/Created school:', school);
+        res.json(school);
     } catch (error) {
         console.error('Error updating school:', error);
         console.error('Error stack:', error.stack);
+        console.error('Error name:', error.name);
+        console.error('Error code:', error.code);
         res.status(500).json({
             message: error.message,
+            name: error.name,
+            code: error.code,
             details: error.toString()
         });
     }
