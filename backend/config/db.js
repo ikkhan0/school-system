@@ -3,13 +3,22 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+let cachedConn = null;
+
 const connectDB = async () => {
+    if (cachedConn) return cachedConn;
+
     try {
-        const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/school_db');
+        const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/school_db', {
+            serverSelectionTimeoutMS: 5000 // Fail fast if no ID
+        });
         console.log(`MongoDB Connected: ${conn.connection.host}`);
+        cachedConn = conn;
+        return conn;
     } catch (error) {
         console.error(`Error: ${error.message}`);
-        process.exit(1);
+        // Do not exit process in serverless, just throw
+        throw error;
     }
 };
 
