@@ -1,273 +1,266 @@
 import { useState, useEffect, useContext } from 'react';
-import { Users, CheckCircle, DollarSign, AlertOctagon, TrendingUp, Calendar, Phone, MessageCircle, Plus, FileText } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import API_URL from '../config';
+import { useNavigate } from 'react-router-dom';
+import {
+    Users, MessageSquare, DollarSign, AlertCircle,
+    Calendar, TrendingUp, BookOpen, UserCheck
+} from 'lucide-react';
 import AuthContext from '../context/AuthContext';
-import StatCard from '../components/StatCard';
-import LoadingSpinner from '../components/LoadingSpinner';
-import EmptyState from '../components/EmptyState';
+import API_URL from '../config';
 
 const Dashboard = () => {
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [stats, setStats] = useState({
         totalStudents: 0,
-        attendancePercentage: 0,
-        monthlyCollection: 0,
-        presentCount: 0,
-        absentCount: 0
+        totalClasses: 0,
+        todayPresent: 0,
+        todayAbsent: 0,
+        feeDefaulters: 0,
+        totalFeeOutstanding: 0,
+        upcomingExams: 0,
+        attendanceRate: 0
     });
-    const [absents, setAbsents] = useState([]);
-    const [warnings, setWarnings] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         if (!user) return;
-        fetchStats();
-        fetchAbsents();
-        fetchWarnings();
+        fetchDashboardStats();
     }, [user]);
 
-    const fetchStats = async () => {
+    const fetchDashboardStats = async () => {
         try {
             const res = await fetch(`${API_URL}/api/dashboard/stats`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
-            if (!res.ok) throw new Error('Failed to fetch stats');
             const data = await res.json();
-            setStats(data);
-        } catch (err) {
-            console.error('Error fetching stats:', err);
-            setError(err.message);
-        }
-    };
 
-    const fetchAbsents = async () => {
-        try {
-            const res = await fetch(`${API_URL}/api/dashboard/absents`, {
-                headers: { Authorization: `Bearer ${user.token}` }
-            });
-            if (!res.ok) throw new Error('Failed to fetch absents');
-            const data = await res.json();
-            setAbsents(data);
-        } catch (err) {
-            console.error('Error fetching absents:', err);
-        }
-    };
+            // Calculate attendance rate
+            const total = (data.todayPresent || 0) + (data.todayAbsent || 0);
+            const rate = total > 0 ? ((data.todayPresent / total) * 100).toFixed(1) : 0;
 
-    const fetchWarnings = async () => {
-        try {
-            const res = await fetch(`${API_URL}/api/dashboard/warnings`, {
-                headers: { Authorization: `Bearer ${user.token}` }
+            setStats({
+                ...data,
+                attendanceRate: parseFloat(rate)
             });
-            if (!res.ok) throw new Error('Failed to fetch warnings');
-            const data = await res.json();
-            setWarnings(data);
-        } catch (err) {
-            console.error('Error fetching warnings:', err);
-        } finally {
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching stats:', error);
             setLoading(false);
         }
     };
 
-    const sendWhatsApp = (mobile, message) => {
-        if (!mobile) return alert("Parent Mobile Number not found!");
-        let num = mobile.replace(/\D/g, '');
-        if (num.length === 11 && num.startsWith('0')) {
-            num = '92' + num.substring(1);
+    const statCards = [
+        {
+            title: 'Total Students',
+            value: stats.totalStudents,
+            icon: Users,
+            color: 'green',
+            gradient: 'from-emerald-500 to-emerald-600',
+            bgLight: 'bg-emerald-50',
+            textColor: 'text-emerald-700',
+            path: '/students'
+        },
+        {
+            title: 'Today\'s Attendance',
+            value: `${stats.attendanceRate}%`,
+            subtitle: `${stats.todayPresent} Present`,
+            icon: UserCheck,
+            color: 'teal',
+            gradient: 'from-teal-500 to-teal-600',
+            bgLight: 'bg-teal-50',
+            textColor: 'text-teal-700',
+            path: '/evaluation'
+        },
+        {
+            title: 'Fee Outstanding',
+            value: `Rs ${stats.totalFeeOutstanding?.toLocaleString() || 0}`,
+            subtitle: `${stats.feeDefaulters} Defaulters`,
+            icon: DollarSign,
+            color: 'orange',
+            gradient: 'from-orange-500 to-orange-600',
+            bgLight: 'bg-orange-50',
+            textColor: 'text-orange-700',
+            path: '/reports'
+        },
+        {
+            title: 'Students with Dues',
+            value: stats.feeDefaulters,
+            icon: AlertCircle,
+            color: 'red',
+            gradient: 'from-red-500 to-red-600',
+            bgLight: 'bg-red-50',
+            textColor: 'text-red-700',
+            path: '/reports'
+        },
+        {
+            title: 'Total Classes',
+            value: stats.totalClasses,
+            icon: BookOpen,
+            color: 'purple',
+            gradient: 'from-purple-500 to-purple-600',
+            bgLight: 'bg-purple-50',
+            textColor: 'text-purple-700',
+            path: '/classes'
+        },
+        {
+            title: 'Upcoming Exams',
+            value: stats.upcomingExams || 0,
+            icon: Calendar,
+            color: 'blue',
+            gradient: 'from-blue-500 to-blue-600',
+            bgLight: 'bg-blue-50',
+            textColor: 'text-blue-700',
+            path: '/exam-menu'
         }
-        window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, '_blank');
-    };
+    ];
 
     const quickActions = [
-        { label: 'Mark Attendance', icon: Calendar, link: '/evaluation', color: 'bg-blue-600' },
-        { label: 'Collect Fees', icon: DollarSign, link: '/fee-collection', color: 'bg-green-600' },
-        { label: 'Add Student', icon: Users, link: '/students', color: 'bg-purple-600' },
-        { label: 'View Reports', icon: FileText, link: '/reports', color: 'bg-orange-600' }
+        { title: 'Mark Attendance', path: '/evaluation', icon: UserCheck, color: 'teal' },
+        { title: 'Collect Fees', path: '/fees', icon: DollarSign, color: 'green' },
+        { title: 'Enter Marks', path: '/marks', icon: BookOpen, color: 'purple' },
+        { title: 'View Reports', path: '/reports', icon: TrendingUp, color: 'blue' }
     ];
 
     if (loading) {
         return (
-            <div className="container-responsive py-8">
-                <LoadingSpinner size="lg" text="Loading dashboard..." />
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading dashboard...</p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="container-responsive py-4 md:py-6">
-            {/* Header */}
-            <div className="mb-6 md:mb-8">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                    Welcome back, {user?.full_name || user?.username}!
-                </h1>
-                <p className="text-gray-600">Here's what's happening in your school today.</p>
-            </div>
-
-            {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
-                    <strong>Error:</strong> {error}
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+            <div className="max-w-7xl mx-auto">
+                {/* Header */}
+                <div className="mb-8">
+                    <h1 className="text-4xl font-bold text-gray-800 mb-2">
+                        Welcome back, {user?.name || 'Admin'}! 👋
+                    </h1>
+                    <p className="text-gray-600">Here's what's happening with your school today.</p>
                 </div>
-            )}
 
-            {/* Stats Cards */}
-            <div className="grid-responsive mb-8">
-                <StatCard
-                    title="Total Students"
-                    value={stats.totalStudents}
-                    icon={Users}
-                    color="blue"
-                    trend="up"
-                    trendValue="+5 this month"
-                />
-                <StatCard
-                    title="Today's Attendance"
-                    value={`${stats.attendancePercentage}%`}
-                    icon={CheckCircle}
-                    color="green"
-                    trend={stats.attendancePercentage >= 75 ? 'up' : 'down'}
-                    trendValue={`${stats.presentCount}/${stats.presentCount + stats.absentCount} present`}
-                />
-                <StatCard
-                    title="Monthly Collection"
-                    value={`Rs. ${stats.monthlyCollection.toLocaleString()}`}
-                    icon={DollarSign}
-                    color="purple"
-                    trend="up"
-                    trendValue="+12% from last month"
-                />
-            </div>
-
-            {/* Quick Actions - Mobile Optimized */}
-            <div className="mb-8">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                    {quickActions.map((action, index) => (
-                        <Link
+                {/* Stat Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    {statCards.map((card, index) => (
+                        <div
                             key={index}
-                            to={action.link}
-                            className={`${action.color} text-white p-4 md:p-6 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1 flex flex-col items-center justify-center gap-2 md:gap-3 text-center`}
+                            onClick={() => navigate(card.path)}
+                            className="group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
                         >
-                            <action.icon className="w-6 h-6 md:w-8 md:h-8" />
-                            <span className="text-xs md:text-sm font-semibold">{action.label}</span>
-                        </Link>
+                            <div className={`bg-gradient-to-br ${card.gradient} rounded-2xl p-6 text-white shadow-lg relative overflow-hidden`}>
+                                {/* Background Pattern */}
+                                <div className="absolute top-0 right-0 opacity-10">
+                                    <card.icon size={120} />
+                                </div>
+
+                                {/* Content */}
+                                <div className="relative z-10">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="bg-white bg-opacity-20 p-3 rounded-lg backdrop-blur-sm">
+                                            <card.icon size={28} />
+                                        </div>
+                                        <TrendingUp size={20} className="opacity-70" />
+                                    </div>
+
+                                    <div className="mb-2">
+                                        <p className="text-white text-opacity-90 text-sm font-medium mb-1">
+                                            {card.title}
+                                        </p>
+                                        <p className="text-4xl font-bold">
+                                            {card.value}
+                                        </p>
+                                        {card.subtitle && (
+                                            <p className="text-white text-opacity-80 text-sm mt-1">
+                                                {card.subtitle}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Hover Effect */}
+                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-white opacity-0 group-hover:opacity-30 transition-opacity"></div>
+                            </div>
+                        </div>
                     ))}
                 </div>
-            </div>
 
-            {/* Two Column Layout for Absents and Warnings */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                {/* Today's Absents */}
-                <div className="card">
-                    <div className="card-header">
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                                <AlertOctagon className="text-red-600" size={20} />
-                                Today's Absents ({absents.length})
-                            </h2>
-                            <Link to="/evaluation" className="text-sm text-blue-600 hover:underline">
-                                Mark Attendance
-                            </Link>
-                        </div>
-                    </div>
-                    <div className="card-body p-0">
-                        {absents.length === 0 ? (
-                            <EmptyState
-                                type="attendance"
-                                title="No absents today"
-                                description="All students are present. Great job!"
-                            />
-                        ) : (
-                            <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
-                                {absents.map((absent, index) => (
-                                    <div key={index} className="p-4 hover:bg-gray-50 transition">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex-1">
-                                                <h3 className="font-semibold text-gray-900">{absent.student_name}</h3>
-                                                <p className="text-sm text-gray-600">
-                                                    Roll No: {absent.roll_no} | Class: {absent.class_id} ({absent.section_id})
-                                                </p>
-                                                <p className="text-xs text-gray-500 mt-1">
-                                                    <Phone className="inline w-3 h-3 mr-1" />
-                                                    {absent.father_mobile}
-                                                </p>
-                                            </div>
-                                            <button
-                                                onClick={() => sendWhatsApp(
-                                                    absent.father_mobile,
-                                                    `Dear Parent, your child ${absent.student_name} is absent today. Please ensure regular attendance. - School Admin`
-                                                )}
-                                                className="ml-3 p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition"
-                                                title="Send WhatsApp"
-                                            >
-                                                <MessageCircle size={18} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                {/* Quick Actions */}
+                <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                        <MessageSquare size={24} className="text-blue-600" />
+                        Quick Actions
+                    </h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {quickActions.map((action, index) => (
+                            <button
+                                key={index}
+                                onClick={() => navigate(action.path)}
+                                className={`p-6 rounded-xl border-2 border-gray-200 hover:border-${action.color}-500 hover:bg-${action.color}-50 transition-all duration-200 group`}
+                            >
+                                <action.icon size={32} className={`text-${action.color}-600 mb-3 mx-auto group-hover:scale-110 transition-transform`} />
+                                <p className="text-sm font-semibold text-gray-700 group-hover:text-gray-900">
+                                    {action.title}
+                                </p>
+                            </button>
+                        ))}
                     </div>
                 </div>
 
-                {/* 3-Day Warnings */}
-                <div className="card">
-                    <div className="card-header">
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                                <AlertOctagon className="text-orange-600" size={20} />
-                                Attendance Warnings ({warnings.length})
-                            </h2>
-                            <Link to="/reports" className="text-sm text-blue-600 hover:underline">
-                                View Report
-                            </Link>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1">Students absent for 3+ consecutive days</p>
-                    </div>
-                    <div className="card-body p-0">
-                        {warnings.length === 0 ? (
-                            <EmptyState
-                                type="attendance"
-                                title="No warnings"
-                                description="No students with consecutive absences."
-                            />
-                        ) : (
-                            <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
-                                {warnings.map((student, index) => (
-                                    <div key={index} className="p-4 hover:bg-gray-50 transition">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex-1">
-                                                <h3 className="font-semibold text-gray-900">{student.full_name}</h3>
-                                                <p className="text-sm text-gray-600">
-                                                    Roll No: {student.roll_no} | Class: {student.class_id} ({student.section_id})
-                                                </p>
-                                                <p className="text-xs text-red-600 font-medium mt-1">
-                                                    ⚠️ Absent for 3+ days
-                                                </p>
-                                            </div>
-                                            <button
-                                                onClick={() => sendWhatsApp(
-                                                    student.family_id?.father_mobile || student.father_mobile,
-                                                    `Dear Parent, ${student.full_name} has been absent for multiple days. Please contact the school immediately. - School Admin`
-                                                )}
-                                                className="ml-3 p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition"
-                                                title="Send WhatsApp"
-                                            >
-                                                <MessageCircle size={18} />
-                                            </button>
-                                        </div>
+                {/* Info Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Today's Summary */}
+                    <div className="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">Today's Summary</h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-green-500 p-2 rounded-lg">
+                                        <UserCheck size={20} className="text-white" />
                                     </div>
-                                ))}
+                                    <span className="font-medium text-gray-700">Present</span>
+                                </div>
+                                <span className="text-2xl font-bold text-green-600">{stats.todayPresent}</span>
                             </div>
-                        )}
+                            <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-red-500 p-2 rounded-lg">
+                                        <AlertCircle size={20} className="text-white" />
+                                    </div>
+                                    <span className="font-medium text-gray-700">Absent</span>
+                                </div>
+                                <span className="text-2xl font-bold text-red-600">{stats.todayAbsent}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* System Info */}
+                    <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white">
+                        <h3 className="text-xl font-bold mb-4">System Information</h3>
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                                <span className="text-white text-opacity-90">School Name</span>
+                                <span className="font-semibold">{user?.school_name || 'School'}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-white text-opacity-90">Total Students</span>
+                                <span className="font-semibold">{stats.totalStudents}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-white text-opacity-90">Total Classes</span>
+                                <span className="font-semibold">{stats.totalClasses}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-white text-opacity-90">Attendance Rate</span>
+                                <span className="font-semibold">{stats.attendanceRate}%</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            {/* Floating Action Button (Mobile Only) */}
-            <Link to="/evaluation" className="fab lg:hidden">
-                <Plus size={24} />
-            </Link>
         </div>
     );
 };

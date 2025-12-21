@@ -14,7 +14,49 @@ const studentSchema = mongoose.Schema({
     section_id: { type: String, required: true },
     category: { type: String, default: 'Regular' },
     monthly_fee: { type: Number, default: 5000 },
-    is_active: { type: Boolean, default: true }
+    is_active: { type: Boolean, default: true },
+
+    // Contact Information
+    student_mobile: { type: String },
+    father_mobile: { type: String },
+    mother_mobile: { type: String },
+    mother_name: { type: String },
+    emergency_contact: { type: String },
+    email: { type: String },
+
+    // Additional Personal Info
+    date_of_birth: { type: Date }, // Alias for dob
+    blood_group: { type: String, enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', ''] },
+    religion: { type: String },
+    nationality: { type: String, default: 'Pakistani' },
+    cnic: { type: String }, // B-Form or CNIC
+
+    // Address Details
+    current_address: { type: String },
+    permanent_address: { type: String },
+    city: { type: String },
+    postal_code: { type: String },
+
+    // Academic Information
+    admission_date: { type: Date },
+    admission_number: { type: String },
+    previous_school: { type: String },
+    previous_class: { type: String },
+    wing: { type: String }, // House/Wing (e.g., "Boys Wing (B)")
+
+    // Medical Information
+    medical_conditions: { type: String },
+    allergies: { type: String },
+
+    // Documents (file paths or URLs)
+    birth_certificate: { type: String },
+    previous_result: { type: String },
+
+    // Siblings (references to other students)
+    siblings: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Student'
+    }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Student', studentSchema);
