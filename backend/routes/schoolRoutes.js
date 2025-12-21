@@ -42,40 +42,19 @@ router.get('/', protect, async (req, res) => {
 
 // @desc    Update School Details
 // @route   PUT /api/school
-// Note: Multer upload is optional - may not work on Vercel serverless
-const uploadMiddleware = (req, res, next) => {
-    upload.single('logo')(req, res, (err) => {
-        if (err) {
-            console.log('File upload error (non-fatal):', err.message);
-            // Continue without file upload
-            req.fileUploadError = err.message;
-        }
-        next();
-    });
-};
-
-router.put('/', protect, uploadMiddleware, async (req, res) => {
+// Temporarily disabled logo upload - will fix Cloudinary separately
+router.put('/', protect, async (req, res) => {
     try {
         console.log('=== SCHOOL UPDATE DEBUG ===');
         console.log('Body:', req.body);
-        console.log('File:', req.file);
-        console.log('File upload error:', req.fileUploadError);
         console.log('User school_id:', req.user.school_id);
 
-        // Prepare update data
+        // Prepare update data (NO LOGO for now)
         const updateData = {};
         if (req.body.name !== undefined) updateData.name = req.body.name;
         if (req.body.address !== undefined) updateData.address = req.body.address;
         if (req.body.phone !== undefined) updateData.phone = req.body.phone;
         if (req.body.email !== undefined) updateData.email = req.body.email;
-
-        // Only update logo if file was successfully uploaded
-        if (req.file && !req.fileUploadError) {
-            updateData.logo = req.file.path; // Cloudinary URL
-            console.log('Logo uploaded to Cloudinary:', req.file.path);
-        } else if (req.fileUploadError) {
-            console.log('Skipping logo update due to upload error');
-        }
 
         console.log('Update data:', updateData);
 
@@ -92,13 +71,7 @@ router.put('/', protect, uploadMiddleware, async (req, res) => {
         );
 
         console.log('Updated/Created school:', school);
-
-        const response = {
-            ...school.toObject(),
-            logoUploadWarning: req.fileUploadError ? 'Logo upload not supported on this server' : null
-        };
-
-        res.json(response);
+        res.json(school);
     } catch (error) {
         console.error('Error updating school:', error);
         console.error('Error stack:', error.stack);
