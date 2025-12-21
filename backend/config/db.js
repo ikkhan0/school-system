@@ -8,12 +8,12 @@ let cachedConn = null;
 const connectDB = async () => {
     if (cachedConn) return cachedConn;
 
-    // Hardcoded Fallback for Vercel Deployment (User Requested Implementation)
-    // Replace 'YOUR_PASSWORD_HERE' with your actual password
+    // Hardcoded Fallback for Vercel Deployment
     const manual_uri = "mongodb+srv://imran_db_user:Imran321123@school.ubwky7x.mongodb.net/?appName=school";
 
     // Check if URI is valid (i.e., user has replaced the placeholder)
-    const isManualConfigured = manual_uri.includes("YOUR_PASSWORD_HERE") === false;
+    const isManualConfigured = !manual_uri.includes("YOUR_PASSWORD_HERE");
+    const final_uri = process.env.MONGO_URI || (isManualConfigured ? manual_uri : null) || 'mongodb://localhost:27017/school_db';
 
     // ONLY return early if BOTH env var AND manual config are missing
     if (!process.env.MONGO_URI && !isManualConfigured) {
@@ -23,10 +23,6 @@ const connectDB = async () => {
             return;
         }
     }
-
-
-
-    const final_uri = process.env.MONGO_URI || (isManualConfigured ? manual_uri : null) || 'mongodb://localhost:27017/school_db';
 
     try {
         const conn = await mongoose.connect(final_uri, {
