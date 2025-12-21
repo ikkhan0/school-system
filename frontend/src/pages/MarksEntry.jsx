@@ -78,8 +78,12 @@ const MarksEntry = () => {
     useEffect(() => {
         if (!user || !selectedClass || !selectedSection) return;
 
+        // Get class name from selected class ID
+        const classData = classes.find(c => c._id === selectedClass);
+        if (!classData) return;
+
         setLoading(true);
-        fetch(`${API_URL}/api/students/list?class_id=${selectedClass}&section_id=${selectedSection}`, {
+        fetch(`${API_URL}/api/students/list?class_id=${classData.name}&section_id=${selectedSection}`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
@@ -91,7 +95,7 @@ const MarksEntry = () => {
                 console.error(err);
                 setLoading(false);
             });
-    }, [selectedClass, selectedSection, user]);
+    }, [selectedClass, selectedSection, user, classes]);
 
     // Load existing marks when exam/class/section/subject changes
     useEffect(() => {
@@ -139,7 +143,7 @@ const MarksEntry = () => {
                 setMarks({}); // Clear marks on error
                 setLoading(false);
             });
-    }, [examId, selectedClass, selectedSection, selectedSubject, students, user]);
+    }, [examId, selectedClass, selectedSection, selectedSubject, students, user, classes]);
 
     const handleMarkChange = (studentId, val) => {
         setMarks(prev => ({ ...prev, [studentId]: val }));
