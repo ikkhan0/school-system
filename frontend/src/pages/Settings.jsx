@@ -22,7 +22,7 @@ const Settings = () => {
 
     const fetchSchoolDetails = async () => {
         try {
-            const res = await axios.get('${API_URL}/api/school', {
+            const res = await axios.get(`${API_URL}/api/school`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const { name, address, phone, email, logo } = res.data;
@@ -56,7 +56,7 @@ const Settings = () => {
                 data.append('logo', formData.logo);
             }
 
-            const res = await axios.put('${API_URL}/api/school', data, {
+            const res = await axios.put(`${API_URL}/api/school`, data, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                     'Content-Type': 'multipart/form-data'
