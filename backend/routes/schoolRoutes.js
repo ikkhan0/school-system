@@ -50,10 +50,18 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
         console.log('File:', req.file);
         console.log('User school_id:', req.user.school_id);
 
-        const school = await School.findById(req.user.school_id);
+        let school = await School.findById(req.user.school_id);
+
+        // If school doesn't exist, create it
         if (!school) {
-            console.log('School not found!');
-            return res.status(404).json({ message: 'School not found' });
+            console.log('School not found, creating new school document');
+            school = new School({
+                _id: req.user.school_id,
+                name: req.body.name || 'School',
+                address: req.body.address || '',
+                phone: req.body.phone || '',
+                email: req.body.email || ''
+            });
         }
 
         console.log('Current school:', school);
@@ -86,7 +94,11 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
         res.json(updatedSchool);
     } catch (error) {
         console.error('Error updating school:', error);
-        res.status(500).json({ message: error.message });
+        console.error('Error stack:', error.stack);
+        res.status(500).json({
+            message: error.message,
+            details: error.toString()
+        });
     }
 });
 
