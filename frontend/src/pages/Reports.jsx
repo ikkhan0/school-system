@@ -16,7 +16,7 @@ const Reports = () => {
         setLoading(true);
         try {
             const endpoint = activeTab === 'defaulters' ? '/api/reports/defaulters' : '/api/reports/shortage';
-            const res = await fetch(`http://localhost:5000${endpoint}`, {
+            const res = await fetch(`${API_URL}${endpoint}`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const result = await res.json();

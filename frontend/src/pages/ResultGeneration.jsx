@@ -22,7 +22,7 @@ const ResultGeneration = () => {
         if (!user) return;
 
         // Fetch Exams
-        fetch('http://localhost:5000/api/exams', {
+        fetch('${API_URL}/api/exams', {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
@@ -32,7 +32,7 @@ const ResultGeneration = () => {
             });
 
         // Fetch Classes
-        fetch('http://localhost:5000/api/classes', {
+        fetch('${API_URL}/api/classes', {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
@@ -48,7 +48,7 @@ const ResultGeneration = () => {
     const fetchResults = async () => {
         if (!selectedExam || !selectedClass || !selectedSection) return alert("Please select Exam, Class, and Section");
 
-        const res = await fetch(`http://localhost:5000/api/exams/results?exam_id=${selectedExam}&class_id=${selectedClass}&section_id=${selectedSection}`, {
+        const res = await fetch(`${API_URL}/api/exams/results?exam_id=${selectedExam}&class_id=${selectedClass}&section_id=${selectedSection}`, {
             headers: { Authorization: `Bearer ${user.token}` }
         });
         const data = await res.json();
@@ -141,7 +141,7 @@ const ResultGeneration = () => {
                             {/* Right: Photo */}
                             <div className="w-24 h-24 border-2 border-black ml-4 bg-gray-100 flex items-center justify-center overflow-hidden">
                                 {result.student_id.image ? (
-                                    <img src={`http://localhost:5000${result.student_id.image}`} alt="Student" className="w-full h-full object-cover" />
+                                    <img src={`${API_URL}${result.student_id.image}`} alt="Student" className="w-full h-full object-cover" />
                                 ) : (
                                     <User className="text-gray-400" size={48} />
                                 )}

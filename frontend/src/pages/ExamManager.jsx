@@ -27,7 +27,7 @@ const ExamManager = () => {
             // We might need a different endpoint for "all" exams or just use this one.
             // If existing returns only active, we should fix that in backend first for this page.
             // Let's just fetch for now.
-            const res = await fetch('http://localhost:5000/api/exams', {
+            const res = await fetch('${API_URL}/api/exams', {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const data = await res.json();
@@ -41,7 +41,7 @@ const ExamManager = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:5000/api/exams', {
+            const res = await fetch('${API_URL}/api/exams', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

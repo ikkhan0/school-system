@@ -1,5 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
+import API_URL from '../config';
 import AuthContext from '../context/AuthContext';
 
 const Classes = () => {
@@ -14,7 +16,7 @@ const Classes = () => {
 
     const fetchClasses = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/classes', {
+            const response = await axios.get('${API_URL}/api/classes', {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setClasses(response.data);
@@ -31,7 +33,7 @@ const Classes = () => {
         const sections = sectionsInput.split(',').map(s => s.trim()).filter(s => s);
 
         try {
-            await axios.post('http://localhost:5000/api/classes', {
+            await axios.post('${API_URL}/api/classes', {
                 name: newClassName,
                 sections: sections
             }, {

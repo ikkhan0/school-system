@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Users, CheckCircle, DollarSign, AlertOctagon } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import API_URL from '../config';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
@@ -20,19 +21,19 @@ const Dashboard = () => {
     }, []);
 
     const fetchStats = async () => {
-        const res = await fetch('http://localhost:5000/api/dashboard/stats');
+        const res = await fetch(`${API_URL}/api/dashboard/stats`);
         const data = await res.json();
         setStats(data);
     };
 
     const fetchAbsents = async () => {
-        const res = await fetch('http://localhost:5000/api/dashboard/absents');
+        const res = await fetch(`${API_URL}/api/dashboard/absents`);
         const data = await res.json();
         setAbsents(data);
     };
 
     const fetchWarnings = async () => {
-        const res = await fetch('http://localhost:5000/api/dashboard/warnings');
+        const res = await fetch(`${API_URL}/api/dashboard/warnings`);
         const data = await res.json();
         setWarnings(data);
     };

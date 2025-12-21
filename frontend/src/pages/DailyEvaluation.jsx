@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Save, AlertTriangle, X, MessageCircle, Check, Search } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
+import API_URL from '../config';
 
 const DailyEvaluation = () => {
     const { user } = useContext(AuthContext); // Added AuthContext
@@ -20,7 +21,7 @@ const DailyEvaluation = () => {
         if (!user) return;
         const fetchClasses = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/classes', {
+                const res = await fetch('${API_URL}/api/classes', {
                     headers: { Authorization: `Bearer ${user.token}` }
                 });
                 const data = await res.json();
@@ -45,7 +46,7 @@ const DailyEvaluation = () => {
     const fetchStudents = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/evaluation/list?class_id=${selectedClass}&section_id=${selectedSection}&date=${date}`, {
+            const response = await fetch(`${API_URL}/api/evaluation/list?class_id=${selectedClass}&section_id=${selectedSection}&date=${date}`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const data = await response.json();
@@ -122,7 +123,7 @@ const DailyEvaluation = () => {
                 }))
             };
 
-            await fetch('http://localhost:5000/api/evaluation/save', {
+            await fetch('${API_URL}/api/evaluation/save', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

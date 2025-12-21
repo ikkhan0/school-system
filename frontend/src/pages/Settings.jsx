@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 import AuthContext from '../context/AuthContext';
 import { Save, Building, Phone, Mail, Image as ImageIcon } from 'lucide-react';
 
@@ -21,12 +22,12 @@ const Settings = () => {
 
     const fetchSchoolDetails = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/school', {
+            const res = await axios.get('${API_URL}/api/school', {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const { name, address, phone, email, logo } = res.data;
             setFormData(prev => ({ ...prev, name, address, phone, email, logoUrl: logo }));
-            if (logo) setPreview(`http://localhost:5000${logo}`);
+            if (logo) setPreview(`${API_URL}${logo}`);
         } catch (error) {
             console.error("Error fetching school details:", error);
         }
@@ -55,7 +56,7 @@ const Settings = () => {
                 data.append('logo', formData.logo);
             }
 
-            const res = await axios.put('http://localhost:5000/api/school', data, {
+            const res = await axios.put('${API_URL}/api/school', data, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                     'Content-Type': 'multipart/form-data'

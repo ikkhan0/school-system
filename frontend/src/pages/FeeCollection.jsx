@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Search, Printer, DollarSign, MessageCircle, FileText, Users, Download } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
+import API_URL from '../config';
 
 const FeeCollection = () => {
     const { user } = useContext(AuthContext);
@@ -23,7 +24,7 @@ const FeeCollection = () => {
     // Load Classes on mount
     useEffect(() => {
         if (!user) return;
-        fetch('http://localhost:5000/api/classes', { headers: { Authorization: `Bearer ${user.token}` } })
+        fetch('${API_URL}/api/classes', { headers: { Authorization: `Bearer ${user.token}` } })
             .then(res => res.json())
             .then(data => {
                 setClasses(data);
@@ -38,7 +39,7 @@ const FeeCollection = () => {
         setLoading(true);
         try {
             // First find student by Roll No or Name
-            const searchRes = await fetch(`http://localhost:5000/api/students?search=${searchTerm}`, {
+            const searchRes = await fetch(`${API_URL}/api/students?search=${searchTerm}`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const students = await searchRes.json();
@@ -53,7 +54,7 @@ const FeeCollection = () => {
             const student = students[0];
 
             // Fetch Ledger
-            const ledgerRes = await fetch(`http://localhost:5000/api/fees/ledger/${student._id}`, {
+            const ledgerRes = await fetch(`${API_URL}/api/fees/ledger/${student._id}`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const history = await ledgerRes.json();
@@ -69,7 +70,7 @@ const FeeCollection = () => {
     const fetchBulkList = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:5000/api/fees/bulk-slips?class_id=${selectedClass}&section_id=${selectedSection}&month=${selectedMonth}`, {
+            const res = await fetch(`${API_URL}/api/fees/bulk-slips?class_id=${selectedClass}&section_id=${selectedSection}&month=${selectedMonth}`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const data = await res.json();
@@ -107,7 +108,7 @@ const FeeCollection = () => {
         if (payments.length === 0) return alert("No payments entered.");
 
         try {
-            const res = await fetch('http://localhost:5000/api/fees/collect', {
+            const res = await fetch('${API_URL}/api/fees/collect', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

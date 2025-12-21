@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Save } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
+import API_URL from '../config';
 
 const MarksEntry = () => {
     const { user } = useContext(AuthContext); // Get user token
@@ -21,7 +22,7 @@ const MarksEntry = () => {
         if (!user) return;
 
         // Fetch Exams
-        fetch('http://localhost:5000/api/exams', {
+        fetch('${API_URL}/api/exams', {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
@@ -31,7 +32,7 @@ const MarksEntry = () => {
             });
 
         // Fetch Classes
-        fetch('http://localhost:5000/api/classes', {
+        fetch('${API_URL}/api/classes', {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
@@ -47,7 +48,7 @@ const MarksEntry = () => {
     useEffect(() => {
         // Fetch students
         if (!user) return;
-        fetch(`http://localhost:5000/api/students/list?class_id=${selectedClass}&section_id=${selectedSection}`, {
+        fetch(`${API_URL}/api/students/list?class_id=${selectedClass}&section_id=${selectedSection}`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
@@ -67,7 +68,7 @@ const MarksEntry = () => {
         }));
 
         try {
-            const res = await fetch('http://localhost:5000/api/exams/marks', {
+            const res = await fetch('${API_URL}/api/exams/marks', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

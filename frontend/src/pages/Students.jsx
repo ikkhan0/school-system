@@ -3,6 +3,7 @@ import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Search, Phone, MessageCircle, User, Edit, Trash2 } from 'lucide-react';
+import API_URL from '../config';
 
 const Students = () => {
     const { user } = useContext(AuthContext);
@@ -54,7 +55,7 @@ const Students = () => {
 
     const fetchStudents = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/students/list', {
+            const response = await axios.get(`${API_URL}/api/students/list`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setStudents(response.data);
@@ -66,7 +67,7 @@ const Students = () => {
 
     const fetchClasses = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/classes', {
+            const response = await axios.get(`${API_URL}/api/classes`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setClasses(response.data);
@@ -91,7 +92,7 @@ const Students = () => {
                 data.append(key, formData[key]);
             });
 
-            await axios.post('http://localhost:5000/api/students/add', data, {
+            await axios.post(`${API_URL}/api/students/add`, data, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                     'Content-Type': 'multipart/form-data'
@@ -173,7 +174,7 @@ const Students = () => {
                             {/* Image Placeholder */}
                             <div className="w-16 h-16 bg-gray-200 rounded-full flex-shrink-0 overflow-hidden border-2 border-white shadow">
                                 {student.image ? (
-                                    <img src={`http://localhost:5000${student.image}`} alt={student.full_name} className="w-full h-full object-cover" />
+                                    <img src={`${API_URL}${student.image}`} alt={student.full_name} className="w-full h-full object-cover" />
                                 ) : (
                                     <User className="w-full h-full p-3 text-gray-400" />
                                 )}

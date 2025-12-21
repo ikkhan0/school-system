@@ -13,7 +13,7 @@ const BulkFeeSlips = () => {
         if (!user) return;
         const fetchClasses = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/classes', {
+                const res = await fetch('${API_URL}/api/classes', {
                     headers: { Authorization: `Bearer ${user.token}` }
                 });
                 const data = await res.json();
@@ -28,7 +28,7 @@ const BulkFeeSlips = () => {
 
     const fetchSlips = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/fees/bulk-slips?class_id=${selectedClass}&month=${month}`, {
+            const res = await fetch(`${API_URL}/api/fees/bulk-slips?class_id=${selectedClass}&month=${month}`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const data = await res.json();

@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 import AuthContext from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Globe, LogOut, Settings as SettingsIcon } from 'lucide-react';
@@ -18,7 +19,7 @@ const Navbar = () => {
 
     useEffect(() => {
         if (user && user.token) {
-            axios.get('http://localhost:5000/api/school', {
+            axios.get('${API_URL}/api/school', {
                 headers: { Authorization: `Bearer ${user.token}` }
             })
                 .then(res => setSchoolInfo(res.data))
@@ -27,7 +28,7 @@ const Navbar = () => {
     }, [user]);
 
     // Construct Logo URL
-    const logoUrl = schoolInfo?.logo ? `http://localhost:5000${schoolInfo.logo}` : "https://cdn-icons-png.flaticon.com/512/3602/3602145.png";
+    const logoUrl = schoolInfo?.logo ? `${API_URL}${schoolInfo.logo}` : "https://cdn-icons-png.flaticon.com/512/3602/3602145.png";
     const schoolName = schoolInfo?.name || user?.school_name || 'I-Soft SMS';
 
     return (
