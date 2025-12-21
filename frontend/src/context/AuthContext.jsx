@@ -21,12 +21,27 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (username, password) => {
         try {
-            const res = await fetch(`${API_URL}/api/auth/login`, {
+            // FORCE RELATIVE PATH: Bypass config.js and env vars entirely
+            // This ensures we always hit /api/auth/login on the same domain
+            const targetUrl = '/api/auth/login';
+            console.log('Attempting login to:', targetUrl);
+
+            const res = await fetch(targetUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
             });
-            const data = await res.json();
+
+            // Check content type to avoid crashing on HTML error pages (like 404/500 from Vercel)
+            const contentType = res.headers.get("content-type");
+            let data;
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                console.error('Non-JSON response:', text);
+                return { success: false, message: `Server Error (${res.status}): Please check console for details.` };
+            }
 
             if (res.ok) {
                 localStorage.setItem('user', JSON.stringify(data));
@@ -36,7 +51,8 @@ export const AuthProvider = ({ children }) => {
                 return { success: false, message: data.message };
             }
         } catch (error) {
-            return { success: false, message: 'Server error' };
+            console.error('Login Exception:', error);
+            return { success: false, message: `Network Error: ${error.message}` };
         }
     };
 
