@@ -70,19 +70,30 @@ const MarksEntry = () => {
 
         setLoading(true);
 
+        console.log('Loading marks for:', { examId, selectedClass, selectedSection, selectedSubject });
+
         // Fetch existing results for this exam/class/section
         fetch(`${API_URL}/api/exams/results?exam_id=${examId}&class_id=${selectedClass}&section_id=${selectedSection}`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
             .then(results => {
+                console.log('Results received:', results);
+
                 // Extract marks for the selected subject
                 const existingMarks = {};
 
                 results.forEach(result => {
+                    console.log('Processing result for student:', result.student_id);
+
                     const subjectData = result.subjects.find(s => s.subject_name === selectedSubject);
                     if (subjectData) {
-                        existingMarks[result.student_id._id] = subjectData.obtained_marks;
+                        // Handle both populated and non-populated student_id
+                        const studentId = result.student_id._id || result.student_id;
+                        existingMarks[studentId] = subjectData.obtained_marks;
+
+                        console.log(`Found marks for student ${studentId}:`, subjectData.obtained_marks);
+
                         // Also update total marks if available
                         if (subjectData.total_marks) {
                             setTotalMarks(subjectData.total_marks);
@@ -90,6 +101,7 @@ const MarksEntry = () => {
                     }
                 });
 
+                console.log('Setting marks:', existingMarks);
                 setMarks(existingMarks);
                 setLoading(false);
             })
