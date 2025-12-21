@@ -16,9 +16,24 @@ const DailyEvaluation = () => {
     // Modal State
     const [modalOpen, setModalOpen] = useState(false);
     const [currentStudentId, setCurrentStudentId] = useState(null);
+    const [schoolInfo, setSchoolInfo] = useState(null);
 
     useEffect(() => {
         if (!user) return;
+
+        // Fetch school info
+        const fetchSchoolInfo = async () => {
+            try {
+                const res = await fetch(`${API_URL}/api/school`, {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                });
+                const data = await res.json();
+                setSchoolInfo(data);
+            } catch (error) {
+                console.error("Error fetching school info:", error);
+            }
+        };
+
         const fetchClasses = async () => {
             try {
                 const res = await fetch(`${API_URL}/api/classes`, {
@@ -34,6 +49,8 @@ const DailyEvaluation = () => {
                 console.error("Error fetching classes:", error);
             }
         };
+
+        fetchSchoolInfo();
         fetchClasses();
     }, [user]);
 
@@ -97,7 +114,7 @@ const DailyEvaluation = () => {
         const violationsText = violations.length > 0 ? `\n\nIssues Reported:\n- ${violations.join('\n- ')}` : "\n\nPerformance: Satisfactory";
         const remarks = student.teacher_remarks ? `\n\nTeacher Remarks: ${student.teacher_remarks}` : "";
 
-        return `Dear Parent,\n\nDaily Report for ${student.name} (${date}):\nStatus: ${student.status}${violationsText}${remarks}\n\n- Bismillah Educational Complex`;
+        return `Dear Parent,\n\nDaily Report for ${student.name} (${date}):\nStatus: ${student.status}${violationsText}${remarks}\n\n- ${schoolInfo?.name || 'School'}`;
     };
 
     const handleSendReport = (student) => {

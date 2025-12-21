@@ -20,10 +20,19 @@ const FeeCollection = () => {
 
     // Family View State (Original)
     const [familyData, setFamilyData] = useState(null);
+    const [schoolInfo, setSchoolInfo] = useState(null);
 
-    // Load Classes on mount
+    // Load Classes and School Info on mount
     useEffect(() => {
         if (!user) return;
+
+        // Fetch school info
+        fetch(`${API_URL}/api/school`, { headers: { Authorization: `Bearer ${user.token}` } })
+            .then(res => res.json())
+            .then(data => setSchoolInfo(data))
+            .catch(err => console.error("Error fetching school info:", err));
+
+        // Fetch classes
         fetch(`${API_URL}/api/classes`, { headers: { Authorization: `Bearer ${user.token}` } })
             .then(res => res.json())
             .then(data => {
@@ -133,7 +142,7 @@ const FeeCollection = () => {
         studentLedger.history.forEach(f => {
             msg += `${f.month}: Due ${f.gross_amount} | Paid ${f.paid_amount} | Bal ${f.balance} (${f.status})\n`;
         });
-        msg += `\n*Total Pending Due: ${totalDue}*\nPlease clear dues immediately.\n- Bismillah Educational Complex`;
+        msg += `\n*Total Pending Due: ${totalDue}*\nPlease clear dues immediately.\n- ${schoolInfo?.name || 'School'}`;
 
         const mobile = s.family_id?.father_mobile || s.father_mobile;
 
