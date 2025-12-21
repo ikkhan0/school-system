@@ -45,20 +45,44 @@ router.get('/', protect, async (req, res) => {
 // @route   PUT /api/school
 router.put('/', protect, upload.single('logo'), async (req, res) => {
     try {
+        console.log('=== SCHOOL UPDATE DEBUG ===');
+        console.log('Body:', req.body);
+        console.log('File:', req.file);
+        console.log('User school_id:', req.user.school_id);
+
         const school = await School.findById(req.user.school_id);
-        if (!school) return res.status(404).json({ message: 'School not found' });
+        if (!school) {
+            console.log('School not found!');
+            return res.status(404).json({ message: 'School not found' });
+        }
+
+        console.log('Current school:', school);
 
         // Update fields - use !== undefined to allow empty strings
-        if (req.body.name !== undefined) school.name = req.body.name;
-        if (req.body.address !== undefined) school.address = req.body.address;
-        if (req.body.phone !== undefined) school.phone = req.body.phone;
-        if (req.body.email !== undefined) school.email = req.body.email;
+        if (req.body.name !== undefined) {
+            console.log('Updating name:', req.body.name);
+            school.name = req.body.name;
+        }
+        if (req.body.address !== undefined) {
+            console.log('Updating address:', req.body.address);
+            school.address = req.body.address;
+        }
+        if (req.body.phone !== undefined) {
+            console.log('Updating phone:', req.body.phone);
+            school.phone = req.body.phone;
+        }
+        if (req.body.email !== undefined) {
+            console.log('Updating email:', req.body.email);
+            school.email = req.body.email;
+        }
 
         if (req.file) {
+            console.log('Updating logo:', req.file.filename);
             school.logo = `/uploads/${req.file.filename}`;
         }
 
         const updatedSchool = await school.save();
+        console.log('Updated school:', updatedSchool);
         res.json(updatedSchool);
     } catch (error) {
         console.error('Error updating school:', error);

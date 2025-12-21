@@ -46,14 +46,28 @@ const Settings = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+
+        console.log('=== SETTINGS SAVE DEBUG ===');
+        console.log('Form Data:', formData);
+        console.log('Logo is File?', formData.logo instanceof File);
+        console.log('Email value:', formData.email);
+
         try {
             const data = new FormData();
             data.append('name', formData.name);
             data.append('address', formData.address);
             data.append('phone', formData.phone);
-            data.append('email', formData.email);
+            data.append('email', formData.email || '');
+
             if (formData.logo instanceof File) {
+                console.log('Appending logo file:', formData.logo.name);
                 data.append('logo', formData.logo);
+            }
+
+            console.log('Sending to:', `${API_URL}/api/school`);
+            console.log('FormData entries:');
+            for (let pair of data.entries()) {
+                console.log(pair[0], pair[1]);
             }
 
             const res = await axios.put(`${API_URL}/api/school`, data, {
@@ -63,13 +77,13 @@ const Settings = () => {
                 }
             });
 
+            console.log('Response:', res.data);
             alert('School Settings Updated Successfully!');
-            // Optionally update user context if school name is stored there too, 
-            // but usually it's fetched fresh on login or we can force reload.
             window.location.reload();
         } catch (error) {
-            console.error(error);
-            alert('Failed to update settings');
+            console.error('Settings save error:', error);
+            console.error('Error response:', error.response?.data);
+            alert(`Failed to update settings: ${error.response?.data?.message || error.message}`);
         } finally {
             setLoading(false);
         }
