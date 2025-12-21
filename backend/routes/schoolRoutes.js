@@ -43,11 +43,24 @@ router.get('/', protect, async (req, res) => {
 
 // @desc    Update School Details
 // @route   PUT /api/school
-router.put('/', protect, upload.single('logo'), async (req, res) => {
+// Note: Multer upload is optional - may not work on Vercel serverless
+const uploadMiddleware = (req, res, next) => {
+    upload.single('logo')(req, res, (err) => {
+        if (err) {
+            console.log('File upload error (non-fatal):', err.message);
+            // Continue without file upload
+            req.fileUploadError = err.message;
+        }
+        next();
+    });
+};
+
+router.put('/', protect, uploadMiddleware, async (req, res) => {
     try {
         console.log('=== SCHOOL UPDATE DEBUG ===');
         console.log('Body:', req.body);
         console.log('File:', req.file);
+        console.log('File upload error:', req.fileUploadError);
         console.log('User school_id:', req.user.school_id);
 
         // Prepare update data
@@ -57,9 +70,12 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
         if (req.body.phone !== undefined) updateData.phone = req.body.phone;
         if (req.body.email !== undefined) updateData.email = req.body.email;
 
-        if (req.file) {
+        // Only update logo if file was successfully uploaded
+        if (req.file && !req.fileUploadError) {
             updateData.logo = `/uploads/${req.file.filename}`;
             console.log('Logo file uploaded:', req.file.filename);
+        } else if (req.fileUploadError) {
+            console.log('Skipping logo update due to upload error');
         }
 
         console.log('Update data:', updateData);
@@ -77,7 +93,13 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
         );
 
         console.log('Updated/Created school:', school);
-        res.json(school);
+
+        const response = {
+            ...school.toObject(),
+            logoUploadWarning: req.fileUploadError ? 'Logo upload not supported on this server' : null
+        };
+
+        res.json(response);
     } catch (error) {
         console.error('Error updating school:', error);
         console.error('Error stack:', error.stack);
