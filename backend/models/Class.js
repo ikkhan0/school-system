@@ -9,6 +9,10 @@ const classSchema = mongoose.Schema({
     sections: [{
         type: String,
         required: true
+    }],
+    subjects: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subject'
     }]
 }, {
     timestamps: true

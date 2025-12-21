@@ -19,6 +19,7 @@ import Classes from './pages/Classes';
 import Students from './pages/Students';
 import ExamManager from './pages/ExamManager';
 import ExamMenu from './pages/ExamMenu';
+import SubjectManager from './pages/SubjectManager';
 import FeeMenu from './pages/FeeMenu';
 import Settings from './pages/Settings';
 
@@ -45,6 +46,7 @@ function App() {
               <Route path="/students" element={<ProtectedRoute><Students /></ProtectedRoute>} />
               <Route path="/exams" element={<ProtectedRoute><ExamManager /></ProtectedRoute>} />
               <Route path="/exam-menu" element={<ProtectedRoute><ExamMenu /></ProtectedRoute>} />
+              <Route path="/subjects" element={<ProtectedRoute><SubjectManager /></ProtectedRoute>} />
               <Route path="/fee-menu" element={<ProtectedRoute><FeeMenu /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Routes>

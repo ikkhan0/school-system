@@ -89,6 +89,7 @@ app.use('/api/evaluation', require('./routes/evaluationRoutes'));
 app.use('/api/exams', require('./routes/examRoutes'));
 app.use('/api/fees', require('./routes/feeRoutes'));
 app.use('/api/classes', require('./routes/classRoutes'));
+app.use('/api/subjects', require('./routes/subjectRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/reports', require('./routes/reportsRoutes'));
 app.use('/api/school', require('./routes/schoolRoutes')); // New Route

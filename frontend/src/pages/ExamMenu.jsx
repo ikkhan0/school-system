@@ -1,8 +1,15 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Edit, FileText, Award } from 'lucide-react';
+import { BookOpen, Edit, FileText, Award, Library } from 'lucide-react';
 
 const ExamMenu = () => {
     const menuItems = [
+        {
+            title: 'Subject Management',
+            description: 'Manage subjects and assign to classes',
+            icon: Library,
+            path: '/subjects',
+            color: 'orange'
+        },
         {
             title: 'Exam Management',
             description: 'Create and manage exams',

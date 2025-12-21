@@ -8,7 +8,8 @@ const MarksEntry = () => {
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedSection, setSelectedSection] = useState('');
     const [classes, setClasses] = useState([]);
-    const [selectedSubject, setSelectedSubject] = useState('Math');
+    const [classSubjects, setClassSubjects] = useState([]);
+    const [selectedSubject, setSelectedSubject] = useState('');
     const [examId, setExamId] = useState('');
     const [exams, setExams] = useState([]);
 
@@ -39,11 +40,39 @@ const MarksEntry = () => {
             .then(data => {
                 setClasses(data);
                 if (data.length > 0) {
-                    setSelectedClass(data[0].name);
-                    setSelectedSection(data[0].sections[0] || 'A');
+                    const firstClass = data[0];
+                    setSelectedClass(firstClass._id);
+                    setSelectedSection(firstClass.sections[0] || 'A');
+                    // Fetch subjects for first class
+                    fetchClassSubjects(firstClass._id);
                 }
             });
     }, [user]);
+
+    // Fetch subjects for selected class
+    const fetchClassSubjects = async (classId) => {
+        if (!classId) return;
+
+        try {
+            const res = await fetch(`${API_URL}/api/subjects/class/${classId}`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            const data = await res.json();
+            setClassSubjects(data);
+
+            // Auto-select first subject and set its total marks
+            if (data.length > 0) {
+                setSelectedSubject(data[0].name);
+                setTotalMarks(data[0].total_marks);
+            } else {
+                setSelectedSubject('');
+                setTotalMarks(100);
+            }
+        } catch (error) {
+            console.error('Error fetching class subjects:', error);
+            setClassSubjects([]);
+        }
+    };
 
     // Fetch students when class/section changes
     useEffect(() => {
@@ -185,13 +214,16 @@ const MarksEntry = () => {
                         <select
                             value={selectedClass}
                             onChange={e => {
-                                setSelectedClass(e.target.value);
-                                const cls = classes.find(c => c.name === e.target.value);
+                                const classId = e.target.value;
+                                setSelectedClass(classId);
+                                const cls = classes.find(c => c._id === classId);
                                 if (cls && cls.sections.length > 0) setSelectedSection(cls.sections[0]);
+                                // Fetch subjects for new class
+                                fetchClassSubjects(classId);
                             }}
                             className="w-full border p-2 rounded"
                         >
-                            {classes.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
+                            {classes.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
                         </select>
                     </div>
 
@@ -202,7 +234,7 @@ const MarksEntry = () => {
                             onChange={e => setSelectedSection(e.target.value)}
                             className="w-full border p-2 rounded"
                         >
-                            {classes.find(c => c.name === selectedClass)?.sections.map(sec => (
+                            {classes.find(c => c._id === selectedClass)?.sections.map(sec => (
                                 <option key={sec} value={sec}>{sec}</option>
                             )) || <option value="A">A</option>}
                         </select>
@@ -210,13 +242,35 @@ const MarksEntry = () => {
 
                     <div>
                         <label className="block text-sm font-bold mb-2">Subject</label>
-                        <input
-                            type="text"
+                        <select
                             value={selectedSubject}
-                            onChange={e => setSelectedSubject(e.target.value)}
+                            onChange={e => {
+                                const subjectName = e.target.value;
+                                setSelectedSubject(subjectName);
+                                // Auto-load total marks from subject
+                                const subject = classSubjects.find(s => s.name === subjectName);
+                                if (subject) {
+                                    setTotalMarks(subject.total_marks);
+                                }
+                            }}
                             className="w-full border p-2 rounded"
-                            placeholder="e.g., Math, English"
-                        />
+                            disabled={classSubjects.length === 0}
+                        >
+                            {classSubjects.length === 0 ? (
+                                <option value="">No subjects assigned to this class</option>
+                            ) : (
+                                classSubjects.map(sub => (
+                                    <option key={sub._id} value={sub.name}>
+                                        {sub.name} ({sub.total_marks} marks)
+                                    </option>
+                                ))
+                            )}
+                        </select>
+                        {classSubjects.length === 0 && (
+                            <p className="text-sm text-red-600 mt-1">
+                                Please assign subjects to this class in Subject Management
+                            </p>
+                        )}
                     </div>
 
                     <div>

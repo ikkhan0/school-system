@@ -37,4 +37,31 @@ router.post('/', protect, async (req, res) => {
     }
 });
 
+// @route   PUT /api/classes/:id/subjects
+// @desc    Assign subjects to a class
+// @access  Private
+router.put('/:id/subjects', protect, async (req, res) => {
+    try {
+        const { subjects } = req.body; // Array of subject IDs
+
+        const classData = await Class.findOne({
+            _id: req.params.id,
+            school_id: req.user.school_id
+        });
+
+        if (!classData) {
+            return res.status(404).json({ message: 'Class not found' });
+        }
+
+        classData.subjects = subjects;
+        await classData.save();
+
+        const populated = await Class.findById(classData._id).populate('subjects');
+        res.json(populated);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;
