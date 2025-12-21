@@ -1,5 +1,6 @@
 export const translations = {
     en: {
+        // Navigation
         dashboard: "Dashboard",
         students: "Students",
         attendance: "Attendance",
@@ -29,6 +30,22 @@ export const translations = {
         smart_sheet: "Smart Sheet",
         slips_4_page: "Slips (4/Page)",
         bulk_whatsapp: "Bulk WhatsApp to Defaulters",
+        fee_collection: "Fee Collection",
+        bulk_fee_slips: "Bulk Fee Slips",
+
+        // Exam Menu
+        exam_management: "Exam Management",
+        marks_entry: "Marks Entry",
+        result_generation: "Result Generation",
+        result_card: "Result Card",
+
+        // Reports
+        fee_defaulters: "Fee Defaulters",
+        attendance_shortage: "Attendance Shortage",
+        attendance_summary: "Attendance Summary",
+        class_performance: "Class Performance",
+        daily_collection: "Daily Collection",
+        student_profile: "Student Profile",
 
         // General
         search_placeholder: "Search by Name or Roll No...",
@@ -38,9 +55,31 @@ export const translations = {
         absent: "Absent",
         leave: "Leave",
         save: "Save",
-        cancel: "Cancel"
+        cancel: "Cancel",
+        print: "Print",
+        load_results: "Load Results",
+        select_class: "Select Class",
+        select_section: "Select Section",
+        select_exam: "Select Exam",
+        all_exams: "All Exams",
+
+        // Additional Options
+        attendance_report: "Attendance Report",
+        fee_status: "Fee Status",
+        evaluation_report: "Evaluation Report",
+        print_cards: "Print Cards",
+        generate_report: "Generate Report",
+
+        // Buttons
+        submit: "Submit",
+        update: "Update",
+        download: "Download",
+        export: "Export",
+        filter: "Filter",
+        clear: "Clear"
     },
     ur: {
+        // Navigation
         dashboard: "ڈیش بورڈ",
         students: "طلباء",
         attendance: "حاضری",
@@ -70,6 +109,22 @@ export const translations = {
         smart_sheet: "اسمارٹ شیٹ",
         slips_4_page: "سلپس (4/صفحہ)",
         bulk_whatsapp: "ڈیفالٹرز کو واٹس ایپ",
+        fee_collection: "فیس وصولی",
+        bulk_fee_slips: "بلک فیس سلپس",
+
+        // Exam Menu
+        exam_management: "امتحان کا انتظام",
+        marks_entry: "نمبر داخل کریں",
+        result_generation: "رزلٹ کارڈ جنریشن",
+        result_card: "رزلٹ کارڈ",
+
+        // Reports
+        fee_defaulters: "فیس بقایا جات",
+        attendance_shortage: "حاضری کی کمی",
+        attendance_summary: "حاضری کا خلاصہ",
+        class_performance: "کلاس کی کارکردگی",
+        daily_collection: "روزانہ وصولی",
+        student_profile: "طالب علم کا ریکارڈ",
 
         // General
         search_placeholder: "نام یا رول نمبر سے تلاش کریں...",
@@ -79,6 +134,27 @@ export const translations = {
         absent: "غیر حاضر",
         leave: "رخصت",
         save: "محفوظ کریں",
-        cancel: "منسوخ"
+        cancel: "منسوخ",
+        print: "پرنٹ کریں",
+        load_results: "رزلٹ لوڈ کریں",
+        select_class: "کلاس منتخب کریں",
+        select_section: "سیکشن منتخب کریں",
+        select_exam: "امتحان منتخب کریں",
+        all_exams: "تمام امتحانات",
+
+        // Additional Options
+        attendance_report: "حاضری رپورٹ",
+        fee_status: "فیس سیکشن",
+        evaluation_report: "تشخیصی رپورٹ",
+        print_cards: "رزلٹ کارڈ پرنٹ کریں",
+        generate_report: "رپورٹ جنریٹ کریں",
+
+        // Buttons
+        submit: "جمع کروائیں",
+        update: "اپ ڈیٹ کریں",
+        download: "ڈاؤن لوڈ کریں",
+        export: "ایکسپورٹ کریں",
+        filter: "فلٹر کریں",
+        clear: "صاف کریں"
     }
 };
