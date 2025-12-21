@@ -22,6 +22,31 @@ app.get('/', (req, res) => {
     res.send('I-Soft School Management System API is running (MongoDB)');
 });
 
+app.get('/api/health', async (req, res) => {
+    const mongoose = require('mongoose');
+    const dbStatus = {
+        0: 'disconnected',
+        1: 'connected',
+        2: 'connecting',
+        3: 'disconnecting',
+    };
+
+    // Explicitly check env var presence (masked)
+    const hasMongoURI = !!process.env.MONGO_URI;
+    const mongoUriPreview = hasMongoURI ? process.env.MONGO_URI.substring(0, 15) + '...' : 'MISSING';
+
+    res.json({
+        status: 'ok',
+        database: {
+            state: dbStatus[mongoose.connection.readyState] || 'unknown',
+            host: mongoose.connection.host || 'none',
+            envConfigured: hasMongoURI,
+            uriPreview: mongoUriPreview
+        },
+        time: new Date().toISOString()
+    });
+});
+
 // Routes
 app.use('/uploads', express.static('uploads'));
 app.use('/api/auth', require('./routes/authRoutes'));
