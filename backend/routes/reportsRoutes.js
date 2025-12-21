@@ -41,7 +41,7 @@ router.get('/shortage', protect, async (req, res) => {
 
         const shortage = [];
         for (const student of students) {
-            const logs = await DailyLog.find({ student_id: student._id });
+            const logs = await DailyLog.find({ student_id: student._id, school_id: req.user.school_id });
             const totalDays = logs.length;
             if (totalDays === 0) continue;
 

@@ -119,6 +119,46 @@ const Students = () => {
         window.open(`https://wa.me/${num}`, '_blank');
     };
 
+    const handleViewProfile = (student) => {
+        // TODO: Implement profile modal or navigate to profile page
+        alert(`Profile: ${student.full_name}\nRoll No: ${student.roll_no}\nClass: ${student.class_id}-${student.section_id}\nFather: ${student.father_name}\nMobile: ${student.family_id?.father_mobile || student.father_mobile}`);
+    };
+
+    const handleEdit = (student) => {
+        // Populate form with student data
+        setFormData({
+            full_name: student.full_name,
+            father_name: student.father_name || student.family_id?.father_name || '',
+            father_mobile: student.father_mobile || student.family_id?.father_mobile || '',
+            father_cnic: student.father_cnic || student.family_id?.father_cnic || '',
+            dob: student.dob || '',
+            gender: student.gender || '',
+            address: student.address || '',
+            roll_no: student.roll_no,
+            class_id: student.class_id,
+            section_id: student.section_id,
+            monthly_fee: student.monthly_fee || 5000,
+            image: null
+        });
+        // Scroll to form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleDelete = async (studentId, studentName) => {
+        if (!confirm(`Are you sure you want to delete ${studentName}?`)) return;
+
+        try {
+            await axios.delete(`${API_URL}/api/students/${studentId}`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            alert('Student deleted successfully');
+            fetchStudents();
+        } catch (error) {
+            console.error('Error deleting student:', error);
+            alert('Failed to delete student');
+        }
+    };
+
     return (
         <div className="max-w-7xl mx-auto p-4">
             {/* Header / Filters */}
@@ -216,18 +256,21 @@ const Students = () => {
                                 <Phone size={18} />
                             </button>
                             <button
+                                onClick={() => handleViewProfile(student)}
                                 className="py-3 hover:bg-purple-50 text-purple-600 flex justify-center items-center"
                                 title={t('profile')}
                             >
                                 <User size={18} />
                             </button>
                             <button
+                                onClick={() => handleEdit(student)}
                                 className="py-3 hover:bg-yellow-50 text-yellow-600 flex justify-center items-center"
                                 title={t('edit')}
                             >
                                 <Edit size={18} />
                             </button>
                             <button
+                                onClick={() => handleDelete(student._id, student.full_name)}
                                 className="py-3 hover:bg-red-50 text-red-600 flex justify-center items-center"
                                 title={t('delete')}
                             >
