@@ -6,6 +6,7 @@ import API_URL from '../config';
 const ResultGeneration = () => {
     const { user } = useContext(AuthContext);
     const [results, setResults] = useState([]);
+    const [schoolInfo, setSchoolInfo] = useState(null);
 
     // Dynamic Selections
     const [exams, setExams] = useState([]);
@@ -21,6 +22,14 @@ const ResultGeneration = () => {
 
     useEffect(() => {
         if (!user) return;
+
+        // Fetch School Info
+        fetch(`${API_URL}/api/school`, {
+            headers: { Authorization: `Bearer ${user.token}` }
+        })
+            .then(res => res.json())
+            .then(data => setSchoolInfo(data))
+            .catch(err => console.error("Error fetching school info:", err));
 
         // Fetch Exams
         fetch(`${API_URL}/api/exams`, {
@@ -132,8 +141,8 @@ const ResultGeneration = () => {
                         <div className="flex items-start justify-between mb-6">
                             {/* Left: Logo/Info */}
                             <div className="flex-1 text-center">
-                                <h1 className="text-3xl font-bold uppercase tracking-wider">BISMILLAH EDUCATIONAL COMPLEX</h1>
-                                <p className="text-sm">Chak No 223 Jb Tehsil Bhowana [0300-7989915]</p>
+                                <h1 className="text-3xl font-bold uppercase tracking-wider">{schoolInfo?.name || 'School Name'}</h1>
+                                <p className="text-sm">{schoolInfo?.address || 'School Address'} {schoolInfo?.phone ? `[${schoolInfo.phone}]` : ''}</p>
                                 <div className="mt-2 inline-block border-2 border-black px-4 py-1 font-bold text-sm uppercase bg-black text-white">
                                     Result Card
                                 </div>

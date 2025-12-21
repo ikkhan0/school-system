@@ -4,14 +4,28 @@ import AuthContext from '../context/AuthContext';
 import API_URL from '../config';
 
 const BulkFeeSlips = () => {
-    const { user } = useContext(AuthContext); // Add user context which was missing!
+    const { user } = useContext(AuthContext);
     const [slips, setSlips] = useState([]);
     const [selectedClass, setSelectedClass] = useState('1');
     const [month, setMonth] = useState('Dec-2025');
     const [classes, setClasses] = useState([]);
+    const [schoolInfo, setSchoolInfo] = useState(null);
 
     useEffect(() => {
         if (!user) return;
+
+        const fetchSchoolInfo = async () => {
+            try {
+                const res = await fetch(`${API_URL}/api/school`, {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                });
+                const data = await res.json();
+                setSchoolInfo(data);
+            } catch (error) {
+                console.error("Error fetching school info:", error);
+            }
+        };
+
         const fetchClasses = async () => {
             try {
                 const res = await fetch(`${API_URL}/api/classes`, {
@@ -24,6 +38,8 @@ const BulkFeeSlips = () => {
                 console.error("Error fetching classes:", error);
             }
         };
+
+        fetchSchoolInfo();
         fetchClasses();
     }, [user]);
 
@@ -66,8 +82,8 @@ const BulkFeeSlips = () => {
                         <div className="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-black -mr-[1px] -mb-[1px]"></div>
 
                         <div className="text-center border-b-2 border-dashed border-gray-400 pb-2 mb-2">
-                            <h2 className="font-bold text-xl uppercase tracking-widest">BISMILLAH EDUCATIONAL COMPLEX</h2>
-                            <p className="text-xs">Chak No 223 Jb Tehsil Bhowana</p>
+                            <h2 className="font-bold text-xl uppercase tracking-widest">{schoolInfo?.name || 'School Name'}</h2>
+                            <p className="text-xs">{schoolInfo?.address || 'School Address'}</p>
                             <div className="mt-1 border-2 border-black inline-block px-4 py-0.5 font-bold text-sm bg-gray-50 uppercase">
                                 FEE SLIP - {slip.fee.month}
                             </div>
