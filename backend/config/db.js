@@ -9,7 +9,7 @@ const connectDB = async () => {
     if (cachedConn) return cachedConn;
 
     // Hardcoded Fallback for Vercel Deployment
-    const manual_uri = "mongodb+srv://imran_db_user:Imran321123@school.ubwky7x.mongodb.net/?appName=school";
+    const manual_uri = "mongodb+srv://imran_db_user:Imran321123@school.ubwky7x.mongodb.net/school_db?retryWrites=true&w=majority&appName=school";
 
     // Check if URI is valid (i.e., user has replaced the placeholder)
     const isManualConfigured = !manual_uri.includes("YOUR_PASSWORD_HERE");
@@ -26,7 +26,7 @@ const connectDB = async () => {
 
     try {
         const conn = await mongoose.connect(final_uri, {
-            serverSelectionTimeoutMS: 5000
+            serverSelectionTimeoutMS: 30000 // 30 seconds for initial connection
         });
         console.log(`MongoDB Connected: ${conn.connection.host}`);
         cachedConn = conn;
