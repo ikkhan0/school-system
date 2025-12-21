@@ -91,4 +91,29 @@ router.get('/list', protect, async (req, res) => {
     }
 });
 
+// @desc    Delete a Student
+// @route   DELETE /api/students/:id
+router.delete('/:id', protect, async (req, res) => {
+    try {
+        const student = await Student.findById(req.params.id);
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        // Verify student belongs to user's school
+        if (student.school_id.toString() !== req.user.school_id.toString()) {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+
+        // Soft delete by setting is_active to false
+        student.is_active = false;
+        await student.save();
+
+        res.json({ message: 'Student deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;
