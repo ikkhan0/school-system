@@ -15,20 +15,20 @@ const connectDB = async () => {
             return;
         }
     }
-}
 
-try {
-    const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/school_db', {
-        serverSelectionTimeoutMS: 5000 // Fail fast if no ID
-    });
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-    cachedConn = conn;
-    return conn;
-} catch (error) {
-    console.error(`Error: ${error.message}`);
-    // Do not exit process in serverless, just throw
-    throw error;
-}
+
+    try {
+        const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/school_db', {
+            serverSelectionTimeoutMS: 5000 // Fail fast if no ID
+        });
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+        cachedConn = conn;
+        return conn;
+    } catch (error) {
+        console.error(`Error: ${error.message}`);
+        // Do not exit process in serverless, just throw
+        throw error;
+    }
 };
 
 module.exports = connectDB;
