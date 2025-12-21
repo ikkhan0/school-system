@@ -18,6 +18,22 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Connection Guard: Prevent "buffering timed out" errors by checking connection state
+app.use((req, res, next) => {
+    // Skip for health check so we can always debug
+    if (req.path === '/api/health') return next();
+
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+        return res.status(503).json({
+            success: false,
+            message: 'Service Unavailable: Database not connected. Please check MONGO_URI in Vercel Settings.',
+            error: 'DB_DISCONNECTED'
+        });
+    }
+    next();
+});
+
 app.get('/', (req, res) => {
     res.send('I-Soft School Management System API is running (MongoDB)');
 });
