@@ -5,7 +5,7 @@ const Student = require('../models/Student');
 const DailyLog = require('../models/DailyLog');
 const Fee = require('../models/Fee');
 const Exam = require('../models/Exam');
-const ExamResult = require('../models/ExamResult');
+const Result = require('../models/Result'); // Changed from ExamResult
 
 // @desc    Get Fee Defaulters (Balance > 0)
 // @route   GET /api/reports/defaulters
@@ -195,7 +195,7 @@ router.get('/class-performance', protect, async (req, res) => {
         const students = await Student.find(studentQuery);
         const studentIds = students.map(s => s._id);
 
-        const results = await ExamResult.find({
+        const results = await Result.find({
             exam_id,
             student_id: { $in: studentIds }
         }).populate('student_id');
@@ -269,7 +269,7 @@ router.get('/student-profile/:student_id', protect, async (req, res) => {
         const feeHistory = await Fee.find({ student_id: student._id }).sort({ month: -1 });
         const totalDue = feeHistory.reduce((sum, fee) => sum + fee.balance, 0);
 
-        const examResults = await ExamResult.find({ student_id: student._id })
+        const examResults = await Result.find({ student_id: student._id })
             .populate('exam_id')
             .sort({ createdAt: -1 });
 
@@ -358,7 +358,7 @@ router.get('/exam-analysis/:exam_id', protect, async (req, res) => {
             return res.status(404).json({ message: 'Exam not found' });
         }
 
-        const results = await ExamResult.find({ exam_id: req.params.exam_id })
+        const results = await Result.find({ exam_id: req.params.exam_id })
             .populate('student_id');
 
         const subjectAnalysis = {};
