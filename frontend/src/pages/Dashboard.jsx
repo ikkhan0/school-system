@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Users, CheckCircle, DollarSign, AlertOctagon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import API_URL from '../config';
+import AuthContext from '../context/AuthContext';
 
 const Dashboard = () => {
+    const { user } = useContext(AuthContext);
     const [stats, setStats] = useState({
         totalStudents: 0,
         attendancePercentage: 0,
@@ -13,29 +15,56 @@ const Dashboard = () => {
     });
     const [absents, setAbsents] = useState([]);
     const [warnings, setWarnings] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
+        if (!user) return;
         fetchStats();
         fetchAbsents();
         fetchWarnings();
-    }, []);
+    }, [user]);
 
     const fetchStats = async () => {
-        const res = await fetch(`${API_URL}/api/dashboard/stats`);
-        const data = await res.json();
-        setStats(data);
+        try {
+            const res = await fetch(`${API_URL}/api/dashboard/stats`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            if (!res.ok) throw new Error('Failed to fetch stats');
+            const data = await res.json();
+            setStats(data);
+        } catch (err) {
+            console.error('Error fetching stats:', err);
+            setError(err.message);
+        }
     };
 
     const fetchAbsents = async () => {
-        const res = await fetch(`${API_URL}/api/dashboard/absents`);
-        const data = await res.json();
-        setAbsents(data);
+        try {
+            const res = await fetch(`${API_URL}/api/dashboard/absents`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            if (!res.ok) throw new Error('Failed to fetch absents');
+            const data = await res.json();
+            setAbsents(data);
+        } catch (err) {
+            console.error('Error fetching absents:', err);
+        }
     };
 
     const fetchWarnings = async () => {
-        const res = await fetch(`${API_URL}/api/dashboard/warnings`);
-        const data = await res.json();
-        setWarnings(data);
+        try {
+            const res = await fetch(`${API_URL}/api/dashboard/warnings`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            if (!res.ok) throw new Error('Failed to fetch warnings');
+            const data = await res.json();
+            setWarnings(data);
+        } catch (err) {
+            console.error('Error fetching warnings:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const sendWhatsApp = (mobile, message) => {
@@ -50,6 +79,9 @@ const Dashboard = () => {
     return (
         <div className="max-w-6xl mx-auto p-4">
             <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
+
+            {loading && <div className="text-center text-blue-600 font-semibold">Loading dashboard...</div>}
+            {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">{error}</div>}
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
