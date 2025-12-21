@@ -4,6 +4,7 @@ const schoolSchema = mongoose.Schema({
     name: { type: String, required: true },
     address: { type: String },
     phone: { type: String },
+    email: { type: String },
     logo: { type: String }, // URL to logo
     subscription_status: { type: String, default: 'active' }, // active, inactive
     settings: {

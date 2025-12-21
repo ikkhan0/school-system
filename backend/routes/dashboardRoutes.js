@@ -13,36 +13,51 @@ router.get('/stats', protect, async (req, res) => {
         // 1. Total Active Students (Scoped to School)
         const totalStudents = await Student.countDocuments({ is_active: true, school_id: req.user.school_id });
 
-        // 2. Today's Attendance %
+        // 2. Total Classes
+        const Class = require('../models/Class');
+        const totalClasses = await Class.countDocuments({ school_id: req.user.school_id });
+
+        // 3. Today's Attendance
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
         const logsToday = await DailyLog.find({ date: today, school_id: req.user.school_id });
-        const presentCount = logsToday.filter(l => l.status === 'Present').length;
-        const absentCount = logsToday.filter(l => l.status === 'Absent').length;
+        const todayPresent = logsToday.filter(l => l.status === 'Present').length;
+        const todayAbsent = logsToday.filter(l => l.status === 'Absent').length;
 
-        // If no logs yet, assume 0% or N/A. If logs exist:
-        const totalLogged = logsToday.length;
-        const attendancePercentage = totalLogged > 0 ? ((presentCount / totalLogged) * 100).toFixed(1) : 0;
+        // 4. Fee Outstanding & Defaulters
+        const fees = await Fee.find({ school_id: req.user.school_id });
 
-        // 3. Monthly Collection (Cash Flow)
-        // Aggregation to sum 'paid_amount' for payments made THIS month
-        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const feeStats = await Fee.aggregate([
-            { $match: { payment_date: { $gte: startOfMonth }, school_id: req.user.school_id } }, // Payments *received* this month
-            { $group: { _id: null, total: { $sum: "$paid_amount" } } }
-        ]);
-        const monthlyCollection = feeStats.length > 0 ? feeStats[0].total : 0;
+        let totalFeeOutstanding = 0;
+        let feeDefaulters = 0;
+
+        fees.forEach(fee => {
+            const outstanding = (fee.amount_due || 0) - (fee.amount_paid || 0);
+            if (outstanding > 0) {
+                totalFeeOutstanding += outstanding;
+                feeDefaulters++;
+            }
+        });
+
+        // 5. Upcoming Exams (active exams)
+        const Exam = require('../models/Exam');
+        const upcomingExams = await Exam.countDocuments({
+            school_id: req.user.school_id,
+            is_active: true
+        });
 
         res.json({
             totalStudents,
-            attendancePercentage,
-            presentCount,
-            absentCount,
-            monthlyCollection
+            totalClasses,
+            todayPresent,
+            todayAbsent,
+            totalFeeOutstanding,
+            feeDefaulters,
+            upcomingExams
         });
 
     } catch (error) {
+        console.error('Dashboard stats error:', error);
         res.status(500).json({ message: error.message });
     }
 });
