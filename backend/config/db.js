@@ -8,7 +8,15 @@ let cachedConn = null;
 const connectDB = async () => {
     if (cachedConn) return cachedConn;
 
-    if (!process.env.MONGO_URI) {
+    // Hardcoded Fallback for Vercel Deployment (User Requested Implementation)
+    // Replace 'YOUR_PASSWORD_HERE' with your actual password
+    const manual_uri = "mongodb+srv://imran_db_user:Imran321123@school.ubwky7x.mongodb.net/?appName=school";
+
+    // Check if URI is valid (i.e., user has replaced the placeholder)
+    const isManualConfigured = manual_uri.includes("YOUR_PASSWORD_HERE") === false;
+
+    // ONLY return early if BOTH env var AND manual config are missing
+    if (!process.env.MONGO_URI && !isManualConfigured) {
         console.error('FATAL: MONGO_URI environment variable is not defined.');
         if (process.env.NODE_ENV === 'production') {
             console.warn('WARN: MONGO_URI is missing. Skipping connection to prevent crash.');
