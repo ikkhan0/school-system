@@ -68,8 +68,8 @@ router.post('/save', protect, async (req, res) => {
 
         const bulkOps = evaluations.map(evalData => ({
             updateOne: {
-                filter: { student_id: evalData.student_id, date: logDate },
-                update: { $set: { ...evalData, date: logDate } },
+                filter: { student_id: evalData.student_id, date: logDate, school_id: req.user.school_id },
+                update: { $set: { ...evalData, date: logDate, school_id: req.user.school_id } },
                 upsert: true
             }
         }));

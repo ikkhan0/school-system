@@ -4,19 +4,20 @@ const Student = require('../models/Student');
 const DailyLog = require('../models/DailyLog');
 const Fee = require('../models/Fee');
 const Family = require('../models/Family');
+const { protect } = require('../middleware/auth');
 
 // @desc    Get Dashboard Stats
 // @route   GET /api/dashboard/stats
-router.get('/stats', async (req, res) => {
+router.get('/stats', protect, async (req, res) => {
     try {
-        // 1. Total Active Students
-        const totalStudents = await Student.countDocuments({ is_active: true });
+        // 1. Total Active Students (Scoped to School)
+        const totalStudents = await Student.countDocuments({ is_active: true, school_id: req.user.school_id });
 
         // 2. Today's Attendance %
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const logsToday = await DailyLog.find({ date: today });
+        const logsToday = await DailyLog.find({ date: today, school_id: req.user.school_id });
         const presentCount = logsToday.filter(l => l.status === 'Present').length;
         const absentCount = logsToday.filter(l => l.status === 'Absent').length;
 
@@ -28,7 +29,7 @@ router.get('/stats', async (req, res) => {
         // Aggregation to sum 'paid_amount' for payments made THIS month
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         const feeStats = await Fee.aggregate([
-            { $match: { payment_date: { $gte: startOfMonth } } }, // Payments *received* this month
+            { $match: { payment_date: { $gte: startOfMonth }, school_id: req.user.school_id } }, // Payments *received* this month
             { $group: { _id: null, total: { $sum: "$paid_amount" } } }
         ]);
         const monthlyCollection = feeStats.length > 0 ? feeStats[0].total : 0;
@@ -48,13 +49,13 @@ router.get('/stats', async (req, res) => {
 
 // @desc    Get Today's Absents with Parent Contact
 // @route   GET /api/dashboard/absents
-router.get('/absents', async (req, res) => {
+router.get('/absents', protect, async (req, res) => {
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // Find logs where status is Absent
-        const absentLogs = await DailyLog.find({ date: today, status: 'Absent' })
+        // Find logs where status is Absent (Scoped to School)
+        const absentLogs = await DailyLog.find({ date: today, status: 'Absent', school_id: req.user.school_id })
             .populate({
                 path: 'student_id',
                 populate: { path: 'family_id' }
@@ -77,7 +78,7 @@ router.get('/absents', async (req, res) => {
 
 // @desc    Get 3-Day Consecutive Absents
 // @route   GET /api/dashboard/warnings
-router.get('/warnings', async (req, res) => {
+router.get('/warnings', protect, async (req, res) => {
     try {
         // Complex logic simplified: 
         // Get logs for last 3 days. Group by student. Check if all 3 are absent.
@@ -90,7 +91,8 @@ router.get('/warnings', async (req, res) => {
 
         const recentLogs = await DailyLog.find({
             date: { $gte: threeDaysAgo },
-            status: 'Absent'
+            status: 'Absent',
+            school_id: req.user.school_id
         });
 
         // Count occurrences of student_id

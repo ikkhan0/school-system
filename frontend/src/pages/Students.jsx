@@ -205,6 +205,11 @@ const Students = () => {
                                 <MessageCircle size={18} />
                             </button>
                             <button
+                                onClick={() => {
+                                    const mobile = student.family_id?.father_mobile || student.father_mobile;
+                                    if (!mobile) return alert("No Mobile Number");
+                                    window.location.href = `tel:${mobile}`;
+                                }}
                                 className="py-3 hover:bg-blue-50 text-blue-600 flex justify-center items-center"
                                 title={t('call')}
                             >

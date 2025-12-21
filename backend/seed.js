@@ -135,7 +135,7 @@ const seedData = async () => {
                 student_id: student._id,
                 date: today,
                 status: status,
-                school_id: school._id // Assuming Logs might need school context, though schema didn't explicitly demand it, it's safer if updated later. (Schema check: DailyLog doesn't have school_id, skipping)
+                school_id: school._id
             });
         });
 
@@ -143,8 +143,8 @@ const seedData = async () => {
         const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
         const dayBefore = new Date(today); dayBefore.setDate(dayBefore.getDate() - 2);
 
-        logs.push({ student_id: createdStudents[0]._id, date: yesterday, status: 'Absent' });
-        logs.push({ student_id: createdStudents[0]._id, date: dayBefore, status: 'Absent' });
+        logs.push({ student_id: createdStudents[0]._id, date: yesterday, status: 'Absent', school_id: school._id });
+        logs.push({ student_id: createdStudents[0]._id, date: dayBefore, status: 'Absent', school_id: school._id });
 
         await DailyLog.insertMany(logs);
         console.log('Daily Logs (Attendance) created');
