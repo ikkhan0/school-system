@@ -3,30 +3,29 @@ const router = express.Router();
 const { protect } = require('../middleware/auth');
 const School = require('../models/School');
 const multer = require('multer');
-const path = require('path');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-// Multer Config for Logo
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, `school-logo-${Date.now()}${path.extname(file.originalname)}`);
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'demo',
+    api_key: process.env.CLOUDINARY_API_KEY || 'demo',
+    api_secret: process.env.CLOUDINARY_API_SECRET || 'demo'
+});
+
+// Cloudinary Storage for Multer
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'school-logos',
+        allowed_formats: ['jpg', 'jpeg', 'png'],
+        transformation: [{ width: 500, height: 500, crop: 'limit' }]
     }
 });
 
 const upload = multer({
-    storage,
-    fileFilter: (req, file, cb) => {
-        const filetypes = /jpeg|jpg|png/;
-        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = filetypes.test(file.mimetype);
-        if (extname && mimetype) {
-            return cb(null, true);
-        } else {
-            cb('Error: Images Only!');
-        }
-    }
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
 // @desc    Get School Details
@@ -72,8 +71,8 @@ router.put('/', protect, uploadMiddleware, async (req, res) => {
 
         // Only update logo if file was successfully uploaded
         if (req.file && !req.fileUploadError) {
-            updateData.logo = `/uploads/${req.file.filename}`;
-            console.log('Logo file uploaded:', req.file.filename);
+            updateData.logo = req.file.path; // Cloudinary URL
+            console.log('Logo uploaded to Cloudinary:', req.file.path);
         } else if (req.fileUploadError) {
             console.log('Skipping logo update due to upload error');
         }
