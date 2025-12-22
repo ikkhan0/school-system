@@ -265,25 +265,25 @@ const MarksEntry = () => {
     };
 
     return (
-        <div className="max-w-6xl mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-6">Marks Entry</h1>
+        <div className="max-w-6xl mx-auto p-3 sm:p-4">
+            <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Marks Entry</h1>
 
             {/* Selection Controls */}
-            <div className="bg-white p-6 rounded shadow mb-6 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="bg-white p-4 sm:p-6 rounded shadow mb-4 sm:mb-6 space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
                     <div>
-                        <label className="block text-sm font-bold mb-2">Exam</label>
+                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">Exam</label>
                         <select
                             value={examId}
                             onChange={e => setExamId(e.target.value)}
-                            className="w-full border p-2 rounded"
+                            className="w-full border p-2 rounded text-sm sm:text-base"
                         >
                             {exams.map(ex => <option key={ex._id} value={ex._id}>{ex.title}</option>)}
                         </select>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold mb-2">Class</label>
+                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">Class</label>
                         <select
                             value={selectedClass}
                             onChange={e => {
@@ -294,18 +294,18 @@ const MarksEntry = () => {
                                 // Fetch subjects for new class
                                 fetchClassSubjects(classId);
                             }}
-                            className="w-full border p-2 rounded"
+                            className="w-full border p-2 rounded text-sm sm:text-base"
                         >
                             {classes.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
                         </select>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold mb-2">Section</label>
+                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">Section</label>
                         <select
                             value={selectedSection}
                             onChange={e => setSelectedSection(e.target.value)}
-                            className="w-full border p-2 rounded"
+                            className="w-full border p-2 rounded text-sm sm:text-base"
                         >
                             {classes.find(c => c._id === selectedClass)?.sections.map(sec => (
                                 <option key={sec} value={sec}>{sec}</option>
@@ -347,23 +347,23 @@ const MarksEntry = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold mb-2">Total Marks</label>
+                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">Total Marks</label>
                         <input
                             type="number"
                             value={totalMarks}
                             onChange={e => setTotalMarks(e.target.value)}
-                            className="w-full border p-2 rounded"
+                            className="w-full border p-2 rounded text-sm sm:text-base"
                         />
                     </div>
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex justify-end mt-4">
                     <button
                         onClick={handleSave}
                         disabled={saving || loading}
-                        className="bg-blue-600 text-white px-6 py-2 rounded flex items-center gap-2 hover:bg-blue-700 disabled:bg-gray-400"
+                        className="bg-blue-600 text-white px-4 py-2 sm:px-6 sm:py-2 rounded flex items-center gap-2 hover:bg-blue-700 disabled:bg-gray-400 text-sm sm:text-base w-full sm:w-auto justify-center"
                     >
-                        <Save size={18} />
+                        <Save size={16} className="sm:w-[18px] sm:h-[18px]" />
                         {saving ? 'Saving...' : 'Save Marks'}
                     </button>
                 </div>
@@ -379,23 +379,23 @@ const MarksEntry = () => {
 
             {/* Marks Entry Table */}
             {!loading && students.length > 0 && (
-                <div className="bg-white rounded shadow overflow-hidden">
-                    <table className="w-full">
+                <div className="bg-white rounded shadow overflow-x-auto">
+                    <table className="w-full min-w-[600px]">
                         <thead className="bg-gray-100">
                             <tr>
-                                <th className="p-3 text-left">#</th>
-                                <th className="p-3 text-left">Roll No</th>
-                                <th className="p-3 text-left">Student Name</th>
-                                <th className="p-3 text-center">Obtained Marks (out of {totalMarks})</th>
+                                <th className="p-2 sm:p-3 text-left text-xs sm:text-sm">#</th>
+                                <th className="p-2 sm:p-3 text-left text-xs sm:text-sm">Roll No</th>
+                                <th className="p-2 sm:p-3 text-left text-xs sm:text-sm">Student Name</th>
+                                <th className="p-2 sm:p-3 text-center text-xs sm:text-sm">Obtained Marks (out of {totalMarks})</th>
                             </tr>
                         </thead>
                         <tbody>
                             {students.map((student, index) => (
                                 <tr key={student._id} className="border-t hover:bg-gray-50">
-                                    <td className="p-3">{index + 1}</td>
-                                    <td className="p-3 font-semibold">{student.roll_no}</td>
-                                    <td className="p-3">{student.full_name}</td>
-                                    <td className="p-3">
+                                    <td className="p-2 sm:p-3 text-xs sm:text-sm">{index + 1}</td>
+                                    <td className="p-2 sm:p-3 font-semibold text-xs sm:text-sm">{student.roll_no}</td>
+                                    <td className="p-2 sm:p-3 text-xs sm:text-sm">{student.full_name}</td>
+                                    <td className="p-2 sm:p-3">
                                         <input
                                             id={`mark-input-${index}`}
                                             type="number"
@@ -404,7 +404,7 @@ const MarksEntry = () => {
                                             value={marks[student._id] || ''}
                                             onChange={e => handleMarkChange(student._id, e.target.value)}
                                             onKeyDown={e => handleKeyDown(e, index)}
-                                            className="w-full border p-2 rounded text-center font-bold text-lg"
+                                            className="w-full border p-1.5 sm:p-2 rounded text-center font-bold text-base sm:text-lg"
                                             placeholder="0"
                                         />
                                     </td>
@@ -424,9 +424,9 @@ const MarksEntry = () => {
             )}
 
             {/* Instructions */}
-            <div className="mt-6 bg-blue-50 p-4 rounded border border-blue-200">
-                <h3 className="font-bold text-blue-800 mb-2">Instructions:</h3>
-                <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
+            <div className="mt-4 sm:mt-6 bg-blue-50 p-3 sm:p-4 rounded border border-blue-200">
+                <h3 className="font-bold text-blue-800 mb-2 text-sm sm:text-base">Instructions:</h3>
+                <ul className="text-xs sm:text-sm text-blue-700 space-y-1 list-disc list-inside">
                     <li>Select Exam, Class, Section, and Subject</li>
                     <li>Existing marks will load automatically if available</li>
                     <li>Enter marks for each student (press Enter to move to next)</li>
