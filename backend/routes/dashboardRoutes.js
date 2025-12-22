@@ -155,4 +155,44 @@ router.get('/charts', async (req, res) => {
     }
 });
 
+// GET /api/dashboard/absent-today - Get today's absent students
+router.get('/absent-today', async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        // Find all absent students for today
+        const absentLogs = await DailyLog.find({
+            date: { $gte: today, $lt: tomorrow },
+            status: 'Absent'
+        }).populate({
+            path: 'student_id',
+            populate: {
+                path: 'family_id'
+            }
+        });
+
+        const absentStudents = absentLogs.map(log => {
+            const student = log.student_id;
+            return {
+                _id: student._id,
+                roll_no: student.roll_no,
+                full_name: student.full_name,
+                class_id: student.class_id,
+                section_id: student.section_id,
+                father_name: student.family_id?.father_name || student.father_name,
+                father_mobile: student.family_id?.father_mobile || student.father_mobile,
+                date: log.date
+            };
+        });
+
+        res.json(absentStudents);
+    } catch (error) {
+        console.error('Absent students error:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

@@ -10,6 +10,7 @@ const Reports = () => {
     const [activeTab, setActiveTab] = useState('defaulters');
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [consecutiveAbsences, setConsecutiveAbsences] = useState([]);
     const [filters, setFilters] = useState({
         start_date: '',
         end_date: '',
@@ -30,6 +31,12 @@ const Reports = () => {
     useEffect(() => {
         if (user) fetchData();
     }, [user, activeTab, filters]);
+
+    useEffect(() => {
+        if (user && activeTab === 'attendance') {
+            fetchConsecutiveAbsences();
+        }
+    }, [user, activeTab]);
 
     const fetchClasses = async () => {
         try {
@@ -106,6 +113,18 @@ const Reports = () => {
         }
     };
 
+    const fetchConsecutiveAbsences = async () => {
+        try {
+            const res = await fetch(`${API_URL}/api/reports/consecutive-absences`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            const result = await res.json();
+            setConsecutiveAbsences(result.students || []);
+        } catch (error) {
+            console.error('Error fetching consecutive absences:', error);
+        }
+    };
+
     const sendWhatsApp = (mobile, message) => {
         if (!mobile) return alert("Mobile Number not found!");
         let num = mobile.replace(/\D/g, '');
@@ -151,8 +170,8 @@ const Reports = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`pb-3 px-3 md:px-4 font-semibold flex items-center gap-2 text-sm md:text-base whitespace-nowrap transition ${activeTab === tab.id
-                                    ? `border-b-2 ${tab.color} border-current`
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? `border-b-2 ${tab.color} border-current`
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             <tab.icon size={18} />
@@ -257,7 +276,7 @@ const Reports = () => {
                     <div className="card-body p-0">
                         {activeTab === 'defaulters' && <DefaultersReport data={data} sendWhatsApp={sendWhatsApp} />}
                         {activeTab === 'shortage' && <ShortageReport data={data} sendWhatsApp={sendWhatsApp} />}
-                        {activeTab === 'attendance' && <AttendanceReport data={data} />}
+                        {activeTab === 'attendance' && <AttendanceReport data={data} sendWhatsApp={sendWhatsApp} consecutiveAbsences={consecutiveAbsences} />}
                         {activeTab === 'performance' && <PerformanceReport data={data} />}
                         {activeTab === 'collection' && <CollectionReport data={data} />}
                     </div>
@@ -372,10 +391,14 @@ const ShortageReport = ({ data, sendWhatsApp }) => {
     );
 };
 
-const AttendanceReport = ({ data }) => {
+const AttendanceReport = ({ data, sendWhatsApp, consecutiveAbsences = [] }) => {
     if (!data.report || data.report.length === 0) {
         return <EmptyState type="attendance" title="No data" description="No attendance records found for the selected period." />;
     }
+
+    const isConsecutiveAbsent = (studentId) => {
+        return consecutiveAbsences.find(s => s.student_id.toString() === studentId.toString());
+    };
 
     return (
         <div>
@@ -384,6 +407,11 @@ const AttendanceReport = ({ data }) => {
                 <p className="text-xs text-gray-500">
                     Period: {new Date(data.start_date).toLocaleDateString()} - {new Date(data.end_date).toLocaleDateString()}
                 </p>
+                {consecutiveAbsences.length > 0 && (
+                    <p className="text-sm text-red-600 font-semibold mt-2">
+                        ⚠️ {consecutiveAbsences.length} student(s) with 3+ consecutive absences
+                    </p>
+                )}
             </div>
             <div className="table-responsive">
                 <table className="w-full">
@@ -392,26 +420,56 @@ const AttendanceReport = ({ data }) => {
                             <th className="p-3 text-left">Roll No</th>
                             <th className="p-3 text-left">Student</th>
                             <th className="p-3 text-left">Class</th>
+                            <th className="p-3 text-left">Mobile</th>
                             <th className="p-3 text-center">Present</th>
                             <th className="p-3 text-center">Absent</th>
                             <th className="p-3 text-center">Leave</th>
                             <th className="p-3 text-right">Percentage</th>
+                            <th className="p-3 text-center no-print">Action</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y">
-                        {data.report.map((item, idx) => (
-                            <tr key={idx} className="hover:bg-gray-50">
-                                <td className="p-3 font-mono text-sm">{item.roll_no}</td>
-                                <td className="p-3 font-semibold">{item.name}</td>
-                                <td className="p-3">{item.class_id}-{item.section_id}</td>
-                                <td className="p-3 text-center text-green-600 font-semibold">{item.present}</td>
-                                <td className="p-3 text-center text-red-600 font-semibold">{item.absent}</td>
-                                <td className="p-3 text-center text-yellow-600 font-semibold">{item.leave}</td>
-                                <td className={`p-3 text-right font-bold ${item.percentage >= 75 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {item.percentage}%
-                                </td>
-                            </tr>
-                        ))}
+                        {data.report.map((item, idx) => {
+                            const consecutiveInfo = isConsecutiveAbsent(item.student_id);
+                            return (
+                                <tr key={idx} className={`hover:bg-gray-50 ${consecutiveInfo ? 'bg-red-50' : ''}`}>
+                                    <td className="p-3 font-mono text-sm">{item.roll_no}</td>
+                                    <td className="p-3">
+                                        <div className="font-semibold flex items-center gap-2">
+                                            {item.name}
+                                            {consecutiveInfo && (
+                                                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded" title={`${consecutiveInfo.consecutive_days} consecutive absences`}>
+                                                    {consecutiveInfo.consecutive_days}d
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="text-xs text-gray-500">{item.father_name}</div>
+                                    </td>
+                                    <td className="p-3">{item.class_id}-{item.section_id}</td>
+                                    <td className="p-3 text-sm">{item.father_mobile || '-'}</td>
+                                    <td className="p-3 text-center text-green-600 font-semibold">{item.present}</td>
+                                    <td className="p-3 text-center text-red-600 font-semibold">{item.absent}</td>
+                                    <td className="p-3 text-center text-yellow-600 font-semibold">{item.leave}</td>
+                                    <td className={`p-3 text-right font-bold ${item.percentage >= 75 ? 'text-green-600' : 'text-red-600'}`}>
+                                        {item.percentage}%
+                                    </td>
+                                    <td className="p-3 text-center no-print">
+                                        <button
+                                            onClick={() => {
+                                                const message = consecutiveInfo
+                                                    ? `Dear ${item.father_name}, ${item.name} has been absent for ${consecutiveInfo.consecutive_days} consecutive days. Current attendance: ${item.percentage}%. Please ensure regular attendance. - School Admin`
+                                                    : `Dear ${item.father_name}, Attendance Summary for ${item.name} (${item.roll_no}):\nPresent: ${item.present}\nAbsent: ${item.absent}\nLeave: ${item.leave}\nAttendance: ${item.percentage}%\n- School Admin`;
+                                                sendWhatsApp(item.father_mobile, message);
+                                            }}
+                                            className="text-green-600 hover:bg-green-50 p-2 rounded-lg"
+                                            title="Send WhatsApp"
+                                        >
+                                            <MessageCircle size={18} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>

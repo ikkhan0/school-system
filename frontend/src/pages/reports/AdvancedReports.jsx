@@ -109,25 +109,32 @@ const AdvancedReports = () => {
             return;
         }
 
-        const doc = new jsPDF();
-        doc.setFontSize(18);
-        doc.text(`${activeTab.toUpperCase()} Report - ${reportType}`, 14, 20);
-        doc.setFontSize(11);
-        doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 28);
+        try {
+            const doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.text(`${activeTab.toUpperCase()} Report - ${reportType}`, 14, 20);
+            doc.setFontSize(11);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 28);
 
-        // Get column headers from first data item
-        const headers = Object.keys(data[0]);
-        const rows = data.map(item => headers.map(key => item[key]));
+            // Get column headers from first data item
+            const headers = Object.keys(data[0]);
+            const rows = data.map(item => headers.map(key => item[key] !== null && item[key] !== undefined ? item[key].toString() : '-'));
 
-        doc.autoTable({
-            head: [headers],
-            body: rows,
-            startY: 35,
-            theme: 'grid',
-            styles: { fontSize: 8 }
-        });
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 35,
+                theme: 'grid',
+                styles: { fontSize: 8, cellPadding: 2 },
+                headStyles: { fillColor: [66, 139, 202], textColor: 255 },
+                margin: { top: 35 }
+            });
 
-        doc.save(`${activeTab}_${reportType}_report.pdf`);
+            doc.save(`${activeTab}_${reportType}_report.pdf`);
+        } catch (error) {
+            console.error('PDF Export Error:', error);
+            alert('Error generating PDF. Please try again.');
+        }
     };
 
     const tabs = [
@@ -178,8 +185,8 @@ const AdvancedReports = () => {
                             setData([]);
                         }}
                         className={`pb-2 px-3 sm:px-4 font-semibold flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap ${activeTab === tab.id
-                                ? `border-b-2 border-${tab.color}-600 text-${tab.color}-600`
-                                : 'text-gray-500 hover:text-gray-700'
+                            ? `border-b-2 border-${tab.color}-600 text-${tab.color}-600`
+                            : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         <tab.icon size={16} />

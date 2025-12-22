@@ -33,6 +33,7 @@ const Dashboard = () => {
         performance: [],
         enrollment: []
     });
+    const [absentStudents, setAbsentStudents] = useState([]);
     const [loading, setLoading] = useState(true);
 
 
@@ -40,6 +41,7 @@ const Dashboard = () => {
         if (!user) return;
         fetchDashboardStats();
         fetchChartData();
+        fetchAbsentStudents();
     }, [user]);
 
     const fetchDashboardStats = async () => {
@@ -74,6 +76,27 @@ const Dashboard = () => {
         } catch (error) {
             console.error('Error fetching chart data:', error);
         }
+    };
+
+    const fetchAbsentStudents = async () => {
+        try {
+            const res = await fetch(`${API_URL}/api/dashboard/absent-today`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            const data = await res.json();
+            setAbsentStudents(data);
+        } catch (error) {
+            console.error('Error fetching absent students:', error);
+        }
+    };
+
+    const sendWhatsApp = (mobile, message) => {
+        if (!mobile) return alert("Mobile Number not found!");
+        let num = mobile.replace(/\D/g, '');
+        if (num.length === 11 && num.startsWith('0')) {
+            num = '92' + num.substring(1);
+        }
+        window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, '_blank');
     };
 
     const statCards = [
@@ -384,6 +407,46 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Today's Absent Students */}
+                {absentStudents.length > 0 && (
+                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 mt-6">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
+                            <AlertCircle className="text-red-600" size={20} />
+                            Today's Absent Students ({absentStudents.length})
+                        </h3>
+                        <div className="space-y-2 sm:space-y-3 max-h-96 overflow-y-auto">
+                            {absentStudents.map((student, idx) => (
+                                <div key={idx} className="flex items-center justify-between p-3 sm:p-4 bg-red-50 rounded-lg hover:bg-red-100 transition">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2 sm:gap-3">
+                                            <span className="font-mono text-xs sm:text-sm bg-red-200 px-2 py-1 rounded">
+                                                {student.roll_no}
+                                            </span>
+                                            <div>
+                                                <p className="font-semibold text-sm sm:text-base text-gray-800">{student.full_name}</p>
+                                                <p className="text-xs sm:text-sm text-gray-600">
+                                                    {student.class_id}-{student.section_id} • {student.father_name}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => sendWhatsApp(
+                                            student.father_mobile,
+                                            `Dear ${student.father_name}, your child ${student.full_name} (${student.roll_no}) is absent today. Please ensure regular attendance. - School Admin`
+                                        )}
+                                        className="bg-green-500 hover:bg-green-600 text-white p-2 sm:p-3 rounded-lg transition flex items-center gap-2"
+                                        title="Send WhatsApp Message"
+                                    >
+                                        <MessageSquare size={18} />
+                                        <span className="hidden sm:inline text-sm">WhatsApp</span>
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -2,8 +2,9 @@ import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
-import { ArrowLeft, Phone, MessageCircle, Printer, Edit, User, Calendar, DollarSign, BookOpen, Award, X, Save } from 'lucide-react';
+import { ArrowLeft, Phone, MessageCircle, Printer, Edit, User, Calendar, DollarSign, BookOpen, Award, X, Save, Download, FileText } from 'lucide-react';
 import API_URL from '../config';
+import { generateFeeVoucherPDF, generateResultCardPDF, downloadPDF, sharePDFViaWhatsApp } from '../utils/pdfGenerator';
 
 const StudentProfile = () => {
     const { id } = useParams();
@@ -103,6 +104,30 @@ const StudentProfile = () => {
         }
 
         window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, '_blank');
+    };
+
+    const handleDownloadFeeVoucher = (fee) => {
+        const doc = generateFeeVoucherPDF(student, fee, {});
+        downloadPDF(doc, `Fee_Voucher_${student.roll_no}_${fee.month}.pdf`);
+    };
+
+    const handleShareFeeVoucher = (fee) => {
+        const mobile = student.family_id?.father_mobile || student.father_mobile;
+        const doc = generateFeeVoucherPDF(student, fee, {});
+        const message = `Dear Parent, please find the fee voucher for ${student.full_name} (${student.roll_no}) for ${fee.month}.`;
+        sharePDFViaWhatsApp(doc, `Fee_Voucher_${student.roll_no}_${fee.month}.pdf`, mobile, message);
+    };
+
+    const handleDownloadResultCard = (result) => {
+        const doc = generateResultCardPDF(student, result, {});
+        downloadPDF(doc, `Result_Card_${student.roll_no}_${result.exam_id?.name || 'Exam'}.pdf`);
+    };
+
+    const handleShareResultCard = (result) => {
+        const mobile = student.family_id?.father_mobile || student.father_mobile;
+        const doc = generateResultCardPDF(student, result, {});
+        const message = `Dear Parent, please find the result card for ${student.full_name} (${student.roll_no}) for ${result.exam_id?.name || 'Exam'}.`;
+        sharePDFViaWhatsApp(doc, `Result_Card_${student.roll_no}_${result.exam_id?.name || 'Exam'}.pdf`, mobile, message);
     };
 
     const handlePrint = () => {
@@ -390,13 +415,24 @@ const StudentProfile = () => {
                                                 </span>
                                             </td>
                                             <td className="border p-3 text-center">
-                                                <button
-                                                    onClick={() => window.open(`/fee-voucher/${student._id}/${fee.month}`, '_blank')}
-                                                    className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm mx-auto"
-                                                >
-                                                    <Printer size={14} />
-                                                    Print
-                                                </button>
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <button
+                                                        onClick={() => handleDownloadFeeVoucher(fee)}
+                                                        className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                                                        title="Download PDF"
+                                                    >
+                                                        <Download size={14} />
+                                                        <span className="hidden sm:inline">PDF</span>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleShareFeeVoucher(fee)}
+                                                        className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                                                        title="Share via WhatsApp"
+                                                    >
+                                                        <MessageCircle size={14} />
+                                                        <span className="hidden sm:inline">Share</span>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     )) : (
@@ -452,6 +488,23 @@ const StudentProfile = () => {
                                             ))}
                                         </div>
                                     )}
+
+                                    <div className="flex gap-2 mt-4">
+                                        <button
+                                            onClick={() => handleDownloadResultCard(result)}
+                                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                        >
+                                            <Download size={18} />
+                                            Download PDF
+                                        </button>
+                                        <button
+                                            onClick={() => handleShareResultCard(result)}
+                                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                                        >
+                                            <MessageCircle size={18} />
+                                            Share via WhatsApp
+                                        </button>
+                                    </div>
                                 </div>
                             )) : (
                                 <div className="text-center text-gray-500 py-12 bg-gray-50 rounded-lg">

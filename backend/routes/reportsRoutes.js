@@ -81,7 +81,7 @@ router.get('/attendance-summary', protect, async (req, res) => {
         if (class_id) studentQuery.class_id = class_id;
         if (section_id) studentQuery.section_id = section_id;
 
-        const students = await Student.find(studentQuery);
+        const students = await Student.find(studentQuery).populate('family_id');
         const studentIds = students.map(s => s._id);
 
         const logs = await DailyLog.find({
@@ -104,6 +104,8 @@ router.get('/attendance-summary', protect, async (req, res) => {
                 roll_no: student.roll_no,
                 class_id: student.class_id,
                 section_id: student.section_id,
+                father_name: student.family_id?.father_name || student.father_name,
+                father_mobile: student.family_id?.father_mobile || student.father_mobile,
                 present,
                 absent,
                 leave,
@@ -690,6 +692,69 @@ router.get('/staff', protect, async (req, res) => {
         } else if (type === 'attendance') {
             res.json([]);
         }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Get Students with 3+ Consecutive Absences
+// @route   GET /api/reports/consecutive-absences
+router.get('/consecutive-absences', protect, async (req, res) => {
+    try {
+        const students = await Student.find({ is_active: true, school_id: req.user.school_id }).populate('family_id');
+        const consecutiveAbsences = [];
+
+        for (const student of students) {
+            // Get last 30 days of attendance logs
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+            const logs = await DailyLog.find({
+                student_id: student._id,
+                school_id: req.user.school_id,
+                date: { $gte: thirtyDaysAgo }
+            }).sort({ date: -1 });
+
+            // Check for consecutive absences
+            let consecutiveCount = 0;
+            let maxConsecutive = 0;
+            let consecutiveDates = [];
+
+            for (const log of logs) {
+                if (log.status === 'Absent') {
+                    consecutiveCount++;
+                    consecutiveDates.push(log.date);
+                    if (consecutiveCount > maxConsecutive) {
+                        maxConsecutive = consecutiveCount;
+                    }
+                } else {
+                    if (consecutiveCount >= 3) {
+                        break; // Found the consecutive streak
+                    }
+                    consecutiveCount = 0;
+                    consecutiveDates = [];
+                }
+            }
+
+            if (maxConsecutive >= 3) {
+                consecutiveAbsences.push({
+                    student_id: student._id,
+                    name: student.full_name,
+                    roll_no: student.roll_no,
+                    class_id: student.class_id,
+                    section_id: student.section_id,
+                    father_name: student.family_id?.father_name || student.father_name,
+                    father_mobile: student.family_id?.father_mobile || student.father_mobile,
+                    consecutive_days: maxConsecutive,
+                    last_absent_date: consecutiveDates[0]
+                });
+            }
+        }
+
+        res.json({
+            total_students: consecutiveAbsences.length,
+            students: consecutiveAbsences
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
