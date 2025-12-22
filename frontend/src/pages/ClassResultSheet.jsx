@@ -272,18 +272,18 @@ const ClassResultSheet = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6 text-gray-800">Class Result Sheet</h1>
+        <div className="max-w-7xl mx-auto p-3 sm:p-4">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800">Class Result Sheet</h1>
 
             {/* Filters */}
-            <div className="bg-white p-6 rounded-lg shadow mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow mb-4 sm:mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-3 sm:mb-4">
                     <div>
-                        <label className="block text-sm font-bold mb-2">Exam</label>
+                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">Exam</label>
                         <select
                             value={selectedExam}
                             onChange={e => setSelectedExam(e.target.value)}
-                            className="w-full border p-2 rounded"
+                            className="w-full border p-2 rounded text-sm sm:text-base"
                         >
                             {exams.map(ex => (
                                 <option key={ex._id} value={ex._id}>{ex.title}</option>
@@ -292,7 +292,7 @@ const ClassResultSheet = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold mb-2">Class</label>
+                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">Class</label>
                         <select
                             value={selectedClass}
                             onChange={e => {
@@ -302,7 +302,7 @@ const ClassResultSheet = () => {
                                     setSelectedSection(cls.sections[0]);
                                 }
                             }}
-                            className="w-full border p-2 rounded"
+                            className="w-full border p-2 rounded text-sm sm:text-base"
                         >
                             {classes.map(c => (
                                 <option key={c._id} value={c._id}>{c.name}</option>
@@ -311,11 +311,11 @@ const ClassResultSheet = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold mb-2">Section</label>
+                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">Section</label>
                         <select
                             value={selectedSection}
                             onChange={e => setSelectedSection(e.target.value)}
-                            className="w-full border p-2 rounded"
+                            className="w-full border p-2 rounded text-sm sm:text-base"
                         >
                             {classes.find(c => c._id === selectedClass)?.sections.map(sec => (
                                 <option key={sec} value={sec}>{sec}</option>
@@ -327,7 +327,7 @@ const ClassResultSheet = () => {
                         <button
                             onClick={fetchResults}
                             disabled={loading}
-                            className="w-full bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400"
+                            className="w-full bg-blue-600 text-white px-4 sm:px-6 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400 text-sm sm:text-base"
                         >
                             {loading ? 'Loading...' : 'Load Results'}
                         </button>
@@ -336,19 +336,19 @@ const ClassResultSheet = () => {
 
                 {/* Export Buttons */}
                 {results.length > 0 && (
-                    <div className="flex gap-3 pt-4 border-t">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4 border-t">
                         <button
                             onClick={exportToExcel}
-                            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                            className="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm sm:text-base"
                         >
-                            <FileSpreadsheet size={18} />
+                            <FileSpreadsheet size={16} className="sm:w-[18px] sm:h-[18px]" />
                             Export to Excel
                         </button>
                         <button
                             onClick={exportToPDF}
-                            className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                            className="flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm sm:text-base"
                         >
-                            <FileText size={18} />
+                            <FileText size={16} className="sm:w-[18px] sm:h-[18px]" />
                             Export to PDF
                         </button>
                     </div>
@@ -423,10 +423,10 @@ const ClassResultSheet = () => {
                                         <td className="p-3 text-center font-bold text-green-600">{result.percentage.toFixed(2)}%</td>
                                         <td className="p-3 text-center">
                                             <span className={`px-2 py-1 rounded font-bold ${result.grade === 'A+' || result.grade === 'A' ? 'bg-green-100 text-green-800' :
-                                                    result.grade === 'B' ? 'bg-blue-100 text-blue-800' :
-                                                        result.grade === 'C' ? 'bg-yellow-100 text-yellow-800' :
-                                                            result.grade === 'D' ? 'bg-orange-100 text-orange-800' :
-                                                                'bg-red-100 text-red-800'
+                                                result.grade === 'B' ? 'bg-blue-100 text-blue-800' :
+                                                    result.grade === 'C' ? 'bg-yellow-100 text-yellow-800' :
+                                                        result.grade === 'D' ? 'bg-orange-100 text-orange-800' :
+                                                            'bg-red-100 text-red-800'
                                                 }`}>
                                                 {result.grade}
                                             </span>
