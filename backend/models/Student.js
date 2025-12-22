@@ -56,6 +56,23 @@ const studentSchema = mongoose.Schema({
     siblings: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Student'
+    }],
+
+    // Enrolled Subjects - Individual subject enrollment per student
+    enrolled_subjects: [{
+        subject_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Subject',
+            required: true
+        },
+        enrollment_date: {
+            type: Date,
+            default: Date.now
+        },
+        is_active: {
+            type: Boolean,
+            default: true
+        }
     }]
 }, { timestamps: true });
 

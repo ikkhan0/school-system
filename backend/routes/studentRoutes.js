@@ -35,7 +35,7 @@ const upload = multer({
 // @route   POST /api/students/add
 router.post('/add', protect, upload.single('image'), async (req, res) => {
     try {
-        const { father_name, father_mobile, father_cnic, ...studentData } = req.body;
+        const { father_name, father_mobile, father_cnic, subjects, monthly_fee, concession, ...studentData } = req.body;
         // Check if family exists or create (Scoped to School)
         let family = await Family.findOne({ father_mobile, school_id: req.user.school_id });
         if (!family) {
@@ -47,15 +47,54 @@ router.post('/add', protect, upload.single('image'), async (req, res) => {
             });
         }
 
+        // Prepare enrolled_subjects array
+        let enrolled_subjects = [];
+        if (subjects) {
+            const subjectIds = Array.isArray(subjects) ? subjects : JSON.parse(subjects);
+            enrolled_subjects = subjectIds.map(subject_id => ({
+                subject_id,
+                enrollment_date: new Date(),
+                is_active: true
+            }));
+        }
+
         const student = await Student.create({
             ...studentData,
             image: req.file ? `/uploads/${req.file.filename}` : '',
             family_id: family._id,
             father_name: father_name, // keep denormalized copy
-            school_id: req.user.school_id
+            school_id: req.user.school_id,
+            enrolled_subjects,
+            monthly_fee: monthly_fee || 5000
         });
 
-        res.status(201).json(student);
+        // Auto-create initial fee voucher
+        const Fee = require('../models/Fee');
+        const currentDate = new Date();
+        const currentMonth = currentDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+        const feeAmount = Number(monthly_fee) || 5000;
+        const concessionAmount = Number(concession) || 0;
+        const grossAmount = feeAmount - concessionAmount;
+
+        const feeVoucher = await Fee.create({
+            school_id: req.user.school_id,
+            student_id: student._id,
+            month: currentMonth,
+            tuition_fee: feeAmount,
+            concession: concessionAmount,
+            other_charges: 0,
+            arrears: 0,
+            gross_amount: grossAmount,
+            paid_amount: 0,
+            balance: grossAmount,
+            status: 'Pending'
+        });
+
+        res.status(201).json({
+            student,
+            feeVoucher
+        });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -92,7 +131,10 @@ router.get('/list', protect, async (req, res) => {
         if (class_id) query.class_id = class_id;
         if (section_id) query.section_id = section_id;
 
-        const students = await Student.find(query).populate('family_id').sort({ roll_no: 1 });
+        const students = await Student.find(query)
+            .populate('family_id')
+            .populate('enrolled_subjects.subject_id')
+            .sort({ roll_no: 1 });
         res.json(students);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -237,6 +279,168 @@ router.get('/:id/exam-results', protect, async (req, res) => {
         }).populate('exam_id', 'name date').sort({ createdAt: -1 }).limit(5);
 
         res.json(results);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Get Student's Enrolled Subjects
+// @route   GET /api/students/:id/subjects
+router.get('/:id/subjects', protect, async (req, res) => {
+    try {
+        const student = await Student.findOne({
+            _id: req.params.id,
+            school_id: req.user.school_id
+        }).populate('enrolled_subjects.subject_id');
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        // Filter only active subjects
+        const activeSubjects = student.enrolled_subjects.filter(es => es.is_active);
+
+        res.json(activeSubjects);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Update Student's Subjects
+// @route   PUT /api/students/:id/subjects
+router.put('/:id/subjects', protect, async (req, res) => {
+    try {
+        const { subjects } = req.body; // Array of subject IDs
+
+        const student = await Student.findOne({
+            _id: req.params.id,
+            school_id: req.user.school_id
+        });
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        // Replace enrolled_subjects with new selection
+        student.enrolled_subjects = subjects.map(subject_id => ({
+            subject_id,
+            enrollment_date: new Date(),
+            is_active: true
+        }));
+
+        await student.save();
+
+        // Populate and return updated student
+        const updatedStudent = await Student.findById(student._id)
+            .populate('enrolled_subjects.subject_id');
+
+        res.json(updatedStudent);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Add New Subject to Student
+// @route   POST /api/students/:id/subjects/enroll
+router.post('/:id/subjects/enroll', protect, async (req, res) => {
+    try {
+        const { subject_id } = req.body;
+
+        const student = await Student.findOne({
+            _id: req.params.id,
+            school_id: req.user.school_id
+        });
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        // Check if already enrolled
+        const alreadyEnrolled = student.enrolled_subjects.some(
+            es => es.subject_id.toString() === subject_id && es.is_active
+        );
+
+        if (alreadyEnrolled) {
+            return res.status(400).json({ message: 'Student already enrolled in this subject' });
+        }
+
+        // Add new subject
+        student.enrolled_subjects.push({
+            subject_id,
+            enrollment_date: new Date(),
+            is_active: true
+        });
+
+        await student.save();
+
+        const updatedStudent = await Student.findById(student._id)
+            .populate('enrolled_subjects.subject_id');
+
+        res.json(updatedStudent);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Update Student (including subjects)
+// @route   PUT /api/students/:id
+router.put('/:id', protect, upload.single('image'), async (req, res) => {
+    try {
+        const { father_name, father_mobile, father_cnic, subjects, ...studentData } = req.body;
+
+        const student = await Student.findOne({
+            _id: req.params.id,
+            school_id: req.user.school_id
+        });
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        // Update family info if provided
+        if (father_mobile) {
+            let family = await Family.findOne({ father_mobile, school_id: req.user.school_id });
+            if (!family) {
+                family = await Family.create({
+                    father_name,
+                    father_mobile,
+                    father_cnic,
+                    school_id: req.user.school_id
+                });
+            }
+            student.family_id = family._id;
+            student.father_name = father_name;
+        }
+
+        // Update student data
+        Object.keys(studentData).forEach(key => {
+            if (studentData[key] !== undefined && studentData[key] !== '') {
+                student[key] = studentData[key];
+            }
+        });
+
+        // Update image if provided
+        if (req.file) {
+            student.image = `/uploads/${req.file.filename}`;
+        }
+
+        // Update subjects if provided
+        if (subjects) {
+            const subjectIds = Array.isArray(subjects) ? subjects : JSON.parse(subjects);
+            student.enrolled_subjects = subjectIds.map(subject_id => ({
+                subject_id,
+                enrollment_date: new Date(),
+                is_active: true
+            }));
+        }
+
+        await student.save();
+
+        const updatedStudent = await Student.findById(student._id)
+            .populate('family_id')
+            .populate('enrolled_subjects.subject_id');
+
+        res.json(updatedStudent);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

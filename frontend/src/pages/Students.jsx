@@ -11,6 +11,7 @@ const Students = () => {
     const [students, setStudents] = useState([]);
     const [filteredStudents, setFilteredStudents] = useState([]);
     const [classes, setClasses] = useState([]);
+    const [subjects, setSubjects] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
 
     // Filters
@@ -29,13 +30,16 @@ const Students = () => {
         class_id: '',
         section_id: '',
         monthly_fee: 5000,
-        image: null // File object
+        concession: 0,
+        image: null, // File object
+        subjects: [] // Array of subject IDs
     });
 
     useEffect(() => {
         if (!user) return;
         fetchStudents();
         fetchClasses();
+        fetchSubjects();
     }, [user]);
 
     useEffect(() => {
@@ -76,6 +80,17 @@ const Students = () => {
         }
     };
 
+    const fetchSubjects = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/api/subjects`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            setSubjects(response.data);
+        } catch (error) {
+            console.error('Error fetching subjects:', error);
+        }
+    };
+
     const handleChange = (e) => {
         if (e.target.name === 'image') {
             setFormData({ ...formData, image: e.target.files[0] });
@@ -84,26 +99,51 @@ const Students = () => {
         }
     };
 
+    const handleSubjectToggle = (subjectId) => {
+        setFormData(prev => {
+            const subjects = prev.subjects.includes(subjectId)
+                ? prev.subjects.filter(id => id !== subjectId)
+                : [...prev.subjects, subjectId];
+            return { ...prev, subjects };
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const data = new FormData();
             Object.keys(formData).forEach(key => {
-                data.append(key, formData[key]);
+                if (key === 'subjects') {
+                    data.append(key, JSON.stringify(formData[key]));
+                } else {
+                    data.append(key, formData[key]);
+                }
             });
 
-            await axios.post(`${API_URL}/api/students/add`, data, {
+            const response = await axios.post(`${API_URL}/api/students/add`, data, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            alert('Student Added Successfully');
+
+            const { student, feeVoucher } = response.data;
+
+            // Show success message with fee voucher option
+            const printVoucher = window.confirm(
+                `Student Added Successfully!\n\nFee Voucher Created:\nMonth: ${feeVoucher.month}\nAmount: Rs. ${feeVoucher.gross_amount}\n\nWould you like to print the fee voucher now?`
+            );
+
+            if (printVoucher) {
+                // Open fee voucher in new window for printing
+                window.open(`/fee-voucher/${student._id}/${feeVoucher.month}`, '_blank');
+            }
+
             // Reset
             setFormData({
                 full_name: '', father_name: '', father_mobile: '', father_cnic: '',
                 dob: '', gender: '', address: '', roll_no: '', class_id: '', section_id: '',
-                monthly_fee: 5000, image: null
+                monthly_fee: 5000, concession: 0, image: null, subjects: []
             });
             fetchStudents();
         } catch (error) {
@@ -120,12 +160,16 @@ const Students = () => {
     };
 
     const handleViewProfile = (student) => {
-        // TODO: Implement profile modal or navigate to profile page
-        alert(`Profile: ${student.full_name}\nRoll No: ${student.roll_no}\nClass: ${student.class_id}-${student.section_id}\nFather: ${student.father_name}\nMobile: ${student.family_id?.father_mobile || student.father_mobile}`);
+        
+        window.location.href = `/student-profile/${student._id}`;
     };
 
     const handleEdit = (student) => {
         // Populate form with student data
+        const enrolledSubjectIds = student.enrolled_subjects
+            ?.filter(es => es.is_active)
+            .map(es => es.subject_id?._id || es.subject_id) || [];
+
         setFormData({
             full_name: student.full_name,
             father_name: student.father_name || student.family_id?.father_name || '',
@@ -138,7 +182,8 @@ const Students = () => {
             class_id: student.class_id,
             section_id: student.section_id,
             monthly_fee: student.monthly_fee || 5000,
-            image: null
+            image: null,
+            subjects: enrolledSubjectIds
         });
         // Scroll to form
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -232,8 +277,39 @@ const Students = () => {
                                     <span className="text-gray-500">Fee:</span>
                                     <span className="font-semibold">{student.monthly_fee}</span>
                                 </div>
+                                {student.enrolled_subjects && student.enrolled_subjects.length > 0 && (
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-500">Subjects:</span>
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-semibold">
+                                                {student.enrolled_subjects.filter(es => es.is_active).length}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
+
+                        {/* Subjects List (if any) */}
+                        {student.enrolled_subjects && student.enrolled_subjects.filter(es => es.is_active).length > 0 && (
+                            <div className="px-4 pb-3">
+                                <div className="flex flex-wrap gap-1">
+                                    {student.enrolled_subjects
+                                        .filter(es => es.is_active)
+                                        .slice(0, 4)
+                                        .map((es, idx) => (
+                                            <span key={idx} className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                                                {es.subject_id?.name || 'N/A'}
+                                            </span>
+                                        ))}
+                                    {student.enrolled_subjects.filter(es => es.is_active).length > 4 && (
+                                        <span className="text-[10px] text-gray-400">
+                                            +{student.enrolled_subjects.filter(es => es.is_active).length - 4}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Action Buttons Row */}
                         <div className="grid grid-cols-5 divide-x divide-gray-100 border-t border-gray-100 bg-gray-50 text-center">
@@ -291,13 +367,53 @@ const Students = () => {
             {/* Quick Add Form Floating or Bottom (Optional) */}
             <div className="mt-8 bg-gray-50 p-6 rounded border-2 border-dashed border-gray-300">
                 <h3 className="font-bold mb-4 text-gray-500 uppercase tracking-widest text-sm">{t('add_student')} (Quick)</h3>
-                <form onSubmit={handleSubmit} className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <input name="full_name" placeholder="Name" onChange={handleChange} value={formData.full_name} className="p-2 border rounded" required />
-                    <input name="roll_no" placeholder="Roll No" onChange={handleChange} value={formData.roll_no} className="p-2 border rounded" required />
-                    <input name="father_mobile" placeholder="Mobile" onChange={handleChange} value={formData.father_mobile} className="p-2 border rounded" required />
-                    <input type="file" name="image" onChange={handleChange} className="p-1 border rounded bg-white text-sm" />
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <input name="full_name" placeholder="Name" onChange={handleChange} value={formData.full_name} className="p-2 border rounded" required />
+                        <input name="roll_no" placeholder="Roll No" onChange={handleChange} value={formData.roll_no} className="p-2 border rounded" required />
+                        <input name="father_mobile" placeholder="Mobile" onChange={handleChange} value={formData.father_mobile} className="p-2 border rounded" required />
+                        <input type="file" name="image" onChange={handleChange} className="p-1 border rounded bg-white text-sm" />
+                        <input
+                            type="number"
+                            name="monthly_fee"
+                            placeholder="Monthly Fee"
+                            onChange={handleChange}
+                            value={formData.monthly_fee}
+                            className="p-2 border rounded"
+                        />
+                        <input
+                            type="number"
+                            name="concession"
+                            placeholder="Concession"
+                            onChange={handleChange}
+                            value={formData.concession}
+                            className="p-2 border rounded"
+                        />
+                    </div>
 
-                    <button className="col-span-2 md:col-span-4 bg-blue-600 text-white font-bold py-2 rounded">{t('save')}</button>
+                    {/* Subject Selection */}
+                    {subjects.length > 0 && (
+                        <div className="border rounded p-4 bg-white">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Select Subjects ({formData.subjects.length} selected)
+                            </label>
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto">
+                                {subjects.map(subject => (
+                                    <label key={subject._id} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.subjects.includes(subject._id)}
+                                            onChange={() => handleSubjectToggle(subject._id)}
+                                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                        />
+                                        <span className="text-sm text-gray-700">{subject.name}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <button className="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 transition">{t('save')}</button>
                 </form>
             </div>
         </div>

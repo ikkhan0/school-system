@@ -194,4 +194,38 @@ router.get('/ledger/:student_id', protect, async (req, res) => {
     }
 });
 
+// @desc    Get Fee Voucher for Printing
+// @route   GET /api/fees/voucher/:student_id/:month
+router.get('/voucher/:student_id/:month', protect, async (req, res) => {
+    try {
+        const { student_id, month } = req.params;
+
+        const student = await Student.findById(student_id).populate('family_id');
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        let fee = await Fee.findOne({
+            student_id,
+            month,
+            school_id: req.user.school_id
+        });
+
+        if (!fee) {
+            return res.status(404).json({ message: 'Fee voucher not found' });
+        }
+
+        const School = require('../models/School');
+        const school = await School.findById(req.user.school_id);
+
+        res.json({
+            student,
+            fee,
+            school
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;
