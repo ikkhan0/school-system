@@ -155,36 +155,36 @@ const FeeCollection = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <DollarSign /> Fee Management
+        <div className="max-w-7xl mx-auto p-3 sm:p-4">
+            <h1 className="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-2">
+                <DollarSign size={20} className="sm:w-6 sm:h-6" /> Fee Management
             </h1>
 
             {/* Tabs */}
-            <div className="flex gap-4 mb-6 border-b">
-                <button onClick={() => setActiveTab('ledger')} className={`pb-2 px-4 font-bold flex gap-2 ${activeTab === 'ledger' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}>
-                    <FileText size={18} /> Student Ledger
+            <div className="flex gap-2 sm:gap-4 mb-4 sm:mb-6 border-b overflow-x-auto">
+                <button onClick={() => setActiveTab('ledger')} className={`pb-2 px-3 sm:px-4 font-bold flex gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap ${activeTab === 'ledger' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}>
+                    <FileText size={16} className="sm:w-[18px] sm:h-[18px]" /> Student Ledger
                 </button>
-                <button onClick={() => setActiveTab('bulk')} className={`pb-2 px-4 font-bold flex gap-2 ${activeTab === 'bulk' ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-500'}`}>
-                    <Users size={18} /> Bulk Collection
+                <button onClick={() => setActiveTab('bulk')} className={`pb-2 px-3 sm:px-4 font-bold flex gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap ${activeTab === 'bulk' ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-500'}`}>
+                    <Users size={16} className="sm:w-[18px] sm:h-[18px]" /> Bulk Collection
                 </button>
-                <button onClick={() => setActiveTab('family')} className={`pb-2 px-4 font-bold flex gap-2 ${activeTab === 'family' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-gray-500'}`}>
-                    <Users size={18} /> Family View
+                <button onClick={() => setActiveTab('family')} className={`pb-2 px-3 sm:px-4 font-bold flex gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap ${activeTab === 'family' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-gray-500'}`}>
+                    <Users size={16} className="sm:w-[18px] sm:h-[18px]" /> Family View
                 </button>
             </div>
 
             {/* --- LEDGER TAB --- */}
             {activeTab === 'ledger' && (
                 <div>
-                    <form onSubmit={fetchLedger} className="flex gap-2 max-w-lg mb-6">
+                    <form onSubmit={fetchLedger} className="flex flex-col sm:flex-row gap-2 max-w-lg mb-4 sm:mb-6">
                         <input
                             type="text"
                             placeholder="Search by Roll No or Name..."
-                            className="border p-2 rounded flex-1"
+                            className="border p-2 rounded flex-1 text-sm sm:text-base"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
-                        <button className="bg-blue-600 text-white px-4 rounded font-bold">Search</button>
+                        <button className="bg-blue-600 text-white px-4 py-2 rounded font-bold text-sm sm:text-base">Search</button>
                     </form>
 
                     {studentLedger && (
@@ -199,42 +199,44 @@ const FeeCollection = () => {
                                 </button>
                             </div>
 
-                            <table className="w-full text-left bg-gray-50 rounded overflow-hidden">
-                                <thead className="bg-gray-200 text-gray-700 font-bold text-sm">
-                                    <tr>
-                                        <th className="p-3">Month</th>
-                                        <th className="p-3 text-right">Total Fee</th>
-                                        <th className="p-3 text-right">Paid</th>
-                                        <th className="p-3 text-right">Balance</th>
-                                        <th className="p-3 text-center">Status</th>
-                                        <th className="p-3 text-right">Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200">
-                                    {studentLedger.history.length === 0 ? (
-                                        <tr><td colSpan="6" className="p-4 text-center text-gray-500">No fee records found.</td></tr>
-                                    ) : (
-                                        studentLedger.history.map(rec => (
-                                            <tr key={rec._id}>
-                                                <td className="p-3 font-medium">{rec.month}</td>
-                                                <td className="p-3 text-right">{rec.gross_amount}</td>
-                                                <td className="p-3 text-right text-green-600 font-bold">{rec.paid_amount}</td>
-                                                <td className="p-3 text-right text-red-600 font-bold">{rec.balance}</td>
-                                                <td className="p-3 text-center">
-                                                    <span className={`px-2 py-1 rounded text-xs text-white ${rec.status === 'Paid' ? 'bg-green-500' :
-                                                        rec.status === 'Partial' ? 'bg-yellow-500' : 'bg-red-500'
-                                                        }`}>
-                                                        {rec.status}
-                                                    </span>
-                                                </td>
-                                                <td className="p-3 text-right text-xs text-gray-500">
-                                                    {rec.payment_date ? new Date(rec.payment_date).toLocaleDateString() : '-'}
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left bg-gray-50 rounded overflow-hidden min-w-[600px]">
+                                    <thead className="bg-gray-200 text-gray-700 font-bold text-xs sm:text-sm">
+                                        <tr>
+                                            <th className="p-2 sm:p-3">Month</th>
+                                            <th className="p-2 sm:p-3 text-right">Total Fee</th>
+                                            <th className="p-2 sm:p-3 text-right">Paid</th>
+                                            <th className="p-2 sm:p-3 text-right">Balance</th>
+                                            <th className="p-2 sm:p-3 text-center">Status</th>
+                                            <th className="p-2 sm:p-3 text-right">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-200">
+                                        {studentLedger.history.length === 0 ? (
+                                            <tr><td colSpan="6" className="p-4 text-center text-gray-500">No fee records found.</td></tr>
+                                        ) : (
+                                            studentLedger.history.map(rec => (
+                                                <tr key={rec._id}>
+                                                    <td className="p-2 sm:p-3 font-medium text-xs sm:text-sm">{rec.month}</td>
+                                                    <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">{rec.gross_amount}</td>
+                                                    <td className="p-2 sm:p-3 text-right text-green-600 font-bold text-xs sm:text-sm">{rec.paid_amount}</td>
+                                                    <td className="p-2 sm:p-3 text-right text-red-600 font-bold text-xs sm:text-sm">{rec.balance}</td>
+                                                    <td className="p-2 sm:p-3 text-center">
+                                                        <span className={`px-2 py-1 rounded text-xs text-white ${rec.status === 'Paid' ? 'bg-green-500' :
+                                                            rec.status === 'Partial' ? 'bg-yellow-500' : 'bg-red-500'
+                                                            }`}>
+                                                            {rec.status}
+                                                        </span>
+                                                    </td>
+                                                    <td className="p-2 sm:p-3 text-right text-xs text-gray-500">
+                                                        {rec.payment_date ? new Date(rec.payment_date).toLocaleDateString() : '-'}
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -243,24 +245,26 @@ const FeeCollection = () => {
             {/* --- BULK COLLECTION TAB --- */}
             {activeTab === 'bulk' && (
                 <div>
-                    <div className="flex gap-4 mb-6 bg-white p-4 rounded shadow items-end">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6 bg-white p-3 sm:p-4 rounded shadow">
                         <div className="flex-1">
-                            <label className="block text-sm font-bold mb-1">Class</label>
-                            <select value={selectedClass} onChange={e => setSelectedClass(e.target.value)} className="w-full border p-2 rounded">
+                            <label className="block text-xs sm:text-sm font-bold mb-1">Class</label>
+                            <select value={selectedClass} onChange={e => setSelectedClass(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base">
                                 {classes.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
                             </select>
                         </div>
-                        <div className="w-32">
-                            <label className="block text-sm font-bold mb-1">Section</label>
-                            <select value={selectedSection} onChange={e => setSelectedSection(e.target.value)} className="w-full border p-2 rounded">
+                        <div>
+                            <label className="block text-xs sm:text-sm font-bold mb-1">Section</label>
+                            <select value={selectedSection} onChange={e => setSelectedSection(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base">
                                 {classes.find(c => c.name === selectedClass)?.sections.map(s => <option key={s} value={s}>{s}</option>) || <option>A</option>}
                             </select>
                         </div>
-                        <div className="w-48">
-                            <label className="block text-sm font-bold mb-1">Month</label>
-                            <input type="text" value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} className="w-full border p-2 rounded" />
+                        <div>
+                            <label className="block text-xs sm:text-sm font-bold mb-1">Month</label>
+                            <input type="text" value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base" />
                         </div>
-                        <button onClick={fetchBulkList} className="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 h-10">Load List</button>
+                        <div className="flex items-end">
+                            <button onClick={fetchBulkList} className="bg-blue-600 text-white px-4 sm:px-6 py-2 rounded font-bold hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base">Load List</button>
+                        </div>
                     </div>
 
                     {bulkStudents.length > 0 && (
