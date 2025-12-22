@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Student = require('../models/Student');
 const Fee = require('../models/Fee');
-const Attendance = require('../models/Attendance');
+const DailyLog = require('../models/DailyLog');
 const Result = require('../models/Result');
 const Staff = require('../models/Staff');
 
@@ -15,7 +15,7 @@ router.get('/stats', async (req, res) => {
         // Today's attendance
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const todayAttendance = await Attendance.find({
+        const todayAttendance = await DailyLog.find({
             date: { $gte: today }
         });
 
@@ -73,7 +73,7 @@ router.get('/charts', async (req, res) => {
         const fourWeeksAgo = new Date();
         fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
 
-        const attendanceData = await Attendance.aggregate([
+        const attendanceData = await DailyLog.aggregate([
             {
                 $match: {
                     date: { $gte: fourWeeksAgo }
