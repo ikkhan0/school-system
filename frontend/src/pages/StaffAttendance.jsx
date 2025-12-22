@@ -248,8 +248,8 @@ const StaffAttendance = () => {
                                             key={status}
                                             onClick={() => handleStatusChange(member._id, status)}
                                             className={`flex items-center gap-1 px-3 py-2 rounded-lg border-2 transition ${attendance[member._id]?.status === status
-                                                    ? getStatusColor(status) + ' font-bold'
-                                                    : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                                                ? getStatusColor(status) + ' font-bold'
+                                                : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
                                                 }`}
                                         >
                                             {getStatusIcon(status)}
@@ -274,6 +274,23 @@ const StaffAttendance = () => {
                                         <option value="Unpaid">Unpaid</option>
                                     </select>
                                 )}
+                            </div>
+
+                            {/* Remarks/Notes Field */}
+                            <div className="mt-3 pt-3 border-t">
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                    Remarks/Notes (Optional)
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g., Late due to traffic, Medical emergency, etc."
+                                    value={attendance[member._id]?.notes || ''}
+                                    onChange={(e) => setAttendance(prev => ({
+                                        ...prev,
+                                        [member._id]: { ...prev[member._id], notes: e.target.value }
+                                    }))}
+                                    className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
                         </div>
                     ))}
