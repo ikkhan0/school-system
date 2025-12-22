@@ -4,6 +4,10 @@ import {
     Users, MessageSquare, DollarSign, AlertCircle,
     Calendar, TrendingUp, BookOpen, UserCheck
 } from 'lucide-react';
+import {
+    LineChart, Line, BarChart, Bar, PieChart, Pie, AreaChart, Area,
+    XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell
+} from 'recharts';
 import AuthContext from '../context/AuthContext';
 import API_URL from '../config';
 
@@ -23,11 +27,19 @@ const Dashboard = () => {
         staffPresent: 0,
         staffAbsent: 0
     });
+    const [chartData, setChartData] = useState({
+        feeCollection: [],
+        attendance: [],
+        performance: [],
+        enrollment: []
+    });
     const [loading, setLoading] = useState(true);
+
 
     useEffect(() => {
         if (!user) return;
         fetchDashboardStats();
+        fetchChartData();
     }, [user]);
 
     const fetchDashboardStats = async () => {
@@ -49,6 +61,18 @@ const Dashboard = () => {
         } catch (error) {
             console.error('Error fetching stats:', error);
             setLoading(false);
+        }
+    };
+
+    const fetchChartData = async () => {
+        try {
+            const res = await fetch(`${API_URL}/api/dashboard/charts`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            const data = await res.json();
+            setChartData(data);
+        } catch (error) {
+            console.error('Error fetching chart data:', error);
         }
     };
 
@@ -221,6 +245,92 @@ const Dashboard = () => {
                                 </p>
                             </button>
                         ))}
+                    </div>
+                </div>
+
+                {/* Charts Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                    {/* Fee Collection Chart */}
+                    <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                        <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <DollarSign size={20} className="text-green-600" />
+                            Fee Collection (Last 6 Months)
+                        </h3>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <LineChart data={chartData.feeCollection}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="month" style={{ fontSize: '12px' }} />
+                                <YAxis style={{ fontSize: '12px' }} />
+                                <Tooltip />
+                                <Legend wrapperStyle={{ fontSize: '12px' }} />
+                                <Line type="monotone" dataKey="collected" stroke="#10b981" strokeWidth={2} name="Collected" />
+                                <Line type="monotone" dataKey="pending" stroke="#ef4444" strokeWidth={2} name="Pending" />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    {/* Attendance Chart */}
+                    <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                        <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <Calendar size={20} className="text-blue-600" />
+                            Attendance Rate (Last 4 Weeks)
+                        </h3>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <BarChart data={chartData.attendance}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="week" style={{ fontSize: '12px' }} />
+                                <YAxis style={{ fontSize: '12px' }} />
+                                <Tooltip />
+                                <Legend wrapperStyle={{ fontSize: '12px' }} />
+                                <Bar dataKey="rate" fill="#3b82f6" name="Attendance %" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    {/* Performance Chart */}
+                    <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                        <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <TrendingUp size={20} className="text-purple-600" />
+                            Grade Distribution
+                        </h3>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <PieChart>
+                                <Pie
+                                    data={chartData.performance}
+                                    dataKey="count"
+                                    nameKey="grade"
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={80}
+                                    label
+                                >
+                                    {chartData.performance.map((entry, index) => {
+                                        const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+                                        return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                                    })}
+                                </Pie>
+                                <Tooltip />
+                                <Legend wrapperStyle={{ fontSize: '12px' }} />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    {/* Enrollment Chart */}
+                    <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                        <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <Users size={20} className="text-indigo-600" />
+                            New Admissions (Last 6 Months)
+                        </h3>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <AreaChart data={chartData.enrollment}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="month" style={{ fontSize: '12px' }} />
+                                <YAxis style={{ fontSize: '12px' }} />
+                                <Tooltip />
+                                <Legend wrapperStyle={{ fontSize: '12px' }} />
+                                <Area type="monotone" dataKey="count" stroke="#6366f1" fill="#818cf8" name="Admissions" />
+                            </AreaChart>
+                        </ResponsiveContainer>
                     </div>
                 </div>
 

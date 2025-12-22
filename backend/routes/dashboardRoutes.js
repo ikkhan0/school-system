@@ -1,151 +1,157 @@
 const express = require('express');
 const router = express.Router();
 const Student = require('../models/Student');
-const DailyLog = require('../models/DailyLog');
 const Fee = require('../models/Fee');
-const Family = require('../models/Family');
-const { protect } = require('../middleware/auth');
+const Attendance = require('../models/Attendance');
+const Result = require('../models/Result');
+const Staff = require('../models/Staff');
 
-// @desc    Get Dashboard Stats
-// @route   GET /api/dashboard/stats
-router.get('/stats', protect, async (req, res) => {
+// GET /api/dashboard/stats - Existing stats
+router.get('/stats', async (req, res) => {
     try {
-        // 1. Total Active Students (Scoped to School)
-        const totalStudents = await Student.countDocuments({ is_active: true, school_id: req.user.school_id });
+        const totalStudents = await Student.countDocuments({ status: 'Active' });
+        const totalStaff = await Staff.countDocuments();
 
-        // 2. Total Classes
-        const Class = require('../models/Class');
-        const totalClasses = await Class.countDocuments({ school_id: req.user.school_id });
-
-        // 3. Today's Attendance
+        // Today's attendance
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-
-        const logsToday = await DailyLog.find({ date: today, school_id: req.user.school_id });
-        const todayPresent = logsToday.filter(l => l.status === 'Present').length;
-        const todayAbsent = logsToday.filter(l => l.status === 'Absent').length;
-
-        // 4. Fee Outstanding & Defaulters
-        const fees = await Fee.find({ school_id: req.user.school_id });
-
-        let totalFeeOutstanding = 0;
-        let feeDefaulters = 0;
-
-        fees.forEach(fee => {
-            const outstanding = (fee.amount_due || 0) - (fee.amount_paid || 0);
-            if (outstanding > 0) {
-                totalFeeOutstanding += outstanding;
-                feeDefaulters++;
-            }
+        const todayAttendance = await Attendance.find({
+            date: { $gte: today }
         });
 
-        // 5. Upcoming Exams (active exams)
-        const Exam = require('../models/Exam');
-        const upcomingExams = await Exam.countDocuments({
-            school_id: req.user.school_id,
-            is_active: true
-        });
+        const todayPresent = todayAttendance.filter(a => a.status === 'Present').length;
+        const todayAbsent = todayAttendance.filter(a => a.status === 'Absent').length;
 
-        // 6. Total Staff
-        const Staff = require('../models/Staff');
-        const totalStaff = await Staff.countDocuments({
-            school_id: req.user.school_id,
-            is_active: true
-        });
-
-        // 7. Today's Staff Attendance
-        const StaffAttendance = require('../models/StaffAttendance');
-        const staffLogsToday = await StaffAttendance.find({
-            date: today,
-            school_id: req.user.school_id
-        });
-        const staffPresent = staffLogsToday.filter(l => l.status === 'Present').length;
-        const staffAbsent = staffLogsToday.filter(l => l.status === 'Absent').length;
+        // Fee defaulters
+        const defaulters = await Fee.find({ status: { $ne: 'Paid' } });
+        const totalFeeOutstanding = defaulters.reduce((sum, f) => sum + f.balance, 0);
 
         res.json({
             totalStudents,
-            totalClasses,
+            totalStaff,
             todayPresent,
             todayAbsent,
-            totalFeeOutstanding,
-            feeDefaulters,
-            upcomingExams,
-            totalStaff,
-            staffPresent,
-            staffAbsent
+            feeDefaulters: defaulters.length,
+            totalFeeOutstanding
         });
-
     } catch (error) {
-        console.error('Dashboard stats error:', error);
         res.status(500).json({ message: error.message });
     }
 });
 
-// @desc    Get Today's Absents with Parent Contact
-// @route   GET /api/dashboard/absents
-router.get('/absents', protect, async (req, res) => {
+// GET /api/dashboard/charts - New endpoint for chart data
+router.get('/charts', async (req, res) => {
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // Fee Collection Chart - Last 6 months
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-        // Find logs where status is Absent (Scoped to School)
-        const absentLogs = await DailyLog.find({ date: today, status: 'Absent', school_id: req.user.school_id })
-            .populate({
-                path: 'student_id',
-                populate: { path: 'family_id' }
-            });
+        const feeData = await Fee.aggregate([
+            {
+                $match: {
+                    payment_date: { $gte: sixMonthsAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: { $substr: ['$month', 0, 8] }, // Group by month (e.g., "Dec-2025")
+                    collected: { $sum: '$paid_amount' },
+                    pending: { $sum: '$balance' }
+                }
+            },
+            { $sort: { _id: 1 } },
+            { $limit: 6 }
+        ]);
 
-        const absents = absentLogs.map(log => ({
-            student_name: log.student_id?.full_name || 'Unknown',
-            roll_no: log.student_id?.roll_no || 'N/A',
-            class_id: log.student_id?.class_id,
-            section_id: log.student_id?.section_id,
-            father_mobile: log.student_id?.family_id?.father_mobile || log.student_id?.father_name // Fallback/logic
+        const feeCollection = feeData.map(item => ({
+            month: item._id,
+            collected: item.collected,
+            pending: item.pending
         }));
 
-        res.json(absents);
+        // Attendance Chart - Last 4 weeks
+        const fourWeeksAgo = new Date();
+        fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
 
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+        const attendanceData = await Attendance.aggregate([
+            {
+                $match: {
+                    date: { $gte: fourWeeksAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        week: { $week: '$date' }
+                    },
+                    present: {
+                        $sum: { $cond: [{ $eq: ['$status', 'Present'] }, 1, 0] }
+                    },
+                    total: { $sum: 1 }
+                }
+            },
+            { $sort: { '_id.week': 1 } }
+        ]);
 
-// @desc    Get 3-Day Consecutive Absents
-// @route   GET /api/dashboard/warnings
-router.get('/warnings', protect, async (req, res) => {
-    try {
-        // Complex logic simplified: 
-        // Get logs for last 3 days. Group by student. Check if all 3 are absent.
+        const attendance = attendanceData.map((item, index) => ({
+            week: `Week ${index + 1}`,
+            rate: item.total > 0 ? ((item.present / item.total) * 100).toFixed(1) : 0
+        }));
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // Performance Chart - Grade distribution from latest results
+        const gradeData = await Result.aggregate([
+            {
+                $group: {
+                    _id: '$grade',
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
 
-        const threeDaysAgo = new Date(today);
-        threeDaysAgo.setDate(today.getDate() - 3);
+        const performance = gradeData.map(item => ({
+            grade: item._id,
+            count: item.count
+        }));
 
-        const recentLogs = await DailyLog.find({
-            date: { $gte: threeDaysAgo },
-            status: 'Absent',
-            school_id: req.user.school_id
+        // Enrollment Chart - Last 6 months
+        const enrollmentData = await Student.aggregate([
+            {
+                $match: {
+                    admission_date: { $gte: sixMonthsAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: '$admission_date' },
+                        month: { $month: '$admission_date' }
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { '_id.year': 1, '_id.month': 1 } }
+        ]);
+
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const enrollment = enrollmentData.map(item => ({
+            month: `${monthNames[item._id.month - 1]}`,
+            count: item.count
+        }));
+
+        res.json({
+            feeCollection,
+            attendance,
+            performance,
+            enrollment
         });
-
-        // Count occurrences of student_id
-        const countMap = {};
-        recentLogs.forEach(log => {
-            const sid = log.student_id.toString();
-            countMap[sid] = (countMap[sid] || 0) + 1;
-        });
-
-        // Filter those with >= 3 absences recently
-        const warningIds = Object.keys(countMap).filter(id => countMap[id] >= 3);
-
-        const students = await Student.find({ _id: { $in: warningIds } })
-            .populate('family_id');
-
-        res.json(students);
-
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Chart data error:', error);
+        res.json({
+            feeCollection: [],
+            attendance: [],
+            performance: [],
+            enrollment: []
+        });
     }
 });
 
