@@ -92,7 +92,8 @@ app.use('/api/classes', require('./routes/classRoutes'));
 app.use('/api/subjects', require('./routes/subjectRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/reports', require('./routes/reportsRoutes'));
-app.use('/api/school', require('./routes/schoolRoutes')); // New Route
+app.use('/api/school', require('./routes/schoolRoutes'));
+app.use('/api/staff', require('./routes/staffRoutes')); // Staff Management Routes
 
 if (require.main === module) {
     app.listen(PORT, () => {
