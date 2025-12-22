@@ -107,10 +107,14 @@ const Navbar = () => {
             ]
         },
         {
-            path: '/reports',
             label: t('reports'),
             icon: BarChart,
-            type: 'link'
+            type: 'dropdown',
+            paths: ['/reports', '/advanced-reports'],
+            items: [
+                { path: '/reports', label: 'Basic Reports' },
+                { path: '/advanced-reports', label: 'Advanced Reports' },
+            ]
         }
     ];
 
