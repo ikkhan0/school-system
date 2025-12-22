@@ -15,7 +15,7 @@ const Classes = () => {
 
     const fetchClasses = async () => {
         try {
-            const response = await axios.get('${API_URL}/api/classes', {
+            const response = await axios.get(`${API_URL}/api/classes`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setClasses(response.data);
@@ -32,7 +32,7 @@ const Classes = () => {
         const sections = sectionsInput.split(',').map(s => s.trim()).filter(s => s);
 
         try {
-            await axios.post('${API_URL}/api/classes', {
+            await axios.post(`${API_URL}/api/classes`, {
                 name: newClassName,
                 sections: sections
             }, {
