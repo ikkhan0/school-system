@@ -18,7 +18,10 @@ const Dashboard = () => {
         feeDefaulters: 0,
         totalFeeOutstanding: 0,
         upcomingExams: 0,
-        attendanceRate: 0
+        attendanceRate: 0,
+        totalStaff: 0,
+        staffPresent: 0,
+        staffAbsent: 0
     });
     const [loading, setLoading] = useState(true);
 
@@ -59,6 +62,17 @@ const Dashboard = () => {
             bgLight: 'bg-emerald-50',
             textColor: 'text-emerald-700',
             path: '/students'
+        },
+        {
+            title: 'Total Staff',
+            value: stats.totalStaff,
+            subtitle: `${stats.staffPresent} Present Today`,
+            icon: UserCheck,
+            color: 'indigo',
+            gradient: 'from-indigo-500 to-indigo-600',
+            bgLight: 'bg-indigo-50',
+            textColor: 'text-indigo-700',
+            path: '/staff'
         },
         {
             title: 'Today\'s Attendance',

@@ -46,6 +46,22 @@ router.get('/stats', protect, async (req, res) => {
             is_active: true
         });
 
+        // 6. Total Staff
+        const Staff = require('../models/Staff');
+        const totalStaff = await Staff.countDocuments({
+            school_id: req.user.school_id,
+            is_active: true
+        });
+
+        // 7. Today's Staff Attendance
+        const StaffAttendance = require('../models/StaffAttendance');
+        const staffLogsToday = await StaffAttendance.find({
+            date: today,
+            school_id: req.user.school_id
+        });
+        const staffPresent = staffLogsToday.filter(l => l.status === 'Present').length;
+        const staffAbsent = staffLogsToday.filter(l => l.status === 'Absent').length;
+
         res.json({
             totalStudents,
             totalClasses,
@@ -53,7 +69,10 @@ router.get('/stats', protect, async (req, res) => {
             todayAbsent,
             totalFeeOutstanding,
             feeDefaulters,
-            upcomingExams
+            upcomingExams,
+            totalStaff,
+            staffPresent,
+            staffAbsent
         });
 
     } catch (error) {
