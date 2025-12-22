@@ -97,12 +97,13 @@ const Navbar = () => {
             label: t('exams'),
             icon: FileText,
             type: 'dropdown',
-            paths: ['/exam', '/marks', '/results'],
+            paths: ['/exam', '/marks', '/results', '/class-result-sheet'],
             items: [
                 { path: '/exam-menu', label: 'Exam Menu' },
                 { path: '/exams', label: 'Exam Manager' },
                 { path: '/marks', label: 'Marks Entry' },
                 { path: '/results', label: 'Result Generation' },
+                { path: '/class-result-sheet', label: 'Class Result Sheet' },
             ]
         },
         {
@@ -133,8 +134,8 @@ const Navbar = () => {
                                         key={index}
                                         to={menu.path}
                                         className={`flex items-center gap-2 px-3 py-2 rounded-lg transition ${isActive(menu.path)
-                                                ? 'text-blue-600 bg-blue-50 font-bold'
-                                                : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                                            ? 'text-blue-600 bg-blue-50 font-bold'
+                                            : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
                                             }`}
                                     >
                                         <menu.icon size={18} />
@@ -217,8 +218,8 @@ const Navbar = () => {
                                     key={index}
                                     to={menu.path}
                                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${isActive(menu.path)
-                                            ? 'text-blue-600 bg-blue-50 font-bold'
-                                            : 'text-gray-700 hover:bg-gray-50'
+                                        ? 'text-blue-600 bg-blue-50 font-bold'
+                                        : 'text-gray-700 hover:bg-gray-50'
                                         }`}
                                 >
                                     <menu.icon size={20} />
