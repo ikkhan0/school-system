@@ -20,8 +20,8 @@ const staffSchema = new mongoose.Schema({
         unique: true
     },
     cnic: {
-        type: String,
-        required: true
+        type: String
+        // Optional - can be added later
     },
     dob: Date,
     gender: {

@@ -27,6 +27,8 @@ const EditStudent = () => {
         concession: '',
         mother_name: '',
         mother_mobile: '',
+        mother_cnic: '',
+        student_cnic: '',
         emergency_contact: '',
         blood_group: '',
         religion: '',
@@ -69,6 +71,8 @@ const EditStudent = () => {
                 concession: '',
                 mother_name: student.mother_name || '',
                 mother_mobile: student.mother_mobile || '',
+                mother_cnic: student.mother_cnic || '',
+                student_cnic: student.student_cnic || student.cnic || '',
                 emergency_contact: student.emergency_contact || '',
                 blood_group: student.blood_group || '',
                 religion: student.religion || '',
@@ -114,8 +118,26 @@ const EditStudent = () => {
         const { name, value, type, files } = e.target;
         if (type === 'file') {
             setFormData(prev => ({ ...prev, [name]: files[0] }));
+        } else if (name.includes('cnic')) {
+            // Auto-format CNIC: 00000-0000000-0
+            const formatted = formatCNIC(value);
+            setFormData(prev => ({ ...prev, [name]: formatted }));
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
+        }
+    };
+
+    const formatCNIC = (value) => {
+        // Remove all non-digits
+        const digits = value.replace(/\D/g, '');
+
+        // Format as 00000-0000000-0
+        if (digits.length <= 5) {
+            return digits;
+        } else if (digits.length <= 12) {
+            return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+        } else {
+            return `${digits.slice(0, 5)}-${digits.slice(5, 12)}-${digits.slice(12, 13)}`;
         }
     };
 
@@ -324,6 +346,20 @@ const EditStudent = () => {
                             </div>
 
                             <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Father CNIC</label>
+                                <input
+                                    type="text"
+                                    name="father_cnic"
+                                    value={formData.father_cnic}
+                                    onChange={handleChange}
+                                    placeholder="00000-0000000-0"
+                                    maxLength="15"
+                                    className="w-full p-2 border rounded"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Format: 00000-0000000-0</p>
+                            </div>
+
+                            <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">Mother Name</label>
                                 <input
                                     type="text"
@@ -343,6 +379,34 @@ const EditStudent = () => {
                                     onChange={handleChange}
                                     className="w-full p-2 border rounded"
                                 />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Mother CNIC</label>
+                                <input
+                                    type="text"
+                                    name="mother_cnic"
+                                    value={formData.mother_cnic}
+                                    onChange={handleChange}
+                                    placeholder="00000-0000000-0"
+                                    maxLength="15"
+                                    className="w-full p-2 border rounded"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Format: 00000-0000000-0</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Student CNIC / B-Form</label>
+                                <input
+                                    type="text"
+                                    name="student_cnic"
+                                    value={formData.student_cnic}
+                                    onChange={handleChange}
+                                    placeholder="00000-0000000-0"
+                                    maxLength="15"
+                                    className="w-full p-2 border rounded"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Student's CNIC or B-Form number</p>
                             </div>
 
                             <div>
