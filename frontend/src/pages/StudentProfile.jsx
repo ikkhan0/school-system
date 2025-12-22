@@ -369,6 +369,7 @@ const StudentProfile = () => {
                                         <th className="border border-blue-700 p-3 text-right">Paid</th>
                                         <th className="border border-blue-700 p-3 text-right">Balance</th>
                                         <th className="border border-blue-700 p-3 text-center">Status</th>
+                                        <th className="border border-blue-700 p-3 text-center">Print</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -382,16 +383,25 @@ const StudentProfile = () => {
                                             <td className="border p-3 text-right text-red-600 font-bold">Rs. {fee.balance}</td>
                                             <td className="border p-3 text-center">
                                                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${fee.status === 'Paid' ? 'bg-green-100 text-green-700' :
-                                                        fee.status === 'Partial' ? 'bg-yellow-100 text-yellow-700' :
-                                                            'bg-red-100 text-red-700'
+                                                    fee.status === 'Partial' ? 'bg-yellow-100 text-yellow-700' :
+                                                        'bg-red-100 text-red-700'
                                                     }`}>
                                                     {fee.status}
                                                 </span>
                                             </td>
+                                            <td className="border p-3 text-center">
+                                                <button
+                                                    onClick={() => window.open(`/fee-voucher/${student._id}/${fee.month}`, '_blank')}
+                                                    className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm mx-auto"
+                                                >
+                                                    <Printer size={14} />
+                                                    Print
+                                                </button>
+                                            </td>
                                         </tr>
                                     )) : (
                                         <tr>
-                                            <td colSpan="7" className="border p-8 text-center text-gray-500">
+                                            <td colSpan="8" className="border p-8 text-center text-gray-500">
                                                 No fee records found
                                             </td>
                                         </tr>
