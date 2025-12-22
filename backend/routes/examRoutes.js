@@ -20,6 +20,26 @@ router.post('/', protect, async (req, res) => {
     }
 });
 
+// @desc    Update Exam
+// @route   PUT /api/exams/:id
+router.put('/:id', protect, async (req, res) => {
+    try {
+        const exam = await Exam.findOne({ _id: req.params.id, school_id: req.user.school_id });
+
+        if (!exam) {
+            return res.status(404).json({ message: 'Exam not found' });
+        }
+
+        // Update exam fields
+        Object.assign(exam, req.body);
+        await exam.save();
+
+        res.json(exam);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 // @desc    Get Active Exams
 // @route   GET /api/exams
 router.get('/', protect, async (req, res) => {

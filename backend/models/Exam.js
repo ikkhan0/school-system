@@ -6,13 +6,17 @@ const examSchema = mongoose.Schema({
     start_date: { type: Date },
     end_date: { type: Date },
     is_active: { type: Boolean, default: true },
+    exam_type: { type: String, enum: ['Mid-Term', 'Final', 'Monthly', 'Quiz', 'Other'], default: 'Mid-Term' },
 
     // Subjects configuration per class
     subjects: [{
         class_id: { type: String, required: true }, // e.g., "Class 1", "Class 2"
         subject_list: [{
             subject_name: { type: String, required: true }, // e.g., "English", "Math"
-            total_marks: { type: Number, required: true, default: 100 }
+            total_marks: { type: Number, required: true, default: 100 },
+            passing_marks: { type: Number, default: 33 }, // Minimum marks to pass
+            theory_marks: { type: Number, default: 0 }, // Theory component
+            practical_marks: { type: Number, default: 0 } // Practical component
         }]
     }]
 }, { timestamps: true });
