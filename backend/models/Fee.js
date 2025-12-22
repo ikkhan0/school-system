@@ -21,10 +21,10 @@ const feeSchema = mongoose.Schema({
     },
 
     // Fee Calculation
-    original_amount: { type: Number, required: true }, // Before any discount
+    original_amount: { type: Number, default: 0 }, // Before any discount - defaults to gross_amount if not set
     // Calculated: (tuition + other + arrears) - concession
     gross_amount: { type: Number, required: true }, // After discount
-    final_amount: { type: Number, required: true }, // Final payable amount
+    final_amount: { type: Number, default: 0 }, // Final payable amount - defaults to gross_amount if not set
 
     paid_amount: { type: Number, default: 0 },
     balance: { type: Number, default: 0 },
