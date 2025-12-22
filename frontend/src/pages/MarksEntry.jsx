@@ -103,10 +103,17 @@ const MarksEntry = () => {
 
         setLoading(true);
 
-        console.log('Loading marks for:', { examId, selectedClass, selectedSection, selectedSubject });
+        // Get class name from selected class ID
+        const classData = classes.find(c => c._id === selectedClass);
+        if (!classData) {
+            setLoading(false);
+            return;
+        }
 
-        // Fetch existing results for this exam/class/section
-        fetch(`${API_URL}/api/exams/results?exam_id=${examId}&class_id=${selectedClass}&section_id=${selectedSection}`, {
+        console.log('Loading marks for:', { examId, className: classData.name, selectedSection, selectedSubject });
+
+        // Fetch existing results for this exam/class/section - use class NAME not ObjectId
+        fetch(`${API_URL}/api/exams/results?exam_id=${examId}&class_id=${classData.name}&section_id=${selectedSection}`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
@@ -208,6 +215,15 @@ const MarksEntry = () => {
         }
 
         setSaving(true);
+
+        // Get class name from selected class ID
+        const classData = classes.find(c => c._id === selectedClass);
+        if (!classData) {
+            alert('Class not found');
+            setSaving(false);
+            return;
+        }
+
         const marksData = students.map(s => ({
             student_id: s._id,
             obtained_marks: Number(marks[s._id] || 0),
@@ -223,7 +239,7 @@ const MarksEntry = () => {
                 },
                 body: JSON.stringify({
                     exam_id: examId,
-                    class_id: selectedClass,
+                    class_id: classData.name, // Send class NAME, not ObjectId
                     section_id: selectedSection,
                     subject: selectedSubject,
                     marks_data: marksData
