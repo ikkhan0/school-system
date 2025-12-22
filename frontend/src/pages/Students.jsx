@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Search, Phone, MessageCircle, User, Edit, Trash2, Plus } from 'lucide-react';
+import { Search, Phone, MessageCircle, User, Edit, Plus } from 'lucide-react';
 import API_URL from '../config';
 
 const Students = () => {
@@ -70,18 +70,20 @@ const Students = () => {
         navigate(`/student-profile/${student._id}`);
     };
 
-    const handleDelete = async (studentId, studentName) => {
-        if (!confirm(`Are you sure you want to delete ${studentName}?`)) return;
+    const handleToggleStatus = async (studentId, studentName, currentStatus) => {
+        const action = currentStatus ? 'deactivate' : 'activate';
+        if (!confirm(`Are you sure you want to ${action} ${studentName}?`)) return;
 
         try {
-            await axios.delete(`${API_URL}/api/students/${studentId}`, {
-                headers: { Authorization: `Bearer ${user.token}` }
-            });
-            alert('Student deleted successfully');
+            await axios.put(`${API_URL}/api/students/${studentId}`,
+                { is_active: !currentStatus },
+                { headers: { Authorization: `Bearer ${user.token}` } }
+            );
+            alert(`Student ${action}d successfully`);
             fetchStudents();
         } catch (error) {
             console.error(error);
-            alert('Failed to delete student');
+            alert(`Failed to ${action} student`);
         }
     };
 
@@ -221,12 +223,20 @@ const Students = () => {
                                     <span className="text-xs mt-1">EDIT</span>
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(student._id, student.full_name)}
-                                    className="flex flex-col items-center justify-center p-2 bg-red-50 text-red-600 rounded hover:bg-red-100"
-                                    title="Delete"
+                                    onClick={() => handleToggleStatus(student._id, student.full_name, student.is_active)}
+                                    className={`flex flex-col items-center justify-center p-2 rounded ${student.is_active
+                                        ? 'bg-orange-50 text-orange-600 hover:bg-orange-100'
+                                        : 'bg-green-50 text-green-600 hover:bg-green-100'
+                                        }`}
+                                    title={student.is_active ? 'Deactivate' : 'Activate'}
                                 >
-                                    <Trash2 size={18} />
-                                    <span className="text-xs mt-1">DEL</span>
+                                    <div className="relative">
+                                        <User size={18} />
+                                        {!student.is_active && (
+                                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                                        )}
+                                    </div>
+                                    <span className="text-xs mt-1">{student.is_active ? 'DEACT' : 'ACT'}</span>
                                 </button>
                             </div>
                         </div>
