@@ -62,8 +62,7 @@ const studentSchema = mongoose.Schema({
     enrolled_subjects: [{
         subject_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Subject',
-            required: true
+            ref: 'Subject'
         },
         enrollment_date: {
             type: Date,

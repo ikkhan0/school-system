@@ -36,6 +36,7 @@ const upload = multer({
 router.post('/add', protect, upload.single('image'), async (req, res) => {
     try {
         const { father_name, father_mobile, father_cnic, subjects, monthly_fee, concession, ...studentData } = req.body;
+
         // Check if family exists or create (Scoped to School)
         let family = await Family.findOne({ father_mobile, school_id: req.user.school_id });
         if (!family) {
@@ -47,20 +48,27 @@ router.post('/add', protect, upload.single('image'), async (req, res) => {
             });
         }
 
-        // Prepare enrolled_subjects array
+        // Prepare enrolled_subjects array - only add if subjects exist and are valid
         let enrolled_subjects = [];
-        if (subjects) {
-            const subjectIds = Array.isArray(subjects) ? subjects : JSON.parse(subjects);
-            enrolled_subjects = subjectIds.map(subject_id => ({
-                subject_id,
-                enrollment_date: new Date(),
-                is_active: true
-            }));
+        if (subjects && subjects.length > 0) {
+            try {
+                const subjectIds = Array.isArray(subjects) ? subjects : JSON.parse(subjects);
+                // Filter out empty or invalid IDs
+                const validSubjectIds = subjectIds.filter(id => id && id.trim() !== '');
+                enrolled_subjects = validSubjectIds.map(subject_id => ({
+                    subject_id,
+                    enrollment_date: new Date(),
+                    is_active: true
+                }));
+            } catch (parseError) {
+                console.error('Error parsing subjects:', parseError);
+                // Continue without subjects if parsing fails
+            }
         }
 
         const student = await Student.create({
             ...studentData,
-            image: req.file ? `/uploads/${req.file.filename}` : '',
+            photo: req.file ? `/uploads/${req.file.filename}` : '',
             family_id: family._id,
             father_name: father_name, // keep denormalized copy
             school_id: req.user.school_id,
@@ -96,6 +104,7 @@ router.post('/add', protect, upload.single('image'), async (req, res) => {
             feeVoucher
         });
     } catch (error) {
+        console.error('Error adding student:', error);
         res.status(400).json({ message: error.message });
     }
 });
