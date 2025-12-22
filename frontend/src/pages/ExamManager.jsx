@@ -1,9 +1,11 @@
 import { useState, useEffect, useContext } from 'react';
-import { Plus, Trash2, Calendar, CheckCircle, XCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Trash2, Calendar, CheckCircle, XCircle, Edit } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import API_URL from '../config';
 
 const ExamManager = () => {
+    const navigate = useNavigate();
     const { user } = useContext(AuthContext);
     const [exams, setExams] = useState([]);
     const [formData, setFormData] = useState({
@@ -154,9 +156,18 @@ const ExamManager = () => {
                                             }
                                         </td>
                                         <td className="p-2 text-right">
-                                            <button className="text-red-500 hover:bg-red-50 p-1 rounded" title="Delete (Not Implemented)">
-                                                <Trash2 size={16} />
-                                            </button>
+                                            <div className="flex justify-end gap-2">
+                                                <button
+                                                    onClick={() => navigate(`/exams/edit/${exam._id}`)}
+                                                    className="text-blue-600 hover:bg-blue-50 p-1 rounded"
+                                                    title="Edit Exam"
+                                                >
+                                                    <Edit size={16} />
+                                                </button>
+                                                <button className="text-red-500 hover:bg-red-50 p-1 rounded" title="Delete (Not Implemented)">
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

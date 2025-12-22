@@ -34,6 +34,7 @@ import DiscountPolicies from './pages/DiscountPolicies';
 import FamilyFeeMessaging from './pages/FamilyFeeMessaging';
 import SiblingManagement from './pages/SiblingManagement';
 import ClassResultSheet from './pages/ClassResultSheet';
+import EditExam from './pages/EditExam';
 import Settings from './pages/Settings';
 
 import './App.css';
@@ -67,6 +68,7 @@ function App() {
               <Route path="/staff/attendance" element={<ProtectedRoute><StaffAttendance /></ProtectedRoute>} />
               <Route path="/fee-voucher/:student_id/:month" element={<ProtectedRoute><FeeVoucher /></ProtectedRoute>} />
               <Route path="/exams" element={<ProtectedRoute><ExamManager /></ProtectedRoute>} />
+              <Route path="/exams/edit/:id" element={<ProtectedRoute><EditExam /></ProtectedRoute>} />
               <Route path="/exam-menu" element={<ProtectedRoute><ExamMenu /></ProtectedRoute>} />
               <Route path="/subjects" element={<ProtectedRoute><SubjectManager /></ProtectedRoute>} />
               <Route path="/fee-menu" element={<ProtectedRoute><FeeMenu /></ProtectedRoute>} />
