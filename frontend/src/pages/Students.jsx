@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -8,6 +9,7 @@ import API_URL from '../config';
 const Students = () => {
     const { user } = useContext(AuthContext);
     const { t, language } = useLanguage();
+    const navigate = useNavigate();
     const [students, setStudents] = useState([]);
     const [filteredStudents, setFilteredStudents] = useState([]);
     const [classes, setClasses] = useState([]);
@@ -160,8 +162,8 @@ const Students = () => {
     };
 
     const handleViewProfile = (student) => {
-        
-        window.location.href = `/student-profile/${student._id}`;
+
+        navigate(`/student-profile/${student._id}`);
     };
 
     const handleEdit = (student) => {
@@ -371,8 +373,16 @@ const Students = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <input name="full_name" placeholder="Name" onChange={handleChange} value={formData.full_name} className="p-2 border rounded" required />
                         <input name="roll_no" placeholder="Roll No" onChange={handleChange} value={formData.roll_no} className="p-2 border rounded" required />
+                        <input name="father_name" placeholder="Father Name" onChange={handleChange} value={formData.father_name} className="p-2 border rounded" required />
                         <input name="father_mobile" placeholder="Mobile" onChange={handleChange} value={formData.father_mobile} className="p-2 border rounded" required />
-                        <input type="file" name="image" onChange={handleChange} className="p-1 border rounded bg-white text-sm" />
+
+                        <select name="class_id" onChange={handleChange} value={formData.class_id} className="p-2 border rounded" required>
+                            <option value="">Select Class</option>
+                            {classes.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
+                        </select>
+
+                        <input name="section_id" placeholder="Section (A/B/C)" onChange={handleChange} value={formData.section_id} className="p-2 border rounded" required />
+
                         <input
                             type="number"
                             name="monthly_fee"
@@ -389,6 +399,7 @@ const Students = () => {
                             value={formData.concession}
                             className="p-2 border rounded"
                         />
+                        <input type="file" name="image" onChange={handleChange} className="p-1 border rounded bg-white text-sm" />
                     </div>
 
                     {/* Subject Selection */}

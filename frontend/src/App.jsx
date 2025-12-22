@@ -18,6 +18,7 @@ import BulkFeeSlips from './pages/BulkFeeSlips';
 import Classes from './pages/Classes';
 import Students from './pages/Students';
 import StudentProfile from './pages/StudentProfile';
+import FeeVoucher from './pages/FeeVoucher';
 import ExamManager from './pages/ExamManager';
 import ExamMenu from './pages/ExamMenu';
 import SubjectManager from './pages/SubjectManager';
@@ -46,6 +47,7 @@ function App() {
               <Route path="/classes" element={<ProtectedRoute><Classes /></ProtectedRoute>} />
               <Route path="/students" element={<ProtectedRoute><Students /></ProtectedRoute>} />
               <Route path="/student-profile/:id" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
+              <Route path="/fee-voucher/:student_id/:month" element={<ProtectedRoute><FeeVoucher /></ProtectedRoute>} />
               <Route path="/exams" element={<ProtectedRoute><ExamManager /></ProtectedRoute>} />
               <Route path="/exam-menu" element={<ProtectedRoute><ExamMenu /></ProtectedRoute>} />
               <Route path="/subjects" element={<ProtectedRoute><SubjectManager /></ProtectedRoute>} />
