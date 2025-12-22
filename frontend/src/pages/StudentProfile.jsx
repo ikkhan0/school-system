@@ -134,10 +134,10 @@ const StudentProfile = () => {
     return (
         <div className="max-w-7xl mx-auto p-4">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-6 mb-6 no-print text-white">
-                <div className="flex items-start justify-between">
-                    <div className="flex gap-4">
-                        <div className="w-24 h-24 bg-white rounded-full overflow-hidden border-4 border-white flex-shrink-0">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-4 md:p-6 mb-6 no-print text-white">
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-full overflow-hidden border-4 border-white flex-shrink-0 mx-auto sm:mx-0">
                             {student.photo ? (
                                 <img src={`${API_URL}${student.photo}`} alt={student.full_name} className="w-full h-full object-cover" />
                             ) : (
@@ -145,50 +145,50 @@ const StudentProfile = () => {
                             )}
                         </div>
 
-                        <div>
-                            <h1 className="text-3xl font-bold">{student.full_name}</h1>
-                            <p className="text-blue-100">Roll No: <span className="font-semibold">{student.roll_no}</span></p>
-                            <p className="text-blue-100">Class: <span className="font-semibold">{student.class_id}-{student.section_id}</span></p>
-                            <p className="text-blue-100">Father: <span className="font-semibold">{student.father_name || student.family_id?.father_name}</span></p>
-                            <p className="text-blue-100">Mobile: <span className="font-semibold">{student.family_id?.father_mobile || student.father_mobile}</span></p>
+                        <div className="text-center sm:text-left">
+                            <h1 className="text-2xl md:text-3xl font-bold">{student.full_name}</h1>
+                            <p className="text-blue-100 text-sm md:text-base">Roll No: <span className="font-semibold">{student.roll_no}</span></p>
+                            <p className="text-blue-100 text-sm md:text-base">Class: <span className="font-semibold">{student.class_id}-{student.section_id}</span></p>
+                            <p className="text-blue-100 text-sm md:text-base">Father: <span className="font-semibold">{student.father_name || student.family_id?.father_name}</span></p>
+                            <p className="text-blue-100 text-sm md:text-base">Mobile: <span className="font-semibold">{student.family_id?.father_mobile || student.father_mobile}</span></p>
                         </div>
                     </div>
 
-                    <div className="flex gap-2 flex-wrap justify-end">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap gap-2 md:justify-end">
                         <button
                             onClick={() => navigate(-1)}
-                            className="flex items-center gap-2 px-4 py-2 bg-white text-blue-700 rounded hover:bg-blue-50"
+                            className="flex items-center justify-center gap-1 md:gap-2 px-3 md:px-4 py-2 bg-white text-blue-700 rounded hover:bg-blue-50 text-sm md:text-base"
                         >
-                            <ArrowLeft size={18} />
-                            Back
+                            <ArrowLeft size={16} className="md:w-[18px] md:h-[18px]" />
+                            <span className="hidden sm:inline">Back</span>
                         </button>
                         <button
                             onClick={handleCall}
-                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                            className="flex items-center justify-center gap-1 md:gap-2 px-3 md:px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm md:text-base"
                         >
-                            <Phone size={18} />
-                            Call
+                            <Phone size={16} className="md:w-[18px] md:h-[18px]" />
+                            <span className="hidden sm:inline">Call</span>
                         </button>
                         <button
                             onClick={() => sendWhatsAppReport('general')}
-                            className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                            className="flex items-center justify-center gap-1 md:gap-2 px-3 md:px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm md:text-base"
                         >
-                            <MessageCircle size={18} />
-                            WhatsApp
+                            <MessageCircle size={16} className="md:w-[18px] md:h-[18px]" />
+                            <span className="hidden sm:inline">WhatsApp</span>
                         </button>
                         <button
                             onClick={handlePrint}
-                            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+                            className="flex items-center justify-center gap-1 md:gap-2 px-3 md:px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm md:text-base"
                         >
-                            <Printer size={18} />
-                            Print
+                            <Printer size={16} className="md:w-[18px] md:h-[18px]" />
+                            <span className="hidden sm:inline">Print</span>
                         </button>
                         <button
                             onClick={() => setShowEditModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                            className="flex items-center justify-center gap-1 md:gap-2 px-3 md:px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm md:text-base col-span-2 sm:col-span-1"
                         >
-                            <Edit size={18} />
-                            Edit Info
+                            <Edit size={16} className="md:w-[18px] md:h-[18px]" />
+                            <span>Edit Info</span>
                         </button>
                     </div>
                 </div>
