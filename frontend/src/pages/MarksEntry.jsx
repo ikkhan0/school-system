@@ -146,12 +146,65 @@ const MarksEntry = () => {
     }, [examId, selectedClass, selectedSection, selectedSubject, students, user, classes]);
 
     const handleMarkChange = (studentId, val) => {
+        // Convert to number
+        const numValue = Number(val);
+        const maxMarks = Number(totalMarks);
+
+        // Validate: must be between 0 and totalMarks
+        if (val === '' || val === null) {
+            // Allow empty input
+            setMarks(prev => ({ ...prev, [studentId]: '' }));
+            return;
+        }
+
+        // Check if it's a valid number
+        if (isNaN(numValue)) {
+            alert('Please enter a valid number');
+            return;
+        }
+
+        // Check if it's negative
+        if (numValue < 0) {
+            alert('Marks cannot be negative!');
+            return;
+        }
+
+        // Check if it exceeds total marks
+        if (numValue > maxMarks) {
+            alert(`Obtained marks (${numValue}) cannot be more than total marks (${maxMarks})!`);
+            return;
+        }
+
+        // Valid input - update marks
         setMarks(prev => ({ ...prev, [studentId]: val }));
     };
 
     const handleSave = async () => {
         if (!examId || !selectedClass || !selectedSection || !selectedSubject) {
             return alert('Please select Exam, Class, Section, and Subject');
+        }
+
+        // Validate all marks before saving
+        const maxMarks = Number(totalMarks);
+        const invalidMarks = [];
+
+        students.forEach(s => {
+            const mark = Number(marks[s._id] || 0);
+            if (mark < 0 || mark > maxMarks) {
+                invalidMarks.push({
+                    name: s.full_name,
+                    roll: s.roll_no,
+                    marks: mark
+                });
+            }
+        });
+
+        if (invalidMarks.length > 0) {
+            const errorMsg = invalidMarks.map(im =>
+                `${im.name} (${im.roll}): ${im.marks} marks`
+            ).join('\n');
+            alert(`Invalid marks detected! Marks must be between 0 and ${maxMarks}:\n\n${errorMsg}`);
+            return;
         }
 
         setSaving(true);
