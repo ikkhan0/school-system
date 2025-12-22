@@ -36,6 +36,7 @@ import SiblingManagement from './pages/SiblingManagement';
 import ClassResultSheet from './pages/ClassResultSheet';
 import EditExam from './pages/EditExam';
 import Settings from './pages/Settings';
+import AdvancedReports from './pages/reports/AdvancedReports';
 
 import './App.css';
 
@@ -76,6 +77,7 @@ function App() {
               <Route path="/family-messaging" element={<ProtectedRoute><FamilyFeeMessaging /></ProtectedRoute>} />
               <Route path="/sibling-management" element={<ProtectedRoute><SiblingManagement /></ProtectedRoute>} />
               <Route path="/class-result-sheet" element={<ProtectedRoute><ClassResultSheet /></ProtectedRoute>} />
+              <Route path="/advanced-reports" element={<ProtectedRoute><AdvancedReports /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Routes>
           </div>
