@@ -29,7 +29,10 @@ const studentSchema = mongoose.Schema({
     blood_group: { type: String, enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', ''] },
     religion: { type: String },
     nationality: { type: String, default: 'Pakistani' },
-    cnic: { type: String }, // B-Form or CNIC
+    cnic: { type: String }, // B-Form or CNIC (student's own)
+    father_cnic: { type: String }, // Father's CNIC
+    mother_cnic: { type: String }, // Mother's CNIC
+    student_cnic: { type: String }, // Alias for cnic (student's B-Form/CNIC)
 
     // Address Details
     current_address: { type: String },
