@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const DiscountPolicy = require('../models/DiscountPolicy');
 const Student = require('../models/Student');
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/auth');
 
 // @route   POST /api/discounts/policy
 // @desc    Create a new discount policy
