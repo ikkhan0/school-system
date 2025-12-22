@@ -163,26 +163,32 @@ const Staff = () => {
                                 </p>
                             </div>
 
-                            {/* Subjects (for teachers) */}
+                            {/* Subjects (for teachers/academic staff only) */}
                             {member.assigned_subjects && member.assigned_subjects.length > 0 && (
-                                <div className="mb-3">
-                                    <p className="text-xs font-semibold text-gray-600 mb-1">
-                                        Subjects ({member.assigned_subjects.length})
-                                    </p>
-                                    <div className="flex flex-wrap gap-1">
-                                        {member.assigned_subjects.slice(0, 3).map((sub, idx) => (
-                                            <span key={idx} className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">
-                                                {sub.subject_id?.name || 'N/A'}
-                                            </span>
-                                        ))}
-                                        {member.assigned_subjects.length > 3 && (
-                                            <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
-                                                +{member.assigned_subjects.length - 3}
-                                            </span>
-                                        )}
+                                member.designation === 'Teacher' ||
+                                member.designation === 'Subject Teacher' ||
+                                member.designation === 'Class Teacher' ||
+                                member.designation === 'Senior Teacher' ||
+                                member.designation === 'Head Teacher'
+                            ) && (
+                                    <div className="mb-3">
+                                        <p className="text-xs font-semibold text-gray-600 mb-1">
+                                            Subjects ({member.assigned_subjects.length})
+                                        </p>
+                                        <div className="flex flex-wrap gap-1">
+                                            {member.assigned_subjects.slice(0, 3).map((sub, idx) => (
+                                                <span key={idx} className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">
+                                                    {sub.subject_id?.name || 'N/A'}
+                                                </span>
+                                            ))}
+                                            {member.assigned_subjects.length > 3 && (
+                                                <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                                                    +{member.assigned_subjects.length - 3}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
                             {/* Action Buttons */}
                             <div className="grid grid-cols-5 gap-2">

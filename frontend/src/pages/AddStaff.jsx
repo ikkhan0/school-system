@@ -262,29 +262,36 @@ const AddStaff = () => {
                         <input type="file" name="photo" onChange={handleChange} accept="image/*" className="w-full p-2 border rounded bg-white" />
                     </div>
 
-                    {/* Subject Assignment (for teachers) */}
+                    {/* Subject Assignment (for teachers/academic staff only) */}
                     {subjects.length > 0 && (
-                        <div>
-                            <h2 className="text-xl font-bold text-blue-700 mb-4">
-                                Assign Subjects ({formData.assigned_subjects.length} selected)
-                            </h2>
-                            <div className="border rounded p-4 bg-gray-50">
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                                    {subjects.map(subject => (
-                                        <label key={subject._id} className="flex items-center space-x-2 p-2 hover:bg-white rounded cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.assigned_subjects.includes(subject._id)}
-                                                onChange={() => handleSubjectToggle(subject._id)}
-                                                className="w-4 h-4 text-blue-600 rounded"
-                                            />
-                                            <span className="text-sm">{subject.name}</span>
-                                        </label>
-                                    ))}
+                        formData.designation === 'Teacher' ||
+                        formData.designation === 'Subject Teacher' ||
+                        formData.designation === 'Class Teacher' ||
+                        formData.designation === 'Senior Teacher' ||
+                        formData.designation === 'Head Teacher'
+                    ) && (
+                            <div>
+                                <h2 className="text-xl font-bold text-blue-700 mb-4">
+                                    Assign Subjects ({formData.assigned_subjects.length} selected)
+                                </h2>
+                                <p className="text-sm text-gray-600 mb-3">Select subjects this teacher will teach</p>
+                                <div className="border rounded p-4 bg-gray-50">
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                        {subjects.map(subject => (
+                                            <label key={subject._id} className="flex items-center space-x-2 p-2 hover:bg-white rounded cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.assigned_subjects.includes(subject._id)}
+                                                    onChange={() => handleSubjectToggle(subject._id)}
+                                                    className="w-4 h-4 text-blue-600 rounded"
+                                                />
+                                                <span className="text-sm">{subject.name}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
                     {/* Submit Button */}
                     <div className="flex justify-end gap-4 pt-4 border-t">
