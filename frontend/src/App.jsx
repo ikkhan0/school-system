@@ -18,6 +18,7 @@ import BulkFeeSlips from './pages/BulkFeeSlips';
 import Classes from './pages/Classes';
 import Students from './pages/Students';
 import AddStudent from './pages/AddStudent';
+import EditStudent from './pages/EditStudent';
 import StudentProfile from './pages/StudentProfile';
 import FeeVoucher from './pages/FeeVoucher';
 import ExamManager from './pages/ExamManager';
@@ -48,6 +49,7 @@ function App() {
               <Route path="/classes" element={<ProtectedRoute><Classes /></ProtectedRoute>} />
               <Route path="/students" element={<ProtectedRoute><Students /></ProtectedRoute>} />
               <Route path="/students/add" element={<ProtectedRoute><AddStudent /></ProtectedRoute>} />
+              <Route path="/students/edit/:id" element={<ProtectedRoute><EditStudent /></ProtectedRoute>} />
               <Route path="/student-profile/:id" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
               <Route path="/fee-voucher/:student_id/:month" element={<ProtectedRoute><FeeVoucher /></ProtectedRoute>} />
               <Route path="/exams" element={<ProtectedRoute><ExamManager /></ProtectedRoute>} />
