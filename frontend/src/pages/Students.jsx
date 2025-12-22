@@ -88,36 +88,36 @@ const Students = () => {
     };
 
     return (
-        <div className="p-4 max-w-7xl mx-auto">
-            <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="p-3 sm:p-4 max-w-7xl mx-auto">
+            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold text-gray-800">{t('students')}</h1>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
+                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">{t('students')}</h1>
                     <button
                         onClick={() => navigate('/students/add')}
-                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md"
+                        className="flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md text-sm sm:text-base w-full sm:w-auto justify-center"
                     >
-                        <Plus size={20} />
-                        Add New Student
+                        <Plus size={18} className="sm:w-5 sm:h-5" />
+                        <span>Add New Student</span>
                     </button>
                 </div>
 
                 {/* Search and Filters */}
-                <div className="flex gap-4 mb-6">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
                     <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                         <input
                             type="text"
                             placeholder="Search by Name or Roll No..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-10 pr-4 py-2 text-sm sm:text-base border rounded-lg focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
                     <select
                         value={filterClass}
                         onChange={(e) => setFilterClass(e.target.value)}
-                        className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="px-4 py-2 text-sm sm:text-base border rounded-lg focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
                     >
                         <option value="">All Classes</option>
                         {classes.map(c => (
@@ -132,22 +132,22 @@ const Students = () => {
                 </div>
 
                 {/* Student Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {filteredStudents.map(student => (
-                        <div key={student._id} className="border-2 border-blue-200 rounded-lg p-4 hover:shadow-lg transition bg-gradient-to-br from-white to-blue-50">
+                        <div key={student._id} className="border-2 border-blue-200 rounded-lg p-3 sm:p-4 hover:shadow-lg transition bg-gradient-to-br from-white to-blue-50">
                             {/* Student Header */}
-                            <div className="flex items-start gap-3 mb-3">
-                                <div className="w-16 h-16 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
+                            <div className="flex items-start gap-2 sm:gap-3 mb-3">
+                                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
                                     {student.photo ? (
                                         <img src={`${API_URL}${student.photo}`} alt={student.full_name} className="w-full h-full object-cover" />
                                     ) : (
                                         <User className="w-full h-full p-3 text-gray-400" />
                                     )}
                                 </div>
-                                <div className="flex-1">
-                                    <h3 className="font-bold text-lg text-gray-800">{student.full_name}</h3>
-                                    <p className="text-sm text-gray-600">Roll: <span className="font-semibold text-blue-600">{student.roll_no}</span></p>
-                                    <p className="text-sm text-gray-600">Father: {student.father_name || student.family_id?.father_name}</p>
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-base sm:text-lg text-gray-800 truncate">{student.full_name}</h3>
+                                    <p className="text-xs sm:text-sm text-gray-600">Roll: <span className="font-semibold text-blue-600">{student.roll_no}</span></p>
+                                    <p className="text-xs sm:text-sm text-gray-600 truncate">Father: {student.father_name || student.family_id?.father_name}</p>
                                 </div>
                             </div>
 
@@ -189,14 +189,14 @@ const Students = () => {
                             )}
 
                             {/* Action Buttons */}
-                            <div className="grid grid-cols-5 gap-2">
+                            <div className="grid grid-cols-5 gap-1 sm:gap-2">
                                 <button
                                     onClick={() => sendWhatsApp(student.family_id?.father_mobile || student.father_mobile)}
-                                    className="flex flex-col items-center justify-center p-2 bg-green-50 text-green-600 rounded hover:bg-green-100"
+                                    className="flex flex-col items-center justify-center p-1.5 sm:p-2 bg-green-50 text-green-600 rounded hover:bg-green-100"
                                     title="WhatsApp"
                                 >
-                                    <MessageCircle size={18} />
-                                    <span className="text-xs mt-1">WA</span>
+                                    <MessageCircle size={16} className="sm:w-[18px] sm:h-[18px]" />
+                                    <span className="text-[10px] sm:text-xs mt-0.5 sm:mt-1">WA</span>
                                 </button>
                                 <button
                                     onClick={() => window.location.href = `tel:${student.family_id?.father_mobile || student.father_mobile}`}
