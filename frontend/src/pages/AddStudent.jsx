@@ -10,6 +10,8 @@ const AddStudent = () => {
     const { user } = useContext(AuthContext);
     const [classes, setClasses] = useState([]);
     const [subjects, setSubjects] = useState([]);
+    const [staff, setStaff] = useState([]);
+    const [isStaffChild, setIsStaffChild] = useState(false);
     const [formData, setFormData] = useState({
         full_name: '',
         father_name: '',
@@ -34,13 +36,16 @@ const AddStudent = () => {
         medical_conditions: '',
         allergies: '',
         image: null,
-        subjects: []
+        subjects: [],
+        is_staff_child: false,
+        staff_parent_id: ''
     });
 
     useEffect(() => {
         if (!user) return;
         fetchClasses();
         fetchSubjects();
+        fetchStaff();
     }, [user]);
 
     const fetchClasses = async () => {
@@ -65,10 +70,28 @@ const AddStudent = () => {
         }
     };
 
+    const fetchStaff = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/api/staff`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            setStaff(response.data);
+        } catch (error) {
+            console.error('Error fetching staff:', error);
+        }
+    };
+
     const handleChange = (e) => {
-        const { name, value, type, files } = e.target;
+        const { name, value, type, files, checked } = e.target;
         if (type === 'file') {
             setFormData(prev => ({ ...prev, [name]: files[0] }));
+        } else if (type === 'checkbox' && name === 'is_staff_child') {
+            setIsStaffChild(checked);
+            setFormData(prev => ({
+                ...prev,
+                is_staff_child: checked,
+                staff_parent_id: checked ? prev.staff_parent_id : ''
+            }));
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
         }
@@ -386,6 +409,44 @@ const AddStudent = () => {
                                     className="w-full p-2 border rounded"
                                 />
                             </div>
+
+                            {/* Staff Child Checkbox */}
+                            <div className="md:col-span-2">
+                                <label className="flex items-center gap-2 p-3 bg-blue-50 border-2 border-blue-200 rounded cursor-pointer hover:bg-blue-100 transition">
+                                    <input
+                                        type="checkbox"
+                                        name="is_staff_child"
+                                        checked={isStaffChild}
+                                        onChange={handleChange}
+                                        className="w-5 h-5 text-blue-600"
+                                    />
+                                    <span className="font-semibold text-blue-700">This student is a Staff Child (20% discount)</span>
+                                </label>
+                            </div>
+
+                            {/* Staff Parent Selection */}
+                            {isStaffChild && (
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Select Staff Parent *</label>
+                                    <select
+                                        name="staff_parent_id"
+                                        value={formData.staff_parent_id}
+                                        onChange={handleChange}
+                                        className="w-full p-2 border rounded"
+                                        required={isStaffChild}
+                                    >
+                                        <option value="">-- Select Staff Member --</option>
+                                        {staff.map(member => (
+                                            <option key={member._id} value={member._id}>
+                                                {member.full_name} ({member.employee_id}) - {member.designation}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Select the staff member who is the parent of this student
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
 
