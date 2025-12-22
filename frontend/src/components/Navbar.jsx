@@ -4,7 +4,7 @@ import axios from 'axios';
 import API_URL from '../config';
 import AuthContext from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Globe, LogOut, Settings as SettingsIcon, Menu, X, Home, Users, Calendar, DollarSign, FileText, BookOpen } from 'lucide-react';
+import { Globe, LogOut, Settings as SettingsIcon, Menu, X, Home, Users, Calendar, DollarSign, FileText, BookOpen, UserCheck } from 'lucide-react';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
@@ -40,6 +40,7 @@ const Navbar = () => {
     const navLinks = [
         { path: '/dashboard', label: t('dashboard'), icon: Home },
         { path: '/students', label: t('students'), icon: Users },
+        { path: '/staff', label: 'Staff', icon: UserCheck },
         { path: '/evaluation', label: t('attendance'), icon: Calendar },
         { path: '/fee-menu', label: t('fees'), icon: DollarSign },
         { path: '/exam-menu', label: t('exams'), icon: BookOpen },
