@@ -22,6 +22,8 @@ import EditStudent from './pages/EditStudent';
 import StudentProfile from './pages/StudentProfile';
 import Staff from './pages/Staff';
 import AddStaff from './pages/AddStaff';
+import EditStaff from './pages/EditStaff';
+import StaffProfile from './pages/StaffProfile';
 import StaffAttendance from './pages/StaffAttendance';
 import FeeVoucher from './pages/FeeVoucher';
 import ExamManager from './pages/ExamManager';
@@ -56,6 +58,8 @@ function App() {
               <Route path="/student-profile/:id" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
               <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
               <Route path="/staff/add" element={<ProtectedRoute><AddStaff /></ProtectedRoute>} />
+              <Route path="/staff/edit/:id" element={<ProtectedRoute><EditStaff /></ProtectedRoute>} />
+              <Route path="/staff/profile/:id" element={<ProtectedRoute><StaffProfile /></ProtectedRoute>} />
               <Route path="/staff/attendance" element={<ProtectedRoute><StaffAttendance /></ProtectedRoute>} />
               <Route path="/fee-voucher/:student_id/:month" element={<ProtectedRoute><FeeVoucher /></ProtectedRoute>} />
               <Route path="/exams" element={<ProtectedRoute><ExamManager /></ProtectedRoute>} />
