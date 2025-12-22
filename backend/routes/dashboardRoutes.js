@@ -9,7 +9,7 @@ const Staff = require('../models/Staff');
 // GET /api/dashboard/stats - Existing stats
 router.get('/stats', async (req, res) => {
     try {
-        const totalStudents = await Student.countDocuments({ status: 'Active' });
+        const totalStudents = await Student.countDocuments({ is_active: true });
         const totalStaff = await Staff.countDocuments();
 
         // Today's attendance
