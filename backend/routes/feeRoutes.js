@@ -228,4 +228,43 @@ router.get('/voucher/:student_id/:month', protect, async (req, res) => {
     }
 });
 
+// @desc    Update fee discount
+// @route   PUT /api/fees/:id/discount
+router.put('/:id/discount', protect, async (req, res) => {
+    try {
+        const { manual_discount, discount_reason } = req.body;
+
+        const fee = await Fee.findOne({
+            _id: req.params.id,
+            school_id: req.user.school_id
+        });
+
+        if (!fee) {
+            return res.status(404).json({ message: 'Fee not found' });
+        }
+
+        // Update discount
+        if (!fee.discount_applied) {
+            fee.discount_applied = {};
+        }
+
+        fee.discount_applied.manual_discount = parseFloat(manual_discount) || 0;
+        fee.discount_applied.discount_reason = discount_reason || '';
+        fee.discount_applied.total_discount = (fee.discount_applied.policy_discount || 0) + (parseFloat(manual_discount) || 0);
+        fee.discount_applied.applied_by = req.user._id;
+        fee.discount_applied.applied_at = new Date();
+
+        // Recalculate final amount
+        const originalAmount = fee.original_amount || fee.gross_amount;
+        fee.final_amount = originalAmount - fee.discount_applied.total_discount;
+        fee.balance = fee.final_amount - fee.paid_amount;
+
+        await fee.save();
+
+        res.json({ message: 'Discount updated successfully', fee });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

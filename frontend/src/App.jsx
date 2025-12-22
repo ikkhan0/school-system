@@ -30,6 +30,7 @@ import ExamManager from './pages/ExamManager';
 import ExamMenu from './pages/ExamMenu';
 import SubjectManager from './pages/SubjectManager';
 import FeeMenu from './pages/FeeMenu';
+import DiscountPolicies from './pages/DiscountPolicies';
 import Settings from './pages/Settings';
 
 import './App.css';
@@ -66,6 +67,7 @@ function App() {
               <Route path="/exam-menu" element={<ProtectedRoute><ExamMenu /></ProtectedRoute>} />
               <Route path="/subjects" element={<ProtectedRoute><SubjectManager /></ProtectedRoute>} />
               <Route path="/fee-menu" element={<ProtectedRoute><FeeMenu /></ProtectedRoute>} />
+              <Route path="/discount-policies" element={<ProtectedRoute><DiscountPolicies /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Routes>
           </div>

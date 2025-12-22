@@ -58,6 +58,23 @@ const studentSchema = mongoose.Schema({
         ref: 'Student'
     }],
 
+    // Discount Information
+    discount_category: {
+        type: String,
+        enum: ['None', 'Staff Child', 'Sibling', 'Merit', 'Financial Aid', 'Other'],
+        default: 'None'
+    },
+    discount_percentage: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100
+    },
+    discount_reason: {
+        type: String,
+        trim: true
+    },
+
     // Enrolled Subjects - Individual subject enrollment per student
     enrolled_subjects: [{
         subject_id: {
