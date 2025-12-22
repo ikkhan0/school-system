@@ -524,4 +524,73 @@ router.get('/:id/exam-results', protect, async (req, res) => {
     }
 });
 
+// @desc    Update Student
+// @route   PUT /api/students/:id
+router.put('/:id', protect, upload.single('image'), async (req, res) => {
+    try {
+        const { father_name, father_mobile, father_cnic, subjects, ...studentData } = req.body;
+
+        const student = await Student.findOne({
+            _id: req.params.id,
+            school_id: req.user.school_id
+        });
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        // Update family information if provided
+        if (father_mobile) {
+            let family = await Family.findOne({ father_mobile, school_id: req.user.school_id });
+            if (!family) {
+                family = await Family.create({
+                    father_name,
+                    father_mobile,
+                    father_cnic,
+                    school_id: req.user.school_id
+                });
+            }
+            student.family_id = family._id;
+        }
+
+        // Update basic student information
+        Object.keys(studentData).forEach(key => {
+            if (studentData[key] !== undefined && studentData[key] !== '') {
+                student[key] = studentData[key];
+            }
+        });
+
+        // Update photo if new file uploaded
+        if (req.file) {
+            student.photo = `/uploads/${req.file.filename}`;
+        }
+
+        // Update subjects if provided
+        if (subjects) {
+            try {
+                const subjectIds = Array.isArray(subjects) ? subjects : JSON.parse(subjects);
+                const validSubjectIds = subjectIds.filter(id => id && id.trim() !== '');
+                student.enrolled_subjects = validSubjectIds.map(subject_id => ({
+                    subject_id,
+                    enrollment_date: new Date(),
+                    is_active: true
+                }));
+            } catch (parseError) {
+                console.error('Error parsing subjects:', parseError);
+            }
+        }
+
+        await student.save();
+
+        const updatedStudent = await Student.findById(student._id)
+            .populate('family_id')
+            .populate('enrolled_subjects.subject_id');
+
+        res.json(updatedStudent);
+    } catch (error) {
+        console.error('Error updating student:', error);
+        res.status(400).json({ message: error.message });
+    }
+});
+
 module.exports = router;
