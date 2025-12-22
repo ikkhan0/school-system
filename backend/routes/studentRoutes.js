@@ -446,4 +446,73 @@ router.put('/:id', protect, upload.single('image'), async (req, res) => {
     }
 });
 
+// @desc    Get Student Complete Profile
+// @route   GET /api/students/:id/profile
+router.get('/:id/profile', protect, async (req, res) => {
+    try {
+        const student = await Student.findOne({
+            _id: req.params.id,
+            school_id: req.user.school_id
+        })
+            .populate('family_id')
+            .populate('enrolled_subjects.subject_id');
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        res.json(student);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Get Student Attendance Summary
+// @route   GET /api/students/:id/attendance-summary
+router.get('/:id/attendance-summary', protect, async (req, res) => {
+    try {
+        const DailyLog = require('../models/DailyLog');
+
+        const logs = await DailyLog.find({
+            student_id: req.params.id,
+            school_id: req.user.school_id
+        });
+
+        const total_days = logs.length;
+        const present = logs.filter(log => log.status === 'Present').length;
+        const absent = logs.filter(log => log.status === 'Absent').length;
+        const leave = logs.filter(log => log.status === 'Leave').length;
+        const percentage = total_days > 0 ? Math.round((present / total_days) * 100) : 0;
+
+        res.json({
+            total_days,
+            present,
+            absent,
+            leave,
+            percentage
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Get Student Exam Results
+// @route   GET /api/students/:id/exam-results
+router.get('/:id/exam-results', protect, async (req, res) => {
+    try {
+        const ExamResult = require('../models/ExamResult');
+
+        const results = await ExamResult.find({
+            student_id: req.params.id,
+            school_id: req.user.school_id
+        })
+            .populate('exam_id')
+            .sort({ createdAt: -1 });
+
+        res.json(results);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;
