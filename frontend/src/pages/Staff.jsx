@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
-import { Search, Phone, MessageCircle, User, Edit, Plus, UserCheck } from 'lucide-react';
+import { Search, Phone, MessageCircle, User, Edit, Plus, UserCheck, Calendar } from 'lucide-react';
 import API_URL from '../config';
 
 const Staff = () => {
@@ -81,13 +81,22 @@ const Staff = () => {
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold text-gray-800">Staff Management</h1>
-                    <button
-                        onClick={() => navigate('/staff/add')}
-                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md"
-                    >
-                        <Plus size={20} />
-                        Add New Staff
-                    </button>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => navigate('/staff/attendance')}
+                            className="flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow-md"
+                        >
+                            <Calendar size={20} />
+                            Staff Attendance
+                        </button>
+                        <button
+                            onClick={() => navigate('/staff/add')}
+                            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md"
+                        >
+                            <Plus size={20} />
+                            Add New Staff
+                        </button>
+                    </div>
                 </div>
 
                 {/* Search and Filters */}

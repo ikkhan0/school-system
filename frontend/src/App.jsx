@@ -22,6 +22,7 @@ import EditStudent from './pages/EditStudent';
 import StudentProfile from './pages/StudentProfile';
 import Staff from './pages/Staff';
 import AddStaff from './pages/AddStaff';
+import StaffAttendance from './pages/StaffAttendance';
 import FeeVoucher from './pages/FeeVoucher';
 import ExamManager from './pages/ExamManager';
 import ExamMenu from './pages/ExamMenu';
@@ -55,6 +56,7 @@ function App() {
               <Route path="/student-profile/:id" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
               <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
               <Route path="/staff/add" element={<ProtectedRoute><AddStaff /></ProtectedRoute>} />
+              <Route path="/staff/attendance" element={<ProtectedRoute><StaffAttendance /></ProtectedRoute>} />
               <Route path="/fee-voucher/:student_id/:month" element={<ProtectedRoute><FeeVoucher /></ProtectedRoute>} />
               <Route path="/exams" element={<ProtectedRoute><ExamManager /></ProtectedRoute>} />
               <Route path="/exam-menu" element={<ProtectedRoute><ExamMenu /></ProtectedRoute>} />
