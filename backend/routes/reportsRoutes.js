@@ -399,6 +399,8 @@ router.get('/exam-analysis/:exam_id', protect, async (req, res) => {
             total_students: results.length,
             subject_analysis: subjectAnalysis
         });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
