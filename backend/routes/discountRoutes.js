@@ -3,6 +3,14 @@ const router = express.Router();
 const DiscountPolicy = require('../models/DiscountPolicy');
 const Student = require('../models/Student');
 const { protect } = require('../middleware/auth');
+const { calculateAutoDiscounts } = require('../utils/discountCalculator');
+const {
+    suggestSiblingGroups,
+    linkSiblings,
+    updateSiblingPositions,
+    detectSiblingsByFamily,
+    detectSiblingsByMobile
+} = require('../utils/siblingDetector');
 
 // @route   POST /api/discounts/policy
 // @desc    Create a new discount policy
@@ -191,6 +199,194 @@ router.get('/calculate/:student_id', protect, async (req, res) => {
     } catch (error) {
         console.error('Error calculating discounts:', error);
         res.status(500).json({ message: 'Failed to calculate discounts', error: error.message });
+    }
+});
+
+// @route   POST /api/discounts/auto-apply/:student_id
+// @desc    Automatically detect and apply all applicable discount policies
+// @access  Private
+router.post('/auto-apply/:student_id', protect, async (req, res) => {
+    try {
+        const student = await Student.findOne({
+            _id: req.params.student_id,
+            school_id: req.user.school_id
+        }).populate('staff_parent_id');
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        // Calculate auto-discounts
+        const result = await calculateAutoDiscounts(student);
+
+        if (!result.success) {
+            return res.status(500).json({ message: 'Failed to calculate discounts', error: result.error });
+        }
+
+        // Update student with auto-discount info
+        student.auto_discount_applied = {
+            is_enabled: true,
+            policies_applied: result.applied_discounts,
+            total_auto_discount_percentage: result.total_discount_percentage,
+            last_calculated: new Date()
+        };
+
+        // Update discount category if staff child
+        if (student.is_staff_child && student.staff_parent_id) {
+            student.discount_category = 'Staff Child';
+        } else if (result.applied_discounts.some(d => d.policy_type === 'Sibling')) {
+            student.discount_category = 'Sibling';
+        }
+
+        await student.save();
+
+        res.json({
+            success: true,
+            message: 'Auto-discounts applied successfully',
+            student_id: student._id,
+            student_name: student.full_name,
+            ...result
+        });
+
+    } catch (error) {
+        console.error('Error applying auto-discounts:', error);
+        res.status(500).json({ message: 'Failed to apply auto-discounts', error: error.message });
+    }
+});
+
+// @route   POST /api/discounts/detect-siblings
+// @desc    Detect siblings based on family_id and mobile numbers
+// @access  Private
+router.post('/detect-siblings', protect, async (req, res) => {
+    try {
+        const suggestions = await suggestSiblingGroups(req.user.school_id);
+        res.json(suggestions);
+    } catch (error) {
+        console.error('Error detecting siblings:', error);
+        res.status(500).json({ message: 'Failed to detect siblings', error: error.message });
+    }
+});
+
+// @route   GET /api/discounts/siblings-by-family
+// @desc    Get siblings grouped by family
+// @access  Private
+router.get('/siblings-by-family', protect, async (req, res) => {
+    try {
+        const familyGroups = await detectSiblingsByFamily(req.user.school_id);
+        res.json({
+            success: true,
+            total_families: familyGroups.length,
+            families: familyGroups
+        });
+    } catch (error) {
+        console.error('Error fetching siblings by family:', error);
+        res.status(500).json({ message: 'Failed to fetch siblings', error: error.message });
+    }
+});
+
+// @route   GET /api/discounts/siblings-by-mobile
+// @desc    Get suggested siblings by matching mobile numbers
+// @access  Private
+router.get('/siblings-by-mobile', protect, async (req, res) => {
+    try {
+        const suggestions = await detectSiblingsByMobile(req.user.school_id);
+        res.json({
+            success: true,
+            total_suggestions: suggestions.length,
+            suggestions: suggestions
+        });
+    } catch (error) {
+        console.error('Error detecting siblings by mobile:', error);
+        res.status(500).json({ message: 'Failed to detect siblings', error: error.message });
+    }
+});
+
+// @route   POST /api/discounts/link-siblings
+// @desc    Link students as siblings
+// @access  Private
+router.post('/link-siblings', protect, async (req, res) => {
+    try {
+        const { student_ids, family_data } = req.body;
+
+        if (!student_ids || !Array.isArray(student_ids) || student_ids.length < 2) {
+            return res.status(400).json({ message: 'At least 2 student IDs required' });
+        }
+
+        const result = await linkSiblings(student_ids, family_data, req.user.school_id);
+
+        if (!result.success) {
+            return res.status(400).json(result);
+        }
+
+        // Auto-apply discounts to all linked siblings
+        const students = await Student.find({ _id: { $in: student_ids } });
+        const discountResults = await Promise.all(
+            students.map(student => calculateAutoDiscounts(student))
+        );
+
+        // Update students with auto-discounts
+        await Promise.all(
+            students.map(async (student, index) => {
+                const discountResult = discountResults[index];
+                if (discountResult.success) {
+                    student.auto_discount_applied = {
+                        is_enabled: true,
+                        policies_applied: discountResult.applied_discounts,
+                        total_auto_discount_percentage: discountResult.total_discount_percentage,
+                        last_calculated: new Date()
+                    };
+                    await student.save();
+                }
+            })
+        );
+
+        res.json({
+            ...result,
+            discounts_applied: discountResults.filter(r => r.success).length
+        });
+
+    } catch (error) {
+        console.error('Error linking siblings:', error);
+        res.status(500).json({ message: 'Failed to link siblings', error: error.message });
+    }
+});
+
+// @route   PUT /api/discounts/update-sibling-positions/:family_id
+// @desc    Update sibling positions for a family
+// @access  Private
+router.put('/update-sibling-positions/:family_id', protect, async (req, res) => {
+    try {
+        const result = await updateSiblingPositions(req.params.family_id);
+
+        if (!result.success) {
+            return res.status(400).json(result);
+        }
+
+        res.json(result);
+    } catch (error) {
+        console.error('Error updating sibling positions:', error);
+        res.status(500).json({ message: 'Failed to update positions', error: error.message });
+    }
+});
+
+// @route   GET /api/discounts/family-eligible
+// @desc    Get all families eligible for sibling discounts
+// @access  Private
+router.get('/family-eligible', protect, async (req, res) => {
+    try {
+        const familyGroups = await detectSiblingsByFamily(req.user.school_id);
+
+        // Filter families with 2+ children
+        const eligibleFamilies = familyGroups.filter(group => group.students.length >= 2);
+
+        res.json({
+            success: true,
+            total_eligible: eligibleFamilies.length,
+            families: eligibleFamilies
+        });
+    } catch (error) {
+        console.error('Error fetching eligible families:', error);
+        res.status(500).json({ message: 'Failed to fetch eligible families', error: error.message });
     }
 });
 

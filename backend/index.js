@@ -95,6 +95,7 @@ app.use('/api/reports', require('./routes/reportsRoutes'));
 app.use('/api/school', require('./routes/schoolRoutes'));
 app.use('/api/staff', require('./routes/staffRoutes')); // Staff Management Routes
 app.use('/api/discounts', require('./routes/discountRoutes')); // Discount Management Routes
+app.use('/api/families', require('./routes/familyRoutes')); // Family Management Routes
 
 if (require.main === module) {
     app.listen(PORT, () => {

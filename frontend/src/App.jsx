@@ -31,6 +31,8 @@ import ExamMenu from './pages/ExamMenu';
 import SubjectManager from './pages/SubjectManager';
 import FeeMenu from './pages/FeeMenu';
 import DiscountPolicies from './pages/DiscountPolicies';
+import FamilyFeeMessaging from './pages/FamilyFeeMessaging';
+import SiblingManagement from './pages/SiblingManagement';
 import Settings from './pages/Settings';
 
 import './App.css';
@@ -68,6 +70,8 @@ function App() {
               <Route path="/subjects" element={<ProtectedRoute><SubjectManager /></ProtectedRoute>} />
               <Route path="/fee-menu" element={<ProtectedRoute><FeeMenu /></ProtectedRoute>} />
               <Route path="/discount-policies" element={<ProtectedRoute><DiscountPolicies /></ProtectedRoute>} />
+              <Route path="/family-messaging" element={<ProtectedRoute><FamilyFeeMessaging /></ProtectedRoute>} />
+              <Route path="/sibling-management" element={<ProtectedRoute><SiblingManagement /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Routes>
           </div>

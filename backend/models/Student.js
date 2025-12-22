@@ -58,6 +58,22 @@ const studentSchema = mongoose.Schema({
         ref: 'Student'
     }],
 
+    // Staff Child Information
+    staff_parent_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Staff'
+    },
+    is_staff_child: {
+        type: Boolean,
+        default: false
+    },
+
+    // Sibling Information
+    sibling_discount_position: {
+        type: Number, // 1 for first child, 2 for second, etc.
+        default: 1
+    },
+
     // Discount Information
     discount_category: {
         type: String,
@@ -73,6 +89,21 @@ const studentSchema = mongoose.Schema({
     discount_reason: {
         type: String,
         trim: true
+    },
+
+    // Auto-Discount Tracking
+    auto_discount_applied: {
+        is_enabled: { type: Boolean, default: true },
+        policies_applied: [{
+            policy_id: { type: mongoose.Schema.Types.ObjectId, ref: 'DiscountPolicy' },
+            policy_name: String,
+            policy_type: String,
+            discount_percentage: Number,
+            discount_amount: Number,
+            applied_at: { type: Date, default: Date.now }
+        }],
+        total_auto_discount_percentage: { type: Number, default: 0 },
+        last_calculated: { type: Date }
     },
 
     // Enrolled Subjects - Individual subject enrollment per student

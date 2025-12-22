@@ -20,6 +20,20 @@ const feeSchema = mongoose.Schema({
         applied_at: { type: Date }
     },
 
+    // Auto-Discount Breakdown (detailed tracking)
+    auto_discount_breakdown: [{
+        policy_id: { type: mongoose.Schema.Types.ObjectId, ref: 'DiscountPolicy' },
+        policy_name: String,
+        policy_type: String,
+        discount_amount: Number,
+        applied_at: { type: Date, default: Date.now }
+    }],
+
+    // WhatsApp Messaging Tracking
+    whatsapp_sent: { type: Boolean, default: false },
+    whatsapp_sent_at: { type: Date },
+    family_message_id: { type: String }, // Track family-based consolidated messages
+
     // Fee Calculation
     original_amount: { type: Number, default: 0 }, // Before any discount - defaults to gross_amount if not set
     // Calculated: (tuition + other + arrears) - concession
