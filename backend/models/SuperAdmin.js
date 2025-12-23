@@ -48,6 +48,12 @@ superAdminSchema.pre('save', async function (next) {
     if (!this.isModified('password')) {
         return next();
     }
+
+    // Check if password is already hashed (bcrypt hashes start with $2a$ or $2b$)
+    if (this.password.startsWith('$2')) {
+        return next();
+    }
+
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
