@@ -6,13 +6,63 @@ const Tenant = require('../models/Tenant');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
-// @desc    Super Admin Login
+// @desc    Super Admin Login (Auto-register if first time)
 // @route   POST /api/super-admin/login
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Find super admin
+        // Check if any super admin exists
+        const superAdminCount = await SuperAdmin.countDocuments();
+
+        // If no super admin exists, auto-register this as the first one
+        if (superAdminCount === 0) {
+            console.log('No super admin exists. Auto-registering first super admin...');
+
+            // Hash password manually to avoid pre-save hook issues
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Create first super admin using direct MongoDB insertion
+            const db = require('mongoose').connection.db;
+            await db.collection('superadmins').insertOne({
+                name: 'Super Administrator',
+                email: email,
+                password: hashedPassword,
+                role: 'super_admin',
+                phone: '',
+                is_active: true,
+                permissions: ['*'],
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            // Fetch the newly created admin
+            const newAdmin = await SuperAdmin.findOne({ email });
+
+            // Generate JWT
+            const token = jwt.sign(
+                {
+                    id: newAdmin._id,
+                    role: 'super_admin',
+                    email: newAdmin.email
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: '30d' }
+            );
+
+            return res.json({
+                token,
+                user: {
+                    id: newAdmin._id,
+                    name: newAdmin.name,
+                    email: newAdmin.email,
+                    role: 'super_admin'
+                },
+                message: 'First super admin created successfully!'
+            });
+        }
+
+        // Find existing super admin
         const superAdmin = await SuperAdmin.findOne({ email });
 
         if (!superAdmin) {
