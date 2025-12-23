@@ -264,7 +264,7 @@ const generateSampleCSV = (availableClasses = []) => {
         classInfo += '# 3. section_id should match one of the sections for that class (e.g., "A", "B", "C")\n';
         classInfo += '# \n';
         classInfo += '# FORMAT REQUIREMENTS:\n';
-        classInfo += '# - Mobile Numbers: Use +923001234567 or 03001234567 format (will be auto-converted to +92 format)\n';
+        classInfo += '# - Mobile Numbers: Enter as 03001234567 or 923001234567 (system will auto-add + prefix)\n';
         classInfo += '# - CNIC: Use 00000-0000000-0 format (5 digits, 7 digits, 1 digit with dashes)\n';
         classInfo += '# - Dates: Use YYYY-MM-DD format (e.g., 2015-01-15)\n';
         classInfo += '# \n';
@@ -322,17 +322,17 @@ const generateSampleCSV = (availableClasses = []) => {
         'Ahmed Ali',                    // full_name
         '1',                            // class_id
         'A',                            // section_id
-        '+923001234567',                // father_mobile (international format)
+        '03001234567',                  // father_mobile (will be auto-converted to +923001234567)
         'Ali Khan',                     // father_name
         'Fatima Khan',                  // mother_name
-        '+923009876543',                // mother_mobile (international format)
+        '03009876543',                  // mother_mobile (will be auto-converted to +923009876543)
         '2015-01-15',                   // dob
         'Male',                         // gender
         'O+',                           // blood_group
         'Islam',                        // religion
         'Pakistani',                    // nationality
         '',                             // student_mobile
-        '+923001111111',                // emergency_contact (international format)
+        '03001111111',                  // emergency_contact (will be auto-converted to +923001111111)
         'ahmed@example.com',            // email
         '123 Main Street, Karachi',     // current_address
         '123 Main Street, Karachi',     // permanent_address
