@@ -83,6 +83,11 @@ app.get('/api/health', async (req, res) => {
 
 // Routes
 app.use('/uploads', express.static('uploads'));
+
+// Super Admin Routes (No tenant isolation)
+app.use('/api/super-admin', require('./routes/superAdminRoutes'));
+
+// Regular Routes (With tenant isolation where applicable)
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/students', require('./routes/studentRoutes'));
 app.use('/api/evaluation', require('./routes/evaluationRoutes'));
