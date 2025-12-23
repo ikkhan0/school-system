@@ -55,9 +55,15 @@ const uploadCSV = multer({
 
 // @desc    Download Sample CSV Template
 // @route   GET /api/students/import/sample
-router.get('/import/sample', protect, (req, res) => {
+router.get('/import/sample', protect, async (req, res) => {
     try {
-        const csvContent = generateSampleCSV();
+        // Get available classes for this school
+        const Class = require('../models/Class');
+        const availableClasses = await Class.find({
+            school_id: req.user.school_id
+        }).select('name sections');
+
+        const csvContent = generateSampleCSV(availableClasses);
 
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader('Content-Disposition', 'attachment; filename=student_import_sample.csv');
@@ -90,8 +96,14 @@ router.post('/import/validate', protect, uploadCSV.single('file'), async (req, r
         }).select('roll_no');
         const existingRollNumbers = existingStudents.map(s => s.roll_no);
 
+        // Get available classes for this school
+        const Class = require('../models/Class');
+        const availableClasses = await Class.find({
+            school_id: req.user.school_id
+        }).select('name sections');
+
         // Validate the data
-        const validation = validateStudentData(students, existingRollNumbers);
+        const validation = validateStudentData(students, existingRollNumbers, availableClasses);
 
         res.json({
             success: true,

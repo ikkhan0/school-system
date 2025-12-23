@@ -54,7 +54,7 @@ const parseExcel = (buffer) => {
 /**
  * Validate student data
  */
-const validateStudentData = (students, existingRollNumbers = []) => {
+const validateStudentData = (students, existingRollNumbers = [], availableClasses = []) => {
     const validStudents = [];
     const invalidStudents = [];
     const seenRollNumbers = new Set();
@@ -87,10 +87,30 @@ const validateStudentData = (students, existingRollNumbers = []) => {
 
         if (!student.class_id || student.class_id.toString().trim() === '') {
             errors.push('Class is required');
+        } else {
+            // Validate class exists in database
+            const className = student.class_id.toString().trim();
+            const classRecord = availableClasses.find(c => c.name === className);
+
+            if (!classRecord) {
+                errors.push(`Class '${className}' does not exist in the system`);
+            } else {
+                // Validate section exists within the class
+                if (!student.section_id || student.section_id.toString().trim() === '') {
+                    errors.push('Section is required');
+                } else {
+                    const sectionName = student.section_id.toString().trim();
+                    if (!classRecord.sections.includes(sectionName)) {
+                        errors.push(`Section '${sectionName}' does not exist in class '${className}'. Available sections: ${classRecord.sections.join(', ')}`);
+                    }
+                }
+            }
         }
 
         if (!student.section_id || student.section_id.toString().trim() === '') {
-            errors.push('Section is required');
+            if (!errors.some(e => e.includes('Section is required'))) {
+                errors.push('Section is required');
+            }
         }
 
         if (!student.father_mobile || student.father_mobile.toString().trim() === '') {
@@ -198,7 +218,23 @@ const normalizePhoneNumber = (phone) => {
 /**
  * Generate sample CSV content
  */
-const generateSampleCSV = () => {
+const generateSampleCSV = (availableClasses = []) => {
+    // Generate helpful comment with available classes
+    let classInfo = '';
+    if (availableClasses && availableClasses.length > 0) {
+        classInfo = '# AVAILABLE CLASSES AND SECTIONS IN YOUR SCHOOL:\n';
+        availableClasses.forEach(cls => {
+            classInfo += `# Class: ${cls.name} | Sections: ${cls.sections.join(', ')}\n`;
+        });
+        classInfo += '# \n';
+        classInfo += '# INSTRUCTIONS:\n';
+        classInfo += '# 1. Use exact class names and section names from the list above\n';
+        classInfo += '# 2. class_id should match the "Class" name (e.g., "1", "2", "KG")\n';
+        classInfo += '# 3. section_id should match one of the sections for that class (e.g., "A", "B", "C")\n';
+        classInfo += '# 4. Delete this comment section before uploading\n';
+        classInfo += '# \n';
+    }
+
     const headers = [
         // Required fields
         'roll_no',
@@ -279,7 +315,8 @@ const generateSampleCSV = () => {
     ];
 
     // Create CSV content
-    let csv = headers.join(',') + '\n';
+    let csv = classInfo; // Add class info comments at the top
+    csv += headers.join(',') + '\n';
     csv += sampleRow.join(',') + '\n';
 
     return csv;
