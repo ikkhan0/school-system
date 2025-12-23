@@ -6,6 +6,8 @@ const Family = require('../models/Family');
 
 const multer = require('multer');
 const path = require('path');
+const { parseFile, validateStudentData, generateSampleCSV } = require('../utils/importStudents');
+
 
 // Multer Config
 const storage = multer.diskStorage({
@@ -31,8 +33,185 @@ const upload = multer({
     }
 });
 
-// @desc    Add a Student
-// @route   POST /api/students/add
+// Multer Config for CSV/Excel Import
+const uploadCSV = multer({
+    storage: multer.memoryStorage(),
+    fileFilter: (req, file, cb) => {
+        const filetypes = /csv|xlsx|xls/;
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = file.mimetype === 'text/csv' ||
+            file.mimetype === 'application/vnd.ms-excel' ||
+            file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        if (extname && mimetype) {
+            return cb(null, true);
+        } else {
+            cb(new Error('Error: CSV or Excel files only!'));
+        }
+    },
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
+// ==================== IMPORT ROUTES ====================
+
+// @desc    Download Sample CSV Template
+// @route   GET /api/students/import/sample
+router.get('/import/sample', protect, (req, res) => {
+    try {
+        const csvContent = generateSampleCSV();
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=student_import_sample.csv');
+        res.send(csvContent);
+    } catch (error) {
+        console.error('Error generating sample CSV:', error);
+        res.status(500).json({ message: 'Failed to generate sample file' });
+    }
+});
+
+// @desc    Upload and Validate CSV/Excel File
+// @route   POST /api/students/import/validate
+router.post('/import/validate', protect, uploadCSV.single('file'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'Please upload a file' });
+        }
+
+        // Parse the file
+        const students = await parseFile(req.file.buffer, req.file.mimetype);
+
+        if (!students || students.length === 0) {
+            return res.status(400).json({ message: 'No data found in file' });
+        }
+
+        // Get existing roll numbers for this school
+        const existingStudents = await Student.find({
+            school_id: req.user.school_id,
+            is_active: true
+        }).select('roll_no');
+        const existingRollNumbers = existingStudents.map(s => s.roll_no);
+
+        // Validate the data
+        const validation = validateStudentData(students, existingRollNumbers);
+
+        res.json({
+            success: true,
+            validation: validation
+        });
+    } catch (error) {
+        console.error('Error validating import file:', error);
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// @desc    Import Validated Students
+// @route   POST /api/students/import/confirm
+router.post('/import/confirm', protect, async (req, res) => {
+    try {
+        const { students } = req.body;
+
+        if (!students || !Array.isArray(students) || students.length === 0) {
+            return res.status(400).json({ message: 'No valid students to import' });
+        }
+
+        const importResults = {
+            success: [],
+            failed: []
+        };
+
+        const Fee = require('../models/Fee');
+
+        // Process each student
+        for (const studentData of students) {
+            try {
+                const { father_name, father_mobile, father_cnic, mother_name, mother_cnic, ...restData } = studentData;
+
+                // Find or create family
+                let family = await Family.findOne({
+                    father_mobile,
+                    school_id: req.user.school_id
+                });
+
+                if (!family) {
+                    family = await Family.create({
+                        father_name: father_name || 'N/A',
+                        father_mobile,
+                        father_cnic: father_cnic || '',
+                        mother_name: mother_name || '',
+                        mother_cnic: mother_cnic || '',
+                        school_id: req.user.school_id
+                    });
+                }
+
+                // Create student
+                const student = await Student.create({
+                    ...restData,
+                    father_name: father_name || family.father_name,
+                    mother_name: mother_name || family.mother_name,
+                    family_id: family._id,
+                    school_id: req.user.school_id,
+                    monthly_fee: studentData.monthly_fee || 5000,
+                    category: studentData.category || 'Regular',
+                    nationality: studentData.nationality || 'Pakistani',
+                    is_active: true
+                });
+
+                // Create initial fee voucher
+                const currentDate = new Date();
+                const currentMonth = currentDate.toLocaleDateString('en-US', {
+                    month: 'short',
+                    year: 'numeric'
+                });
+
+                const feeAmount = Number(student.monthly_fee) || 5000;
+                const grossAmount = feeAmount;
+
+                await Fee.create({
+                    school_id: req.user.school_id,
+                    student_id: student._id,
+                    month: currentMonth,
+                    tuition_fee: feeAmount,
+                    concession: 0,
+                    other_charges: 0,
+                    arrears: 0,
+                    gross_amount: grossAmount,
+                    paid_amount: 0,
+                    balance: grossAmount,
+                    status: 'Pending'
+                });
+
+                importResults.success.push({
+                    roll_no: student.roll_no,
+                    full_name: student.full_name,
+                    class: `${student.class_id}-${student.section_id}`
+                });
+
+            } catch (error) {
+                console.error('Error importing student:', error);
+                importResults.failed.push({
+                    data: studentData,
+                    error: error.message
+                });
+            }
+        }
+
+        res.json({
+            success: true,
+            results: importResults,
+            summary: {
+                total: students.length,
+                imported: importResults.success.length,
+                failed: importResults.failed.length
+            }
+        });
+
+    } catch (error) {
+        console.error('Error confirming import:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// ==================== END IMPORT ROUTES ====================
+
 router.post('/add', protect, upload.single('image'), async (req, res) => {
     try {
         const { father_name, father_mobile, father_cnic, subjects, monthly_fee, concession, ...studentData } = req.body;

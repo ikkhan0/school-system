@@ -20,6 +20,7 @@ import Students from './pages/Students';
 import AddStudent from './pages/AddStudent';
 import EditStudent from './pages/EditStudent';
 import StudentProfile from './pages/StudentProfile';
+import ImportStudents from './pages/ImportStudents';
 import Staff from './pages/Staff';
 import AddStaff from './pages/AddStaff';
 import EditStaff from './pages/EditStaff';
@@ -60,6 +61,7 @@ function App() {
               <Route path="/classes" element={<ProtectedRoute><Classes /></ProtectedRoute>} />
               <Route path="/students" element={<ProtectedRoute><Students /></ProtectedRoute>} />
               <Route path="/students/add" element={<ProtectedRoute><AddStudent /></ProtectedRoute>} />
+              <Route path="/students/import" element={<ProtectedRoute><ImportStudents /></ProtectedRoute>} />
               <Route path="/students/edit/:id" element={<ProtectedRoute><EditStudent /></ProtectedRoute>} />
               <Route path="/student-profile/:id" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
               <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
