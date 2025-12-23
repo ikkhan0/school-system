@@ -21,6 +21,8 @@ import AddStudent from './pages/AddStudent';
 import EditStudent from './pages/EditStudent';
 import StudentProfile from './pages/StudentProfile';
 import ImportStudents from './pages/ImportStudents';
+import SuperAdminLogin from './pages/SuperAdminLogin';
+import SuperAdminDashboard from './pages/SuperAdminDashboard';
 import Staff from './pages/Staff';
 import AddStaff from './pages/AddStaff';
 import EditStaff from './pages/EditStaff';
@@ -61,7 +63,11 @@ function App() {
               <Route path="/classes" element={<ProtectedRoute><Classes /></ProtectedRoute>} />
               <Route path="/students" element={<ProtectedRoute><Students /></ProtectedRoute>} />
               <Route path="/students/add" element={<ProtectedRoute><AddStudent /></ProtectedRoute>} />
-              <Route path="/students/import" element={<ProtectedRoute><ImportStudents /></ProtectedRoute>} />
+              <Route path="/students/import" element={<ImportStudents />} />
+
+              {/* Super Admin Routes */}
+              <Route path="/super-admin/login" element={<SuperAdminLogin />} />
+              <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
               <Route path="/students/edit/:id" element={<ProtectedRoute><EditStudent /></ProtectedRoute>} />
               <Route path="/student-profile/:id" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
               <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />

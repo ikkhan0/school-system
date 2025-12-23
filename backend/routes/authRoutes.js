@@ -18,25 +18,49 @@ router.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        const validUser = await User.findOne({ username }).populate('school_id');
+        const validUser = await User.findOne({ username })
+            .populate('school_id')
+            .populate('tenant_id');
 
         if (validUser && (await bcrypt.compare(password, validUser.password))) {
 
+            // Check if user is active
+            if (!validUser.is_active) {
+                return res.status(403).json({ message: 'Account is deactivated' });
+            }
+
             // Safety check for missing school reference
             const schoolId = validUser.school_id ? validUser.school_id._id : null;
-            const schoolName = validUser.school_id ? validUser.school_id.name : 'Unknown School';
+            const schoolName = validUser.school_id ? validUser.school_id.school_name : 'Unknown School';
+            const tenantId = validUser.tenant_id ? validUser.tenant_id._id : null;
 
-            if (!schoolId) {
-                console.warn(`Warning: User ${username} has no linked School.`);
+            if (!schoolId && !tenantId) {
+                console.warn(`Warning: User ${username} has no linked School or Tenant.`);
             }
+
+            // Generate JWT with tenant context
+            const token = jwt.sign(
+                {
+                    id: validUser._id,
+                    role: validUser.role,
+                    tenant_id: tenantId,
+                    school_id: schoolId
+                },
+                process.env.JWT_SECRET || 'secret123',
+                { expiresIn: '30d' }
+            );
 
             res.json({
                 _id: validUser._id,
                 username: validUser.username,
+                full_name: validUser.full_name,
+                email: validUser.email,
                 role: validUser.role,
                 school_id: schoolId,
                 school_name: schoolName,
-                token: generateToken(validUser._id),
+                tenant_id: tenantId,
+                permissions: validUser.permissions || [],
+                token: token,
             });
         } else {
             res.status(400).json({ message: 'Invalid credentials' });
