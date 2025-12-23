@@ -1,7 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthContext';
 
 const SuperAdminLogin = () => {
     const [email, setEmail] = useState('');
@@ -9,7 +8,6 @@ const SuperAdminLogin = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -25,9 +23,6 @@ const SuperAdminLogin = () => {
             // Store super admin token and user info
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
-
-            // Update auth context
-            login(response.data.user, response.data.token);
 
             // Redirect to super admin dashboard
             navigate('/super-admin/dashboard');

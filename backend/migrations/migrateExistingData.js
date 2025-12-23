@@ -34,13 +34,13 @@ async function migrateData() {
 
         // Step 2: Get existing school
         console.log('📋 Step 1: Finding existing school...');
-        const existingSchool = await School.findOne();
+        let existingSchool = await School.findOne();
 
         if (!existingSchool) {
-            console.log('❌ No existing school found.');
+            console.log('   ⚠️  No existing school found.');
             console.log('   Creating default school...\n');
 
-            const defaultSchool = await School.create({
+            existingSchool = await School.create({
                 school_name: 'I-Soft School Management System',
                 email: 'admin@school.com',
                 phone: '+923001234567',
@@ -48,25 +48,23 @@ async function migrateData() {
                 city: 'City'
             });
 
-            console.log(`   ✅ Created default school: ${defaultSchool.school_name}\n`);
+            console.log(`   ✅ Created default school: ${existingSchool.school_name}\n`);
         } else {
             console.log(`   ✅ Found school: ${existingSchool.school_name}\n`);
         }
-
-        const school = existingSchool || await School.findOne();
 
         // Step 3: Create first tenant
         console.log('📋 Step 2: Creating first tenant...');
 
         const tenant = await Tenant.create({
             tenant_id: 'SCH-001',
-            school_name: school.school_name,
-            logo_url: school.logo || '',
+            school_name: existingSchool.school_name || 'I-Soft School Management System',
+            logo_url: existingSchool.logo || '',
             contact_info: {
-                email: school.email || 'admin@school.com',
-                phone: school.phone || '+923001234567',
-                address: school.address || '',
-                city: school.city || '',
+                email: existingSchool.email || 'admin@school.com',
+                phone: existingSchool.phone || '+923001234567',
+                address: existingSchool.address || '',
+                city: existingSchool.city || '',
                 country: 'Pakistan'
             },
             subscription_status: 'Active',
