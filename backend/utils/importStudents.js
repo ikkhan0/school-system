@@ -145,7 +145,20 @@ const validateStudentData = (students, existingRollNumbers = [], availableClasse
             errors.push('Invalid admission date format (use YYYY-MM-DD)');
         }
 
-        // Normalize phone numbers
+        // CNIC validations
+        if (student.student_cnic && !isValidCNIC(student.student_cnic)) {
+            errors.push('Invalid student CNIC format (use 00000-0000000-0)');
+        }
+
+        if (student.father_cnic && !isValidCNIC(student.father_cnic)) {
+            errors.push('Invalid father CNIC format (use 00000-0000000-0)');
+        }
+
+        if (student.mother_cnic && !isValidCNIC(student.mother_cnic)) {
+            errors.push('Invalid mother CNIC format (use 00000-0000000-0)');
+        }
+
+        // Normalize phone numbers to international format (+92)
         if (student.father_mobile) {
             student.father_mobile = normalizePhoneNumber(student.father_mobile);
         }
@@ -196,7 +209,20 @@ const isValidDate = (dateString) => {
 };
 
 /**
- * Normalize phone number to standard format
+ * Validate CNIC format (00000-0000000-0)
+ */
+const isValidCNIC = (cnic) => {
+    if (!cnic) return true; // CNIC is optional
+    const cnicString = cnic.toString().trim();
+    if (cnicString === '') return true; // Empty is valid (optional field)
+
+    // Check format: 00000-0000000-0 (5 digits, 7 digits, 1 digit)
+    const regex = /^\d{5}-\d{7}-\d{1}$/;
+    return regex.test(cnicString);
+};
+
+/**
+ * Normalize phone number to international format (+92)
  */
 const normalizePhoneNumber = (phone) => {
     if (!phone) return '';
@@ -212,7 +238,12 @@ const normalizePhoneNumber = (phone) => {
         cleaned = '92' + cleaned;
     }
 
-    return cleaned;
+    // Add + prefix for international format
+    if (cleaned.startsWith('92')) {
+        return '+' + cleaned;
+    }
+
+    return cleaned ? '+' + cleaned : '';
 };
 
 /**
@@ -231,7 +262,13 @@ const generateSampleCSV = (availableClasses = []) => {
         classInfo += '# 1. Use exact class names and section names from the list above\n';
         classInfo += '# 2. class_id should match the "Class" name (e.g., "1", "2", "KG")\n';
         classInfo += '# 3. section_id should match one of the sections for that class (e.g., "A", "B", "C")\n';
-        classInfo += '# 4. Delete this comment section before uploading\n';
+        classInfo += '# \n';
+        classInfo += '# FORMAT REQUIREMENTS:\n';
+        classInfo += '# - Mobile Numbers: Use +923001234567 or 03001234567 format (will be auto-converted to +92 format)\n';
+        classInfo += '# - CNIC: Use 00000-0000000-0 format (5 digits, 7 digits, 1 digit with dashes)\n';
+        classInfo += '# - Dates: Use YYYY-MM-DD format (e.g., 2015-01-15)\n';
+        classInfo += '# \n';
+        classInfo += '# NOTE: Delete this comment section before uploading\n';
         classInfo += '# \n';
     }
 
@@ -285,17 +322,17 @@ const generateSampleCSV = (availableClasses = []) => {
         'Ahmed Ali',                    // full_name
         '1',                            // class_id
         'A',                            // section_id
-        '03001234567',                  // father_mobile
+        '+923001234567',                // father_mobile (international format)
         'Ali Khan',                     // father_name
         'Fatima Khan',                  // mother_name
-        '03009876543',                  // mother_mobile
+        '+923009876543',                // mother_mobile (international format)
         '2015-01-15',                   // dob
         'Male',                         // gender
         'O+',                           // blood_group
         'Islam',                        // religion
         'Pakistani',                    // nationality
         '',                             // student_mobile
-        '03001111111',                  // emergency_contact
+        '+923001111111',                // emergency_contact (international format)
         'ahmed@example.com',            // email
         '123 Main Street, Karachi',     // current_address
         '123 Main Street, Karachi',     // permanent_address
@@ -307,9 +344,9 @@ const generateSampleCSV = (availableClasses = []) => {
         'KG',                           // previous_class
         '5000',                         // monthly_fee
         'Regular',                      // category
-        '',                             // student_cnic
-        '42101-1234567-1',              // father_cnic
-        '',                             // mother_cnic
+        '',                             // student_cnic (optional, format: 00000-0000000-0)
+        '42101-1234567-1',              // father_cnic (format: 00000-0000000-0)
+        '42201-2345678-2',              // mother_cnic (format: 00000-0000000-0)
         '',                             // medical_conditions
         ''                              // allergies
     ];
