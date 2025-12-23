@@ -11,7 +11,7 @@ const Result = require('../models/Result'); // Changed from ExamResult
 // @route   GET /api/reports/defaulters
 router.get('/defaulters', protect, async (req, res) => {
     try {
-        const students = await Student.find({ is_active: true, school_id: req.user.school_id }).populate('family_id');
+        const students = await Student.find({ is_active: true, tenant_id: req.tenant_id }).populate('family_id');
 
         const defaulters = [];
         for (const student of students) {
@@ -37,11 +37,11 @@ router.get('/defaulters', protect, async (req, res) => {
 // @route   GET /api/reports/shortage
 router.get('/shortage', protect, async (req, res) => {
     try {
-        const students = await Student.find({ is_active: true, school_id: req.user.school_id }).populate('family_id');
+        const students = await Student.find({ is_active: true, tenant_id: req.tenant_id }).populate('family_id');
 
         const shortage = [];
         for (const student of students) {
-            const logs = await DailyLog.find({ student_id: student._id, school_id: req.user.school_id });
+            const logs = await DailyLog.find({ student_id: student._id, tenant_id: req.tenant_id });
             const totalDays = logs.length;
             if (totalDays === 0) continue;
 
@@ -77,7 +77,7 @@ router.get('/attendance-summary', protect, async (req, res) => {
         startDate.setHours(0, 0, 0, 0);
         endDate.setHours(23, 59, 59, 999);
 
-        let studentQuery = { school_id: req.user.school_id, is_active: true };
+        let studentQuery = { tenant_id: req.tenant_id, is_active: true };
         if (class_id) studentQuery.class_id = class_id;
         if (section_id) studentQuery.section_id = section_id;
 
@@ -87,7 +87,7 @@ router.get('/attendance-summary', protect, async (req, res) => {
         const logs = await DailyLog.find({
             student_id: { $in: studentIds },
             date: { $gte: startDate, $lte: endDate },
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         const report = students.map(student => {
@@ -131,7 +131,7 @@ router.get('/fee-defaulters', protect, async (req, res) => {
     try {
         const { days = 30, class_id } = req.query;
 
-        let studentQuery = { school_id: req.user.school_id, is_active: true };
+        let studentQuery = { tenant_id: req.tenant_id, is_active: true };
         if (class_id) studentQuery.class_id = class_id;
 
         const students = await Student.find(studentQuery).populate('family_id');
@@ -141,7 +141,7 @@ router.get('/fee-defaulters', protect, async (req, res) => {
         for (const student of students) {
             const fees = await Fee.find({
                 student_id: student._id,
-                school_id: req.user.school_id,
+                tenant_id: req.tenant_id,
                 status: { $in: ['Pending', 'Partial'] }
             }).sort({ month: -1 });
 
@@ -191,7 +191,7 @@ router.get('/class-performance', protect, async (req, res) => {
             return res.status(404).json({ message: 'Exam not found' });
         }
 
-        let studentQuery = { school_id: req.user.school_id, is_active: true };
+        let studentQuery = { tenant_id: req.tenant_id, is_active: true };
         if (class_id) studentQuery.class_id = class_id;
 
         const students = await Student.find(studentQuery);
@@ -323,7 +323,7 @@ router.get('/daily-collection', protect, async (req, res) => {
         nextDay.setDate(nextDay.getDate() + 1);
 
         const payments = await Fee.find({
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             payment_date: { $gte: queryDate, $lt: nextDay }
         }).populate('student_id');
 
@@ -412,7 +412,7 @@ router.get('/exam-analysis/:exam_id', protect, async (req, res) => {
 router.get('/students', protect, async (req, res) => {
     try {
         const { type, class_id, section_id, status } = req.query;
-        let query = { school_id: req.user.school_id };
+        let query = { tenant_id: req.tenant_id };
 
         if (class_id) query.class_id = class_id;
         if (section_id) query.section_id = section_id;
@@ -463,7 +463,7 @@ router.get('/fees', protect, async (req, res) => {
         const { type, start_date, end_date, class_id, month } = req.query;
 
         if (type === 'collection') {
-            let query = { school_id: req.user.school_id };
+            let query = { tenant_id: req.tenant_id };
             if (start_date && end_date) {
                 query.payment_date = { $gte: new Date(start_date), $lte: new Date(end_date) };
             }
@@ -481,7 +481,7 @@ router.get('/fees', protect, async (req, res) => {
             }));
             res.json(formatted);
         } else if (type === 'defaulters') {
-            const defaulters = await Fee.find({ school_id: req.user.school_id, status: { $ne: 'Paid' } }).populate('student_id', 'roll_no full_name father_mobile class_id section_id');
+            const defaulters = await Fee.find({ tenant_id: req.tenant_id, status: { $ne: 'Paid' } }).populate('student_id', 'roll_no full_name father_mobile class_id section_id');
             const formatted = defaulters.map(f => ({
                 'Roll No': f.student_id?.roll_no || '-',
                 'Student': f.student_id?.full_name || '-',
@@ -494,7 +494,7 @@ router.get('/fees', protect, async (req, res) => {
             res.json(formatted);
         } else if (type === 'monthly') {
             const fees = await Fee.aggregate([
-                { $match: month ? { month, school_id: req.user.school_id } : { school_id: req.user.school_id } },
+                { $match: month ? { month, tenant_id: req.tenant_id } : { tenant_id: req.tenant_id } },
                 {
                     $group: {
                         _id: '$month',
@@ -527,7 +527,7 @@ router.get('/attendance', protect, async (req, res) => {
         const { type, start_date, end_date, class_id, section_id } = req.query;
 
         if (type === 'daily') {
-            let query = { school_id: req.user.school_id };
+            let query = { tenant_id: req.tenant_id };
             if (start_date) query.date = { $gte: new Date(start_date) };
             if (class_id) query.class_id = class_id;
             if (section_id) query.section_id = section_id;
@@ -545,7 +545,7 @@ router.get('/attendance', protect, async (req, res) => {
             const attendance = await DailyLog.aggregate([
                 {
                     $match: {
-                        school_id: req.user.school_id,
+                        tenant_id: req.tenant_id,
                         date: { $gte: new Date(start_date), $lte: new Date(end_date) }
                     }
                 },
@@ -578,7 +578,7 @@ router.get('/attendance', protect, async (req, res) => {
             res.json(formatted);
         } else if (type === 'low') {
             const attendance = await DailyLog.aggregate([
-                { $match: { school_id: req.user.school_id } },
+                { $match: { tenant_id: req.tenant_id } },
                 {
                     $group: {
                         _id: '$student_id',
@@ -622,7 +622,7 @@ router.get('/exams', protect, async (req, res) => {
         const { type, class_id } = req.query;
 
         if (type === 'performance') {
-            let query = { school_id: req.user.school_id };
+            let query = { tenant_id: req.tenant_id };
             if (class_id) query.class_id = class_id;
 
             const results = await Result.find(query).populate('student_id', 'roll_no full_name class_id section_id').populate('exam_id', 'title');
@@ -639,7 +639,7 @@ router.get('/exams', protect, async (req, res) => {
             res.json(formatted);
         } else if (type === 'progress') {
             const results = await Result.aggregate([
-                { $match: { school_id: req.user.school_id } },
+                { $match: { tenant_id: req.tenant_id } },
                 {
                     $group: {
                         _id: '$student_id',
@@ -678,7 +678,7 @@ router.get('/staff', protect, async (req, res) => {
         const { type } = req.query;
 
         if (type === 'list') {
-            const staff = await Staff.find({ school_id: req.user.school_id });
+            const staff = await Staff.find({ tenant_id: req.tenant_id });
             const formatted = staff.map(s => ({
                 'Name': s.full_name,
                 'Designation': s.designation,
@@ -701,7 +701,7 @@ router.get('/staff', protect, async (req, res) => {
 // @route   GET /api/reports/consecutive-absences
 router.get('/consecutive-absences', protect, async (req, res) => {
     try {
-        const students = await Student.find({ is_active: true, school_id: req.user.school_id }).populate('family_id');
+        const students = await Student.find({ is_active: true, tenant_id: req.tenant_id }).populate('family_id');
         const consecutiveAbsences = [];
 
         for (const student of students) {
@@ -711,7 +711,7 @@ router.get('/consecutive-absences', protect, async (req, res) => {
 
             const logs = await DailyLog.find({
                 student_id: student._id,
-                school_id: req.user.school_id,
+                tenant_id: req.tenant_id,
                 date: { $gte: thirtyDaysAgo }
             }).sort({ date: -1 });
 

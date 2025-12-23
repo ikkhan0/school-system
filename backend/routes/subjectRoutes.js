@@ -9,7 +9,7 @@ router.post('/', protect, async (req, res) => {
     try {
         const subject = await Subject.create({
             ...req.body,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
         res.status(201).json(subject);
     } catch (error) {
@@ -22,7 +22,7 @@ router.post('/', protect, async (req, res) => {
 router.get('/', protect, async (req, res) => {
     try {
         const subjects = await Subject.find({
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             is_active: true
         }).sort({ name: 1 });
         res.json(subjects);
@@ -54,7 +54,7 @@ router.put('/:id', protect, async (req, res) => {
     try {
         const subject = await Subject.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!subject) {
@@ -76,7 +76,7 @@ router.delete('/:id', protect, async (req, res) => {
     try {
         const subject = await Subject.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!subject) {
@@ -125,13 +125,13 @@ router.post('/seed', protect, async (req, res) => {
             // Check if subject already exists
             const existing = await Subject.findOne({
                 name: subData.name,
-                school_id: req.user.school_id
+                tenant_id: req.tenant_id
             });
 
             if (!existing) {
                 const subject = await Subject.create({
                     ...subData,
-                    school_id: req.user.school_id
+                    tenant_id: req.tenant_id
                 });
                 created.push(subject);
             }

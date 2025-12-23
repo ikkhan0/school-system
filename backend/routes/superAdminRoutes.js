@@ -6,6 +6,12 @@ const Tenant = require('../models/Tenant');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
+// @desc    Test endpoint to verify routes are loaded
+// @route   GET /api/super-admin/test
+router.get('/test', (req, res) => {
+    res.json({ message: 'Super Admin routes are working!', timestamp: new Date() });
+});
+
 // @desc    Super Admin Login (Auto-register if first time)
 // @route   POST /api/super-admin/login
 router.post('/login', async (req, res) => {
@@ -82,8 +88,17 @@ router.post('/login', async (req, res) => {
         }
 
         // Update last login
-        superAdmin.last_login = new Date();
-        await superAdmin.save();
+        try {
+            superAdmin.last_login = new Date();
+            await superAdmin.save();
+        } catch (saveError) {
+            // If save fails, update directly via MongoDB
+            console.warn('Save failed, updating via MongoDB directly:', saveError.message);
+            await SuperAdmin.updateOne(
+                { _id: superAdmin._id },
+                { $set: { last_login: new Date() } }
+            );
+        }
 
         // Generate JWT
         const token = jwt.sign(
@@ -394,6 +409,264 @@ router.get('/stats', protectSuperAdmin, async (req, res) => {
         });
     } catch (error) {
         console.error('Get stats error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @desc    Get all users for a specific tenant
+// @route   GET /api/super-admin/tenants/:tenantId/users
+router.get('/tenants/:tenantId/users', protectSuperAdmin, async (req, res) => {
+    try {
+        const users = await User.find({ tenant_id: req.params.tenantId })
+            .select('-password')
+            .sort({ createdAt: -1 });
+
+        res.json(users);
+    } catch (error) {
+        console.error('Get tenant users error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @desc    Reset password for a specific user
+// @route   PATCH /api/super-admin/users/:userId/password
+router.patch('/users/:userId/password', protectSuperAdmin, async (req, res) => {
+    try {
+        const { new_password } = req.body;
+
+        if (!new_password || new_password.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters' });
+        }
+
+        const user = await User.findById(req.params.userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(new_password, 10);
+
+        // Update password directly
+        await User.updateOne(
+            { _id: req.params.userId },
+            { $set: { password: hashedPassword } }
+        );
+
+        res.json({ message: 'Password reset successfully' });
+    } catch (error) {
+        console.error('Reset password error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @desc    Get super admin profile
+// @route   GET /api/super-admin/profile
+router.get('/profile', protectSuperAdmin, async (req, res) => {
+    try {
+        const superAdmin = await SuperAdmin.findById(req.user._id).select('-password');
+
+        if (!superAdmin) {
+            return res.status(404).json({ message: 'Profile not found' });
+        }
+
+        res.json(superAdmin);
+    } catch (error) {
+        console.error('Get profile error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @desc    Update super admin profile
+// @route   PATCH /api/super-admin/profile
+router.patch('/profile', protectSuperAdmin, async (req, res) => {
+    try {
+        const { name, email, phone, current_password, new_password } = req.body;
+
+        const superAdmin = await SuperAdmin.findById(req.user._id);
+
+        if (!superAdmin) {
+            return res.status(404).json({ message: 'Profile not found' });
+        }
+
+        // If changing password, verify current password
+        if (new_password) {
+            if (!current_password) {
+                return res.status(400).json({ message: 'Current password required' });
+            }
+
+            const isMatch = await superAdmin.matchPassword(current_password);
+            if (!isMatch) {
+                return res.status(401).json({ message: 'Current password is incorrect' });
+            }
+
+            if (new_password.length < 6) {
+                return res.status(400).json({ message: 'New password must be at least 6 characters' });
+            }
+
+            // Hash and update password
+            const hashedPassword = await bcrypt.hash(new_password, 10);
+            await SuperAdmin.updateOne(
+                { _id: req.user._id },
+                { $set: { password: hashedPassword } }
+            );
+        }
+
+        // Update other fields
+        const updateData = {};
+        if (name) updateData.name = name;
+        if (email) updateData.email = email;
+        if (phone !== undefined) updateData.phone = phone;
+
+        if (Object.keys(updateData).length > 0) {
+            await SuperAdmin.updateOne(
+                { _id: req.user._id },
+                { $set: updateData }
+            );
+        }
+
+        // Get updated profile
+        const updatedProfile = await SuperAdmin.findById(req.user._id).select('-password');
+
+        res.json({
+            message: 'Profile updated successfully',
+            profile: updatedProfile
+        });
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @desc    Update tenant features
+// @route   PATCH /api/super-admin/tenants/:id/features
+router.patch('/tenants/:id/features', protectSuperAdmin, async (req, res) => {
+    try {
+        const { features_enabled } = req.body;
+
+        const tenant = await Tenant.findById(req.params.id);
+
+        if (!tenant) {
+            return res.status(404).json({ message: 'School not found' });
+        }
+
+        // Update features
+        tenant.features_enabled = features_enabled;
+        await tenant.save();
+
+        res.json({
+            message: 'Features updated successfully',
+            tenant
+        });
+    } catch (error) {
+        console.error('Update features error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @desc    Update tenant (school) information
+// @route   PATCH /api/super-admin/tenants/:id
+router.patch('/tenants/:id', protectSuperAdmin, async (req, res) => {
+    try {
+        const {
+            school_name,
+            contact_info,
+            subscription_plan,
+            features_enabled,
+            logo,
+            address,
+            city,
+            phone,
+            email
+        } = req.body;
+
+        const tenant = await Tenant.findById(req.params.id);
+
+        if (!tenant) {
+            return res.status(404).json({ message: 'School not found' });
+        }
+
+        // Update fields
+        if (school_name) tenant.school_name = school_name;
+        if (subscription_plan) tenant.subscription_plan = subscription_plan;
+        if (features_enabled) tenant.features_enabled = features_enabled;
+
+        // Update contact info
+        if (contact_info || phone || email || address || city) {
+            tenant.contact_info = {
+                ...tenant.contact_info,
+                phone: phone || tenant.contact_info?.phone,
+                email: email || tenant.contact_info?.email,
+                address: address || tenant.contact_info?.address,
+                city: city || tenant.contact_info?.city
+            };
+        }
+
+        if (logo !== undefined) tenant.logo = logo;
+
+        await tenant.save();
+
+        res.json({
+            message: 'School updated successfully',
+            tenant
+        });
+    } catch (error) {
+        console.error('Update tenant error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @desc    Delete tenant (school) and all associated data
+// @route   DELETE /api/super-admin/tenants/:id
+router.delete('/tenants/:id', protectSuperAdmin, async (req, res) => {
+    try {
+        const tenant = await Tenant.findById(req.params.id);
+
+        if (!tenant) {
+            return res.status(404).json({ message: 'School not found' });
+        }
+
+        // Delete all associated data
+        await User.deleteMany({ tenant_id: tenant._id });
+        await Student.deleteMany({ tenant_id: tenant._id });
+
+        // Delete other models if they exist
+        try {
+            const Class = require('../models/Class');
+            await Class.deleteMany({ tenant_id: tenant._id });
+        } catch (e) { }
+
+        try {
+            const Fee = require('../models/Fee');
+            await Fee.deleteMany({ tenant_id: tenant._id });
+        } catch (e) { }
+
+        try {
+            const Staff = require('../models/Staff');
+            await Staff.deleteMany({ tenant_id: tenant._id });
+        } catch (e) { }
+
+        try {
+            const Exam = require('../models/Exam');
+            await Exam.deleteMany({ tenant_id: tenant._id });
+        } catch (e) { }
+
+        try {
+            const Family = require('../models/Family');
+            await Family.deleteMany({ tenant_id: tenant._id });
+        } catch (e) { }
+
+        try {
+            const Subject = require('../models/Subject');
+            await Subject.deleteMany({ tenant_id: tenant._id });
+        } catch (e) { }
+
+        // Finally delete the tenant
+        await Tenant.findByIdAndDelete(req.params.id);
+
+        res.json({ message: 'School deleted successfully' });
+    } catch (error) {
+        console.error('Delete tenant error:', error);
         res.status(500).json({ message: 'Server error' });
     }
 });

@@ -12,7 +12,7 @@ router.post('/', protect, async (req, res) => {
     try {
         const exam = await Exam.create({
             ...req.body,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
         res.status(201).json(exam);
     } catch (error) {
@@ -24,7 +24,7 @@ router.post('/', protect, async (req, res) => {
 // @route   PUT /api/exams/:id
 router.put('/:id', protect, async (req, res) => {
     try {
-        const exam = await Exam.findOne({ _id: req.params.id, school_id: req.user.school_id });
+        const exam = await Exam.findOne({ _id: req.params.id, tenant_id: req.tenant_id });
 
         if (!exam) {
             return res.status(404).json({ message: 'Exam not found' });
@@ -44,7 +44,7 @@ router.put('/:id', protect, async (req, res) => {
 // @route   GET /api/exams
 router.get('/', protect, async (req, res) => {
     try {
-        const exams = await Exam.find({ is_active: true, school_id: req.user.school_id });
+        const exams = await Exam.find({ is_active: true, tenant_id: req.tenant_id });
         res.json(exams);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -60,11 +60,11 @@ router.post('/marks', protect, async (req, res) => {
         // marks_data = [{ student_id, obtained_marks, total_marks }]
 
         for (const data of marks_data) {
-            let result = await Result.findOne({ exam_id, student_id: data.student_id, school_id: req.user.school_id });
+            let result = await Result.findOne({ exam_id, student_id: data.student_id, tenant_id: req.tenant_id });
             if (!result) {
                 result = new Result({
                     exam_id,
-                    school_id: req.user.school_id,
+                    tenant_id: req.tenant_id,
                     student_id: data.student_id,
                     class_id,
                     section_id,
@@ -115,7 +115,7 @@ const Fee = require('../models/Fee'); // Add Fee model import
 router.get('/results', protect, async (req, res) => {
     try {
         const { exam_id, class_id, section_id } = req.query;
-        const results = await Result.find({ exam_id, class_id, section_id, school_id: req.user.school_id })
+        const results = await Result.find({ exam_id, class_id, section_id, tenant_id: req.tenant_id })
             .populate('student_id')
             .populate('exam_id');
 

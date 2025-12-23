@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
+const checkPermission = require('../middleware/checkPermission');
 const Student = require('../models/Student');
 const Family = require('../models/Family');
 
@@ -60,7 +61,7 @@ router.get('/import/sample', protect, async (req, res) => {
         // Get available classes for this school
         const Class = require('../models/Class');
         const availableClasses = await Class.find({
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         }).select('name sections');
 
         const csvContent = generateSampleCSV(availableClasses);
@@ -91,7 +92,7 @@ router.post('/import/validate', protect, uploadCSV.single('file'), async (req, r
 
         // Get existing roll numbers for this school
         const existingStudents = await Student.find({
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             is_active: true
         }).select('roll_no');
         const existingRollNumbers = existingStudents.map(s => s.roll_no);
@@ -99,7 +100,7 @@ router.post('/import/validate', protect, uploadCSV.single('file'), async (req, r
         // Get available classes for this school
         const Class = require('../models/Class');
         const availableClasses = await Class.find({
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         }).select('name sections');
 
         // Validate the data
@@ -140,7 +141,7 @@ router.post('/import/confirm', protect, async (req, res) => {
                 // Find or create family
                 let family = await Family.findOne({
                     father_mobile,
-                    school_id: req.user.school_id
+                    tenant_id: req.tenant_id
                 });
 
                 if (!family) {
@@ -150,7 +151,7 @@ router.post('/import/confirm', protect, async (req, res) => {
                         father_cnic: father_cnic || '',
                         mother_name: mother_name || '',
                         mother_cnic: mother_cnic || '',
-                        school_id: req.user.school_id
+                        tenant_id: req.tenant_id
                     });
                 }
 
@@ -160,7 +161,7 @@ router.post('/import/confirm', protect, async (req, res) => {
                     father_name: father_name || family.father_name,
                     mother_name: mother_name || family.mother_name,
                     family_id: family._id,
-                    school_id: req.user.school_id,
+                    tenant_id: req.tenant_id,
                     monthly_fee: studentData.monthly_fee || 5000,
                     category: studentData.category || 'Regular',
                     nationality: studentData.nationality || 'Pakistani',
@@ -178,7 +179,7 @@ router.post('/import/confirm', protect, async (req, res) => {
                 const grossAmount = feeAmount;
 
                 await Fee.create({
-                    school_id: req.user.school_id,
+                    tenant_id: req.tenant_id,
                     student_id: student._id,
                     month: currentMonth,
                     tuition_fee: feeAmount,
@@ -224,18 +225,18 @@ router.post('/import/confirm', protect, async (req, res) => {
 
 // ==================== END IMPORT ROUTES ====================
 
-router.post('/add', protect, upload.single('image'), async (req, res) => {
+router.post('/add', protect, checkPermission('students.create'), upload.single('image'), async (req, res) => {
     try {
         const { father_name, father_mobile, father_cnic, subjects, monthly_fee, concession, ...studentData } = req.body;
 
         // Check if family exists or create (Scoped to School)
-        let family = await Family.findOne({ father_mobile, school_id: req.user.school_id });
+        let family = await Family.findOne({ father_mobile, tenant_id: req.tenant_id });
         if (!family) {
             family = await Family.create({
                 father_name,
                 father_mobile,
                 father_cnic,
-                school_id: req.user.school_id
+                tenant_id: req.tenant_id
             });
         }
 
@@ -262,7 +263,7 @@ router.post('/add', protect, upload.single('image'), async (req, res) => {
             photo: req.file ? `/uploads/${req.file.filename}` : '',
             family_id: family._id,
             father_name: father_name, // keep denormalized copy
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             enrolled_subjects,
             monthly_fee: monthly_fee || 5000
         });
@@ -277,7 +278,7 @@ router.post('/add', protect, upload.single('image'), async (req, res) => {
         const grossAmount = feeAmount - concessionAmount;
 
         const feeVoucher = await Fee.create({
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             student_id: student._id,
             month: currentMonth,
             tuition_fee: feeAmount,
@@ -302,10 +303,10 @@ router.post('/add', protect, upload.single('image'), async (req, res) => {
 
 // @desc    Get Students (Search or All)
 // @route   GET /api/students?search=xyz
-router.get('/', protect, async (req, res) => {
+router.get('/', protect, checkPermission('students.view'), async (req, res) => {
     try {
         const { search } = req.query;
-        let query = { school_id: req.user.school_id, is_active: true };
+        let query = { tenant_id: req.tenant_id, is_active: true };
 
         if (search) {
             query.$or = [
@@ -325,7 +326,7 @@ router.get('/list', protect, async (req, res) => {
     try {
         const { class_id, section_id } = req.query;
 
-        let query = { school_id: req.user.school_id, is_active: true };
+        let query = { tenant_id: req.tenant_id, is_active: true };
 
         // Add filters if provided
         if (class_id) query.class_id = class_id;
@@ -343,7 +344,7 @@ router.get('/list', protect, async (req, res) => {
 
 // @desc    Delete a Student
 // @route   DELETE /api/students/:id
-router.delete('/:id', protect, async (req, res) => {
+router.delete('/:id', protect, checkPermission('students.delete'), async (req, res) => {
     try {
         const student = await Student.findById(req.params.id);
 
@@ -352,7 +353,7 @@ router.delete('/:id', protect, async (req, res) => {
         }
 
         // Verify student belongs to user's school
-        if (student.school_id.toString() !== req.user.school_id.toString()) {
+        if (student.school_id.toString() !== req.tenant_id.toString()) {
             return res.status(403).json({ message: 'Not authorized' });
         }
 
@@ -372,7 +373,7 @@ router.get('/:id/profile', protect, async (req, res) => {
     try {
         const student = await Student.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         }).populate('siblings', 'full_name roll_no class_id section_id photo');
 
         if (!student) {
@@ -391,7 +392,7 @@ router.get('/:id/siblings', protect, async (req, res) => {
     try {
         const student = await Student.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!student) {
@@ -402,7 +403,7 @@ router.get('/:id/siblings', protect, async (req, res) => {
         const siblings = await Student.find({
             family_id: student.family_id,
             _id: { $ne: student._id },
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             is_active: true
         }).select('full_name roll_no class_id section_id photo');
 
@@ -420,7 +421,7 @@ router.get('/:id/fee-summary', protect, async (req, res) => {
 
         const fees = await Fee.find({
             student_id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         const totalPaid = fees.reduce((sum, fee) => sum + (fee.amount_paid || 0), 0);
@@ -446,7 +447,7 @@ router.get('/:id/attendance-summary', protect, async (req, res) => {
 
         const logs = await DailyLog.find({
             student_id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         const totalDays = logs.length;
@@ -475,7 +476,7 @@ router.get('/:id/exam-results', protect, async (req, res) => {
 
         const results = await Result.find({
             student_id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         }).populate('exam_id', 'name date').sort({ createdAt: -1 }).limit(5);
 
         res.json(results);
@@ -490,7 +491,7 @@ router.get('/:id/subjects', protect, async (req, res) => {
     try {
         const student = await Student.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         }).populate('enrolled_subjects.subject_id');
 
         if (!student) {
@@ -514,7 +515,7 @@ router.put('/:id/subjects', protect, async (req, res) => {
 
         const student = await Student.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!student) {
@@ -548,7 +549,7 @@ router.post('/:id/subjects/enroll', protect, async (req, res) => {
 
         const student = await Student.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!student) {
@@ -584,13 +585,13 @@ router.post('/:id/subjects/enroll', protect, async (req, res) => {
 
 // @desc    Update Student (including subjects)
 // @route   PUT /api/students/:id
-router.put('/:id', protect, upload.single('image'), async (req, res) => {
+router.put('/:id', protect, checkPermission('students.edit'), upload.single('image'), async (req, res) => {
     try {
         const { father_name, father_mobile, father_cnic, subjects, ...studentData } = req.body;
 
         const student = await Student.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!student) {
@@ -599,13 +600,13 @@ router.put('/:id', protect, upload.single('image'), async (req, res) => {
 
         // Update family info if provided
         if (father_mobile) {
-            let family = await Family.findOne({ father_mobile, school_id: req.user.school_id });
+            let family = await Family.findOne({ father_mobile, tenant_id: req.tenant_id });
             if (!family) {
                 family = await Family.create({
                     father_name,
                     father_mobile,
                     father_cnic,
-                    school_id: req.user.school_id
+                    tenant_id: req.tenant_id
                 });
             }
             student.family_id = family._id;
@@ -652,7 +653,7 @@ router.get('/:id/profile', protect, async (req, res) => {
     try {
         const student = await Student.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         })
             .populate('family_id')
             .populate('enrolled_subjects.subject_id');
@@ -675,7 +676,7 @@ router.get('/:id/attendance-summary', protect, async (req, res) => {
 
         const logs = await DailyLog.find({
             student_id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         const total_days = logs.length;
@@ -704,7 +705,7 @@ router.get('/:id/exam-results', protect, async (req, res) => {
 
         const results = await ExamResult.find({
             student_id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         })
             .populate('exam_id')
             .sort({ createdAt: -1 });
@@ -723,7 +724,7 @@ router.put('/:id', protect, upload.single('image'), async (req, res) => {
 
         const student = await Student.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!student) {
@@ -732,13 +733,13 @@ router.put('/:id', protect, upload.single('image'), async (req, res) => {
 
         // Update family information if provided
         if (father_mobile) {
-            let family = await Family.findOne({ father_mobile, school_id: req.user.school_id });
+            let family = await Family.findOne({ father_mobile, tenant_id: req.tenant_id });
             if (!family) {
                 family = await Family.create({
                     father_name,
                     father_mobile,
                     father_cnic,
-                    school_id: req.user.school_id
+                    tenant_id: req.tenant_id
                 });
             }
             student.family_id = family._id;

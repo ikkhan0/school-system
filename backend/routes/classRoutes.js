@@ -8,7 +8,7 @@ const Class = require('../models/Class');
 // @access  Private
 router.get('/', protect, async (req, res) => {
     try {
-        const classes = await Class.find({ school_id: req.user.school_id }).sort({ name: 1 });
+        const classes = await Class.find({ tenant_id: req.tenant_id }).sort({ name: 1 });
         res.json(classes);
     } catch (err) {
         console.error(err.message);
@@ -26,7 +26,7 @@ router.post('/', protect, async (req, res) => {
         let newClass = new Class({
             name,
             sections,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         const savedClass = await newClass.save();
@@ -46,7 +46,7 @@ router.put('/:id/subjects', protect, async (req, res) => {
 
         const classData = await Class.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!classData) {

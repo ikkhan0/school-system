@@ -15,7 +15,7 @@ const upload = multer({
 // @route   GET /api/school
 router.get('/', protect, async (req, res) => {
     try {
-        const school = await School.findById(req.user.school_id);
+        const school = await School.findById(req.tenant_id);
         if (!school) return res.status(404).json({ message: 'School not found' });
         res.json(school);
     } catch (error) {
@@ -31,7 +31,7 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
         console.log('=== SCHOOL UPDATE DEBUG ===');
         console.log('Body:', req.body);
         console.log('File:', req.file ? 'File uploaded' : 'No file');
-        console.log('User school_id:', req.user.school_id);
+        console.log('User school_id:', req.tenant_id);
 
         // Prepare update data
         const updateData = {};
@@ -51,7 +51,7 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
 
         // Use findOneAndUpdate with upsert to create if doesn't exist
         const school = await School.findOneAndUpdate(
-            { _id: req.user.school_id },
+            { _id: req.tenant_id },
             { $set: updateData },
             {
                 new: true, // Return updated document

@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 
 const staffSchema = new mongoose.Schema({
+    // Multi-tenant support
+    tenant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tenant', required: false, index: true },
     // School Reference
     school_id: {
         type: mongoose.Schema.Types.ObjectId,

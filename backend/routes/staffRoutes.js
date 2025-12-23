@@ -58,7 +58,7 @@ router.post('/add', protect, upload.single('photo'), async (req, res) => {
         const staff = await Staff.create({
             ...staffData,
             photo: req.file ? `/uploads/${req.file.filename}` : '',
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             assigned_subjects: parsedSubjects.map(id => ({ subject_id: id })),
             assigned_classes: parsedClasses
         });
@@ -76,7 +76,7 @@ router.get('/list', protect, async (req, res) => {
     try {
         const { designation, department, status } = req.query;
 
-        let query = { school_id: req.user.school_id };
+        let query = { tenant_id: req.tenant_id };
 
         if (designation) query.designation = designation;
         if (department) query.department = department;
@@ -99,7 +99,7 @@ router.get('/:id', protect, async (req, res) => {
     try {
         const staff = await Staff.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         }).populate('assigned_subjects.subject_id');
 
         if (!staff) {
@@ -120,7 +120,7 @@ router.put('/:id', protect, upload.single('photo'), async (req, res) => {
 
         const staff = await Staff.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!staff) {
@@ -173,7 +173,7 @@ router.get('/:id/profile', protect, async (req, res) => {
     try {
         const staff = await Staff.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         }).populate('assigned_subjects.subject_id');
 
         if (!staff) {
@@ -198,7 +198,7 @@ router.post('/attendance/mark', protect, async (req, res) => {
 
         for (const record of attendanceRecords) {
             const existing = await StaffAttendance.findOne({
-                school_id: req.user.school_id,
+                tenant_id: req.tenant_id,
                 staff_id: record.staff_id,
                 date: new Date(record.date)
             });
@@ -218,7 +218,7 @@ router.post('/attendance/mark', protect, async (req, res) => {
             } else {
                 // Create new record
                 const attendance = await StaffAttendance.create({
-                    school_id: req.user.school_id,
+                    tenant_id: req.tenant_id,
                     staff_id: record.staff_id,
                     date: new Date(record.date),
                     status: record.status,
@@ -250,7 +250,7 @@ router.get('/attendance/daily', protect, async (req, res) => {
         targetDate.setHours(0, 0, 0, 0);
 
         const attendance = await StaffAttendance.find({
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             date: targetDate
         }).populate('staff_id', 'full_name employee_id designation photo');
 
@@ -270,7 +270,7 @@ router.get('/attendance/monthly', protect, async (req, res) => {
         const endDate = new Date(year, new Date(Date.parse(month + " 1, 2000")).getMonth() + 1, 0);
 
         const attendance = await StaffAttendance.find({
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             date: { $gte: startDate, $lte: endDate }
         }).populate('staff_id', 'full_name employee_id designation');
 
@@ -287,7 +287,7 @@ router.get('/:id/attendance-summary', protect, async (req, res) => {
         const { month, year } = req.query;
 
         let query = {
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             staff_id: req.params.id
         };
 
@@ -328,7 +328,7 @@ router.post('/salary/generate', protect, async (req, res) => {
 
         // Get all active staff
         const staffMembers = await Staff.find({
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             is_active: true
         });
 
@@ -337,7 +337,7 @@ router.post('/salary/generate', protect, async (req, res) => {
         for (const staff of staffMembers) {
             // Check if salary already exists
             const existing = await Salary.findOne({
-                school_id: req.user.school_id,
+                tenant_id: req.tenant_id,
                 staff_id: staff._id,
                 month,
                 year
@@ -350,7 +350,7 @@ router.post('/salary/generate', protect, async (req, res) => {
             const endDate = new Date(year, new Date(Date.parse(month + " 1, 2000")).getMonth() + 1, 0);
 
             const attendance = await StaffAttendance.find({
-                school_id: req.user.school_id,
+                tenant_id: req.tenant_id,
                 staff_id: staff._id,
                 date: { $gte: startDate, $lte: endDate }
             });
@@ -375,7 +375,7 @@ router.post('/salary/generate', protect, async (req, res) => {
             const netSalary = grossSalary - totalDeductions;
 
             const salary = await Salary.create({
-                school_id: req.user.school_id,
+                tenant_id: req.tenant_id,
                 staff_id: staff._id,
                 month,
                 year,
@@ -413,7 +413,7 @@ router.get('/salary/list', protect, async (req, res) => {
     try {
         const { month, year, status } = req.query;
 
-        let query = { school_id: req.user.school_id };
+        let query = { tenant_id: req.tenant_id };
 
         if (month) query.month = month;
         if (year) query.year = parseInt(year);
@@ -434,7 +434,7 @@ router.get('/salary/list', protect, async (req, res) => {
 router.get('/:id/salary-history', protect, async (req, res) => {
     try {
         const salaries = await Salary.find({
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             staff_id: req.params.id
         }).sort({ year: -1, month: -1 });
 
@@ -452,7 +452,7 @@ router.put('/salary/:id/pay', protect, async (req, res) => {
 
         const salary = await Salary.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!salary) {

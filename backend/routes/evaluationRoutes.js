@@ -19,7 +19,7 @@ router.get('/list', protect, async (req, res) => {
         queryDate.setHours(0, 0, 0, 0);
 
         // 1. Get all students
-        const students = await Student.find({ class_id, section_id, is_active: true, school_id: req.user.school_id }).populate('family_id'); // Added school_id check
+        const students = await Student.find({ class_id, section_id, is_active: true, tenant_id: req.tenant_id }).populate('family_id'); // Added school_id check
 
         // 2. Get existing logs
         const existingLogs = await DailyLog.find({
@@ -68,8 +68,8 @@ router.post('/save', protect, async (req, res) => {
 
         const bulkOps = evaluations.map(evalData => ({
             updateOne: {
-                filter: { student_id: evalData.student_id, date: logDate, school_id: req.user.school_id },
-                update: { $set: { ...evalData, date: logDate, school_id: req.user.school_id } },
+                filter: { student_id: evalData.student_id, date: logDate, tenant_id: req.tenant_id },
+                update: { $set: { ...evalData, date: logDate, tenant_id: req.tenant_id } },
                 upsert: true
             }
         }));

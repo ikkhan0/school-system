@@ -29,10 +29,17 @@ router.post('/login', async (req, res) => {
                 return res.status(403).json({ message: 'Account is deactivated' });
             }
 
-            // Safety check for missing school reference
+            // Get school info from tenant (preferred) or fallback to old school_id
             const schoolId = validUser.school_id ? validUser.school_id._id : null;
-            const schoolName = validUser.school_id ? validUser.school_id.school_name : 'Unknown School';
             const tenantId = validUser.tenant_id ? validUser.tenant_id._id : null;
+
+            // Use tenant school name if available, otherwise fallback to old school name
+            let schoolName = 'Unknown School';
+            if (validUser.tenant_id && validUser.tenant_id.school_name) {
+                schoolName = validUser.tenant_id.school_name;
+            } else if (validUser.school_id && validUser.school_id.school_name) {
+                schoolName = validUser.school_id.school_name;
+            }
 
             if (!schoolId && !tenantId) {
                 console.warn(`Warning: User ${username} has no linked School or Tenant.`);

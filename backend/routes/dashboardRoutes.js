@@ -9,13 +9,17 @@ const Staff = require('../models/Staff');
 // GET /api/dashboard/stats - Existing stats
 router.get('/stats', async (req, res) => {
     try {
-        const totalStudents = await Student.countDocuments({ is_active: true });
-        const totalStaff = await Staff.countDocuments();
+        // Filter by tenant_id for multi-tenant isolation
+        const tenantId = req.tenant_id;
+
+        const totalStudents = await Student.countDocuments({ tenant_id: tenantId, is_active: true });
+        const totalStaff = await Staff.countDocuments({ tenant_id: tenantId });
 
         // Today's attendance
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const todayAttendance = await DailyLog.find({
+            tenant_id: tenantId,
             date: { $gte: today }
         });
 
@@ -23,7 +27,7 @@ router.get('/stats', async (req, res) => {
         const todayAbsent = todayAttendance.filter(a => a.status === 'Absent').length;
 
         // Fee defaulters
-        const defaulters = await Fee.find({ status: { $ne: 'Paid' } });
+        const defaulters = await Fee.find({ tenant_id: tenantId, status: { $ne: 'Paid' } });
         const totalFeeOutstanding = defaulters.reduce((sum, f) => sum + f.balance, 0);
 
         res.json({
@@ -42,6 +46,8 @@ router.get('/stats', async (req, res) => {
 // GET /api/dashboard/charts - New endpoint for chart data
 router.get('/charts', async (req, res) => {
     try {
+        const tenantId = req.tenant_id;
+
         // Fee Collection Chart - Last 6 months
         const sixMonthsAgo = new Date();
         sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -49,6 +55,7 @@ router.get('/charts', async (req, res) => {
         const feeData = await Fee.aggregate([
             {
                 $match: {
+                    tenant_id: tenantId,
                     payment_date: { $gte: sixMonthsAgo }
                 }
             },
@@ -76,6 +83,7 @@ router.get('/charts', async (req, res) => {
         const attendanceData = await DailyLog.aggregate([
             {
                 $match: {
+                    tenant_id: tenantId,
                     date: { $gte: fourWeeksAgo }
                 }
             },
@@ -101,6 +109,9 @@ router.get('/charts', async (req, res) => {
         // Performance Chart - Grade distribution from latest results
         const gradeData = await Result.aggregate([
             {
+                $match: { tenant_id: tenantId }
+            },
+            {
                 $group: {
                     _id: '$grade',
                     count: { $sum: 1 }
@@ -117,6 +128,7 @@ router.get('/charts', async (req, res) => {
         const enrollmentData = await Student.aggregate([
             {
                 $match: {
+                    tenant_id: tenantId,
                     admission_date: { $gte: sixMonthsAgo }
                 }
             },
@@ -158,6 +170,7 @@ router.get('/charts', async (req, res) => {
 // GET /api/dashboard/absent-today - Get today's absent students
 router.get('/absent-today', async (req, res) => {
     try {
+        const tenantId = req.tenant_id;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const tomorrow = new Date(today);
@@ -165,6 +178,7 @@ router.get('/absent-today', async (req, res) => {
 
         // Find all absent students for today
         const absentLogs = await DailyLog.find({
+            tenant_id: tenantId,
             date: { $gte: today, $lt: tomorrow },
             status: 'Absent'
         }).populate({

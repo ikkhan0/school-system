@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const feeSchema = mongoose.Schema({
+    tenant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tenant', required: false, index: true },
     school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true },
     student_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
     month: { type: String, required: true }, // e.g., "Jan-2025"

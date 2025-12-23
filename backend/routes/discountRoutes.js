@@ -19,7 +19,7 @@ router.post('/policy', protect, async (req, res) => {
     try {
         const policy = new DiscountPolicy({
             ...req.body,
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             created_by: req.user._id
         });
 
@@ -38,7 +38,7 @@ router.get('/policies', protect, async (req, res) => {
     try {
         const { active_only } = req.query;
 
-        const query = { school_id: req.user.school_id };
+        const query = { tenant_id: req.tenant_id };
         if (active_only === 'true') {
             query.is_active = true;
         }
@@ -58,7 +58,7 @@ router.get('/policy/:id', protect, async (req, res) => {
     try {
         const policy = await DiscountPolicy.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!policy) {
@@ -78,7 +78,7 @@ router.get('/policy/:id', protect, async (req, res) => {
 router.put('/policy/:id', protect, async (req, res) => {
     try {
         const policy = await DiscountPolicy.findOneAndUpdate(
-            { _id: req.params.id, school_id: req.user.school_id },
+            { _id: req.params.id, tenant_id: req.tenant_id },
             req.body,
             { new: true, runValidators: true }
         );
@@ -101,7 +101,7 @@ router.delete('/policy/:id', protect, async (req, res) => {
     try {
         const policy = await DiscountPolicy.findOneAndDelete({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!policy) {
@@ -125,7 +125,7 @@ router.get('/calculate/:student_id', protect, async (req, res) => {
 
         const student = await Student.findOne({
             _id: req.params.student_id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         }).populate('siblings');
 
         if (!student) {
@@ -133,7 +133,7 @@ router.get('/calculate/:student_id', protect, async (req, res) => {
         }
 
         const policies = await DiscountPolicy.find({
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             is_active: true
         });
 
@@ -209,7 +209,7 @@ router.post('/auto-apply/:student_id', protect, async (req, res) => {
     try {
         const student = await Student.findOne({
             _id: req.params.student_id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         }).populate('staff_parent_id');
 
         if (!student) {
@@ -259,7 +259,7 @@ router.post('/auto-apply/:student_id', protect, async (req, res) => {
 // @access  Private
 router.post('/detect-siblings', protect, async (req, res) => {
     try {
-        const suggestions = await suggestSiblingGroups(req.user.school_id);
+        const suggestions = await suggestSiblingGroups(req.tenant_id);
         res.json(suggestions);
     } catch (error) {
         console.error('Error detecting siblings:', error);
@@ -272,7 +272,7 @@ router.post('/detect-siblings', protect, async (req, res) => {
 // @access  Private
 router.get('/siblings-by-family', protect, async (req, res) => {
     try {
-        const familyGroups = await detectSiblingsByFamily(req.user.school_id);
+        const familyGroups = await detectSiblingsByFamily(req.tenant_id);
         res.json({
             success: true,
             total_families: familyGroups.length,
@@ -289,7 +289,7 @@ router.get('/siblings-by-family', protect, async (req, res) => {
 // @access  Private
 router.get('/siblings-by-mobile', protect, async (req, res) => {
     try {
-        const suggestions = await detectSiblingsByMobile(req.user.school_id);
+        const suggestions = await detectSiblingsByMobile(req.tenant_id);
         res.json({
             success: true,
             total_suggestions: suggestions.length,
@@ -312,7 +312,7 @@ router.post('/link-siblings', protect, async (req, res) => {
             return res.status(400).json({ message: 'At least 2 student IDs required' });
         }
 
-        const result = await linkSiblings(student_ids, family_data, req.user.school_id);
+        const result = await linkSiblings(student_ids, family_data, req.tenant_id);
 
         if (!result.success) {
             return res.status(400).json(result);
@@ -374,7 +374,7 @@ router.put('/update-sibling-positions/:family_id', protect, async (req, res) => 
 // @access  Private
 router.get('/family-eligible', protect, async (req, res) => {
     try {
-        const familyGroups = await detectSiblingsByFamily(req.user.school_id);
+        const familyGroups = await detectSiblingsByFamily(req.tenant_id);
 
         // Filter families with 2+ children
         const eligibleFamilies = familyGroups.filter(group => group.students.length >= 2);

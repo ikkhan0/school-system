@@ -15,6 +15,7 @@ const subjectSchema = new mongoose.Schema({
         type: Number,
         default: 100
     },
+    tenant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tenant', required: false, index: true },
     school_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'School',

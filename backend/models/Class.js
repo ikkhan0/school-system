@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const classSchema = mongoose.Schema({
+    tenant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tenant', required: false, index: true },
     name: {
         type: String,
         required: true

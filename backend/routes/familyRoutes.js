@@ -16,7 +16,7 @@ const {
 // @access  Private
 router.get('/', protect, async (req, res) => {
     try {
-        const families = await Family.find({ school_id: req.user.school_id })
+        const families = await Family.find({ tenant_id: req.tenant_id })
             .sort({ father_name: 1 });
 
         // Get student count for each family
@@ -48,7 +48,7 @@ router.get('/:id', protect, async (req, res) => {
     try {
         const family = await Family.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!family) {
@@ -69,7 +69,7 @@ router.get('/:id/students', protect, async (req, res) => {
     try {
         const students = await Student.find({
             family_id: req.params.id,
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             is_active: true
         }).sort({ sibling_discount_position: 1 });
 
@@ -90,7 +90,7 @@ router.get('/:id/consolidated-fees', protect, async (req, res) => {
 
         const family = await Family.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!family) {
@@ -99,7 +99,7 @@ router.get('/:id/consolidated-fees', protect, async (req, res) => {
 
         const students = await Student.find({
             family_id: req.params.id,
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             is_active: true
         }).sort({ sibling_discount_position: 1 });
 
@@ -108,7 +108,7 @@ router.get('/:id/consolidated-fees', protect, async (req, res) => {
                 let fee = await Fee.findOne({
                     student_id: student._id,
                     month: currentMonth,
-                    school_id: req.user.school_id
+                    tenant_id: req.tenant_id
                 });
 
                 // If no fee record, create preview
@@ -163,7 +163,7 @@ router.post('/:id/whatsapp-message', protect, async (req, res) => {
 
         const family = await Family.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!family) {
@@ -172,7 +172,7 @@ router.post('/:id/whatsapp-message', protect, async (req, res) => {
 
         const students = await Student.find({
             family_id: req.params.id,
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             is_active: true
         }).sort({ sibling_discount_position: 1 });
 
@@ -181,7 +181,7 @@ router.post('/:id/whatsapp-message', protect, async (req, res) => {
                 let fee = await Fee.findOne({
                     student_id: student._id,
                     month: currentMonth,
-                    school_id: req.user.school_id
+                    tenant_id: req.tenant_id
                 });
 
                 if (!fee) {
@@ -201,7 +201,7 @@ router.post('/:id/whatsapp-message', protect, async (req, res) => {
             })
         );
 
-        const school = await School.findById(req.user.school_id);
+        const school = await School.findById(req.tenant_id);
 
         const message = generateFamilyFeeMessage(family, studentsWithFees, school);
         const whatsappNumber = family.whatsapp_number || family.father_mobile;
@@ -213,7 +213,7 @@ router.post('/:id/whatsapp-message', protect, async (req, res) => {
             {
                 student_id: { $in: students.map(s => s._id) },
                 month: currentMonth,
-                school_id: req.user.school_id
+                tenant_id: req.tenant_id
             },
             {
                 whatsapp_sent: true,
@@ -248,7 +248,7 @@ router.post('/bulk-whatsapp', protect, async (req, res) => {
 
         // Build student query
         const studentQuery = {
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             is_active: true,
             family_id: { $exists: true, $ne: null }
         };
@@ -271,7 +271,7 @@ router.post('/bulk-whatsapp', protect, async (req, res) => {
             familyGroups[familyId].students.push(student);
         });
 
-        const school = await School.findById(req.user.school_id);
+        const school = await School.findById(req.tenant_id);
 
         // Generate messages for each family
         const familiesData = await Promise.all(
@@ -281,7 +281,7 @@ router.post('/bulk-whatsapp', protect, async (req, res) => {
                         let fee = await Fee.findOne({
                             student_id: student._id,
                             month: currentMonth,
-                            school_id: req.user.school_id
+                            tenant_id: req.tenant_id
                         });
 
                         if (!fee) {
@@ -341,7 +341,7 @@ router.post('/', protect, async (req, res) => {
     try {
         const family = new Family({
             ...req.body,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         await family.save();
@@ -358,7 +358,7 @@ router.post('/', protect, async (req, res) => {
 router.put('/:id', protect, async (req, res) => {
     try {
         const family = await Family.findOneAndUpdate(
-            { _id: req.params.id, school_id: req.user.school_id },
+            { _id: req.params.id, tenant_id: req.tenant_id },
             req.body,
             { new: true, runValidators: true }
         );
@@ -382,7 +382,7 @@ router.delete('/:id', protect, async (req, res) => {
         // Check if family has students
         const studentCount = await Student.countDocuments({
             family_id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (studentCount > 0) {
@@ -393,7 +393,7 @@ router.delete('/:id', protect, async (req, res) => {
 
         const family = await Family.findOneAndDelete({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!family) {

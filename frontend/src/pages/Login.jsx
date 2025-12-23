@@ -44,11 +44,6 @@ const Login = () => {
                     <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
                         Sign In
                     </button>
-                    <div className="text-center text-sm text-gray-500 mt-4 bg-yellow-50 p-2 rounded border border-yellow-200">
-                        <p className="font-semibold text-gray-700">Demo Access</p>
-                        <p>Username: <span className="font-bold text-black">admin</span></p>
-                        <p>Password: <span className="font-bold text-black">admin</span></p>
-                    </div>
                 </form>
             </div>
         </div>

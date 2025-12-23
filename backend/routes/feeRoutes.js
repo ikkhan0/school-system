@@ -5,17 +5,18 @@ const Student = require('../models/Student');
 const Family = require('../models/Family');
 
 const { protect } = require('../middleware/auth');
+const checkPermission = require('../middleware/checkPermission');
 
 // @desc    Get Family Fee Details by searching for ONE student
 // @route   GET /api/fees/family-view?search=roll_or_name
-router.get('/family-view', protect, async (req, res) => {
+router.get('/family-view', protect, checkPermission('fees.view'), async (req, res) => {
     try {
         const { search } = req.query;
         if (!search) return res.status(400).json({ message: "Search term required" });
 
         // 1. Find the student (Scoped to School)
         const student = await Student.findOne({
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             $or: [
                 { roll_no: search },
                 { full_name: { $regex: search, $options: 'i' } }
@@ -30,7 +31,7 @@ router.get('/family-view', protect, async (req, res) => {
 
         if (student.family_id) {
             family = await Family.findById(student.family_id);
-            siblings = await Student.find({ family_id: student.family_id, school_id: req.user.school_id });
+            siblings = await Student.find({ family_id: student.family_id, tenant_id: req.tenant_id });
         } else {
             siblings = [student];
         }
@@ -38,7 +39,7 @@ router.get('/family-view', protect, async (req, res) => {
         const currentMonth = req.query.month || "Dec-2025"; // In real app, dynamic
 
         const familyData = await Promise.all(siblings.map(async (sib) => {
-            let fee = await Fee.findOne({ student_id: sib._id, month: currentMonth, school_id: req.user.school_id });
+            let fee = await Fee.findOne({ student_id: sib._id, month: currentMonth, tenant_id: req.tenant_id });
 
             if (!fee) {
                 // Mocking with new structure
@@ -74,18 +75,18 @@ router.get('/family-view', protect, async (req, res) => {
 
 // @desc    Collect Fee (Bulk or Single)
 // @route   POST /api/fees/collect
-router.post('/collect', protect, async (req, res) => {
+router.post('/collect', protect, checkPermission('fees.collect'), async (req, res) => {
     try {
         const { payments } = req.body;
         const results = [];
 
         for (const p of payments) {
-            let fee = await Fee.findOne({ student_id: p.student_id, month: p.month, school_id: req.user.school_id });
+            let fee = await Fee.findOne({ student_id: p.student_id, month: p.month, tenant_id: req.tenant_id });
 
             if (!fee) {
                 fee = new Fee({
                     student_id: p.student_id,
-                    school_id: req.user.school_id,
+                    tenant_id: req.tenant_id,
                     month: p.month,
                     tuition_fee: p.total_due,
                     gross_amount: p.total_due,
@@ -118,13 +119,13 @@ router.post('/collect', protect, async (req, res) => {
 
 // @desc    Add a Fee Manually for a Student
 // @route   POST /api/fees/add
-router.post('/add', protect, async (req, res) => {
+router.post('/add', protect, checkPermission('fees.create'), async (req, res) => {
     try {
         const { student_id, month, amount, description } = req.body;
 
         const newFee = new Fee({
             student_id,
-            school_id: req.user.school_id,
+            tenant_id: req.tenant_id,
             month,
             tuition_fee: amount,
             gross_amount: amount,
@@ -143,11 +144,11 @@ router.post('/add', protect, async (req, res) => {
 
 // @desc    Get Bulk Fee Slips for a Class
 // @route   GET /api/fees/bulk-slips?class_id=X&section_id=Y&month=Jan-2025
-router.get('/bulk-slips', protect, async (req, res) => {
+router.get('/bulk-slips', protect, checkPermission('fees.view'), async (req, res) => {
     try {
         const { class_id, section_id, month } = req.query;
         // Search loose to allow just class
-        const query = { is_active: true, school_id: req.user.school_id };
+        const query = { is_active: true, tenant_id: req.tenant_id };
         if (class_id) query.class_id = class_id;
         if (section_id) query.section_id = section_id;
 
@@ -180,11 +181,11 @@ router.get('/bulk-slips', protect, async (req, res) => {
 
 // @desc    Get Student Fee Ledger (History)
 // @route   GET /api/fees/ledger/:student_id
-router.get('/ledger/:student_id', protect, async (req, res) => {
+router.get('/ledger/:student_id', protect, checkPermission('fees.view'), async (req, res) => {
     try {
         const fees = await Fee.find({
             student_id: req.params.student_id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         }).sort({ createdAt: -1 }); // Latest first
 
         // Calculate running balance or totals if needed
@@ -196,7 +197,7 @@ router.get('/ledger/:student_id', protect, async (req, res) => {
 
 // @desc    Get Fee Voucher for Printing
 // @route   GET /api/fees/voucher/:student_id/:month
-router.get('/voucher/:student_id/:month', protect, async (req, res) => {
+router.get('/voucher/:student_id/:month', protect, checkPermission('fees.view'), async (req, res) => {
     try {
         const { student_id, month } = req.params;
 
@@ -208,7 +209,7 @@ router.get('/voucher/:student_id/:month', protect, async (req, res) => {
         let fee = await Fee.findOne({
             student_id,
             month,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!fee) {
@@ -216,7 +217,7 @@ router.get('/voucher/:student_id/:month', protect, async (req, res) => {
         }
 
         const School = require('../models/School');
-        const school = await School.findById(req.user.school_id);
+        const school = await School.findById(req.tenant_id);
 
         res.json({
             student,
@@ -230,13 +231,13 @@ router.get('/voucher/:student_id/:month', protect, async (req, res) => {
 
 // @desc    Update fee discount
 // @route   PUT /api/fees/:id/discount
-router.put('/:id/discount', protect, async (req, res) => {
+router.put('/:id/discount', protect, checkPermission('fees.edit'), async (req, res) => {
     try {
         const { manual_discount, discount_reason } = req.body;
 
         const fee = await Fee.findOne({
             _id: req.params.id,
-            school_id: req.user.school_id
+            tenant_id: req.tenant_id
         });
 
         if (!fee) {

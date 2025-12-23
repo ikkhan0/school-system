@@ -1,7 +1,14 @@
 const mongoose = require('mongoose');
 
 const studentSchema = mongoose.Schema({
-    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true },
+    // Multi-tenant support
+    tenant_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tenant',
+        required: false, // Optional for backward compatibility
+        index: true // Index for faster queries
+    },
+    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true }, // Legacy, kept for backward compatibility
     family_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Family' },
     roll_no: { type: String, required: true },
     full_name: { type: String, required: true },

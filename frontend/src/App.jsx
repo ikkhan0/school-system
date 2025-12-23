@@ -3,7 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 
 // Components
-import Navbar from './components/Navbar';
+import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages
@@ -40,6 +40,7 @@ import ClassResultSheet from './pages/ClassResultSheet';
 import EditExam from './pages/EditExam';
 import Settings from './pages/Settings';
 import AdvancedReports from './pages/reports/AdvancedReports';
+import UserManagement from './pages/UserManagement';
 
 import './App.css';
 
@@ -48,8 +49,7 @@ function App() {
     <Router>
       <LanguageProvider>
         <AuthProvider>
-          <div className="min-h-screen bg-gray-100 font-sans text-gray-900">
-            <Navbar />
+          <Layout>
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -86,9 +86,10 @@ function App() {
               <Route path="/sibling-management" element={<ProtectedRoute><SiblingManagement /></ProtectedRoute>} />
               <Route path="/class-result-sheet" element={<ProtectedRoute><ClassResultSheet /></ProtectedRoute>} />
               <Route path="/advanced-reports" element={<ProtectedRoute><AdvancedReports /></ProtectedRoute>} />
+              <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             </Routes>
-          </div>
+          </Layout>
         </AuthProvider>
       </LanguageProvider>
     </Router>

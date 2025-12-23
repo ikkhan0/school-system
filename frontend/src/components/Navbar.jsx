@@ -4,7 +4,7 @@ import axios from 'axios';
 import API_URL from '../config';
 import AuthContext from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Globe, LogOut, Settings as SettingsIcon, Menu, X, Home, Users, UserCheck, DollarSign, BookOpen, FileText, BarChart } from 'lucide-react';
+import { Globe, LogOut, Settings as SettingsIcon, Menu, X, Home, Users, UserCheck, DollarSign, BookOpen, FileText, BarChart, Shield } from 'lucide-react';
 import DropdownMenu from './DropdownMenu';
 import MobileDropdownMenu from './MobileDropdownMenu';
 
@@ -115,6 +115,12 @@ const Navbar = () => {
                 { path: '/reports', label: 'Basic Reports' },
                 { path: '/advanced-reports', label: 'Advanced Reports' },
             ]
+        },
+        {
+            path: '/users',
+            label: 'Users',
+            icon: Shield,
+            type: 'link'
         }
     ];
 

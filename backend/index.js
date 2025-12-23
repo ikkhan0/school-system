@@ -84,23 +84,31 @@ app.get('/api/health', async (req, res) => {
 // Routes
 app.use('/uploads', express.static('uploads'));
 
+// Import tenant isolation middleware
+const ensureTenant = require('./middleware/ensureTenant');
+const { protect } = require('./middleware/auth');
+
 // Super Admin Routes (No tenant isolation)
 app.use('/api/super-admin', require('./routes/superAdminRoutes'));
 
-// Regular Routes (With tenant isolation where applicable)
+// Auth Routes (No tenant isolation - needed for login)
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/students', require('./routes/studentRoutes'));
-app.use('/api/evaluation', require('./routes/evaluationRoutes'));
-app.use('/api/exams', require('./routes/examRoutes'));
-app.use('/api/fees', require('./routes/feeRoutes'));
-app.use('/api/classes', require('./routes/classRoutes'));
-app.use('/api/subjects', require('./routes/subjectRoutes'));
-app.use('/api/dashboard', require('./routes/dashboardRoutes'));
-app.use('/api/reports', require('./routes/reportsRoutes'));
-app.use('/api/school', require('./routes/schoolRoutes'));
-app.use('/api/staff', require('./routes/staffRoutes')); // Staff Management Routes
-app.use('/api/discounts', require('./routes/discountRoutes')); // Discount Management Routes
-app.use('/api/families', require('./routes/familyRoutes')); // Family Management Routes
+
+// Protected Routes WITH Tenant Isolation
+// All routes below require authentication and tenant context
+app.use('/api/students', protect, ensureTenant, require('./routes/studentRoutes'));
+app.use('/api/evaluation', protect, ensureTenant, require('./routes/evaluationRoutes'));
+app.use('/api/exams', protect, ensureTenant, require('./routes/examRoutes'));
+app.use('/api/fees', protect, ensureTenant, require('./routes/feeRoutes'));
+app.use('/api/classes', protect, ensureTenant, require('./routes/classRoutes'));
+app.use('/api/subjects', protect, ensureTenant, require('./routes/subjectRoutes'));
+app.use('/api/dashboard', protect, ensureTenant, require('./routes/dashboardRoutes'));
+app.use('/api/reports', protect, ensureTenant, require('./routes/reportsRoutes'));
+app.use('/api/school', protect, ensureTenant, require('./routes/schoolRoutes'));
+app.use('/api/staff', protect, ensureTenant, require('./routes/staffRoutes'));
+app.use('/api/discounts', protect, ensureTenant, require('./routes/discountRoutes'));
+app.use('/api/families', protect, ensureTenant, require('./routes/familyRoutes'));
+app.use('/api/users', protect, ensureTenant, require('./routes/userRoutes'));
 
 if (require.main === module) {
     app.listen(PORT, () => {
