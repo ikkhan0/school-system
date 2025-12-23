@@ -45,18 +45,27 @@ const superAdminSchema = mongoose.Schema({
 
 // Hash password before saving
 superAdminSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) {
-        return next();
-    }
+    try {
+        if (!this.isModified('password')) {
+            return next();
+        }
 
-    // Check if password is already hashed (bcrypt hashes start with $2a$ or $2b$)
-    if (this.password.startsWith('$2')) {
-        return next();
-    }
+        // Check if password is already hashed (bcrypt hashes start with $2a$ or $2b$)
+        if (this.password && this.password.startsWith('$2')) {
+            return next();
+        }
 
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
+        // Validate password length before hashing
+        if (!this.password || this.password.length < 6) {
+            return next(new Error('Password must be at least 6 characters'));
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (error) {
+        next(error);
+    }
 });
 
 // Method to compare password
