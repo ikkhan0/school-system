@@ -1,11 +1,28 @@
 const cloudinary = require('cloudinary').v2;
 
 // Configure Cloudinary
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'dcp9y6xas';
+const apiKey = process.env.CLOUDINARY_API_KEY || '629531215784715';
+const apiSecret = process.env.CLOUDINARY_API_SECRET || 'KKzS_ZGjje84ejLMxYK7glBCabs';
+
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dcp9y6xas',
-    api_key: process.env.CLOUDINARY_API_KEY || '629531215784715',
-    api_secret: process.env.CLOUDINARY_API_SECRET || 'KKzS_ZGjje84ejLMxYK7glBCabs'
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret
 });
+
+// Log configuration status (without exposing secrets)
+console.log('Cloudinary Configuration:');
+console.log('- Cloud Name:', cloudName ? '✓ Set' : '✗ Missing');
+console.log('- API Key:', apiKey ? '✓ Set' : '✗ Missing');
+console.log('- API Secret:', apiSecret ? '✓ Set' : '✗ Missing');
+
+/**
+ * Check if Cloudinary is properly configured
+ */
+const isCloudinaryConfigured = () => {
+    return !!(cloudName && apiKey && apiSecret);
+};
 
 /**
  * Upload image buffer to Cloudinary
@@ -16,6 +33,14 @@ cloudinary.config({
  */
 const uploadToCloudinary = (buffer, folder, publicId = null) => {
     return new Promise((resolve, reject) => {
+        // Check if Cloudinary is configured
+        if (!isCloudinaryConfigured()) {
+            const error = new Error('Cloudinary is not configured. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET environment variables.');
+            console.error('❌ Cloudinary configuration error:', error.message);
+            reject(error);
+            return;
+        }
+
         const uploadOptions = {
             folder: folder,
             resource_type: 'auto',
@@ -29,13 +54,16 @@ const uploadToCloudinary = (buffer, folder, publicId = null) => {
             uploadOptions.public_id = publicId;
         }
 
+        console.log(`📤 Uploading to Cloudinary folder: ${folder}`);
+
         const uploadStream = cloudinary.uploader.upload_stream(
             uploadOptions,
             (error, result) => {
                 if (error) {
-                    console.error('Cloudinary upload error:', error);
+                    console.error('❌ Cloudinary upload error:', error);
                     reject(error);
                 } else {
+                    console.log('✅ Cloudinary upload successful:', result.secure_url);
                     resolve(result);
                 }
             }
@@ -78,5 +106,6 @@ module.exports = {
     cloudinary,
     uploadToCloudinary,
     deleteFromCloudinary,
-    getPublicIdFromUrl
+    getPublicIdFromUrl,
+    isCloudinaryConfigured
 };
