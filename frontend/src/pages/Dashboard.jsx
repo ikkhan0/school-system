@@ -451,12 +451,12 @@ const Dashboard = () => {
                                         <span className="hidden sm:inline text-sm lg:text-base">WhatsApp</span>
                                     </button>
                                 </div>
-                            ))}
+                            ))}\
                         </div>
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 };
 
