@@ -217,7 +217,7 @@ router.get('/results', protect, async (req, res) => {
             exam_id,
             class_id,
             section_id,
-            tenant_id: req.tenant_id
+            school_id: req.tenant_id
         };
 
         console.log('MongoDB query:', query);
