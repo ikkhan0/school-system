@@ -55,6 +55,35 @@ router.get('/', protect, async (req, res) => {
     }
 });
 
+// @desc    Delete Exam
+// @route   DELETE /api/exams/:id
+router.delete('/:id', protect, async (req, res) => {
+    try {
+        const exam = await Exam.findOne({ _id: req.params.id, tenant_id: req.tenant_id });
+
+        if (!exam) {
+            return res.status(404).json({ message: 'Exam not found' });
+        }
+
+        // Check if any results/marks exist for this exam
+        const resultsCount = await Result.countDocuments({ exam_id: req.params.id, tenant_id: req.tenant_id });
+
+        if (resultsCount > 0) {
+            return res.status(400).json({
+                message: `Cannot delete exam. ${resultsCount} student result(s) exist for this exam. Please delete all marks/results first.`,
+                hasResults: true,
+                resultsCount: resultsCount
+            });
+        }
+
+        // No results found, safe to delete
+        await Exam.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Exam deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // @desc    Save Marks (Bulk)
 // @desc    Save Marks (Bulk)
 // @route   POST /api/exams/marks

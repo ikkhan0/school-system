@@ -52,17 +52,41 @@ const ExamManager = () => {
                 },
                 body: JSON.stringify(formData)
             });
+            const data = await res.json();
             if (res.ok) {
                 alert("Exam Created Successfully!");
                 setFormData({ title: '', start_date: '', end_date: '', is_active: true });
                 fetchExams();
             } else {
-                alert("Failed to create exam");
+                alert(data.message || "Failed to create exam");
             }
         } catch (err) {
             alert(err.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDelete = async (examId, examTitle) => {
+        if (!confirm(`Are you sure you want to delete "${examTitle}"?\n\nNote: This exam can only be deleted if no marks have been entered.`)) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/api/exams/${examId}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                alert('Exam deleted successfully!');
+                fetchExams();
+            } else {
+                alert(data.message || 'Failed to delete exam');
+            }
+        } catch (err) {
+            alert('Error deleting exam: ' + err.message);
         }
     };
 
@@ -164,7 +188,11 @@ const ExamManager = () => {
                                                 >
                                                     <Edit size={16} />
                                                 </button>
-                                                <button className="text-red-500 hover:bg-red-50 p-1 rounded" title="Delete (Not Implemented)">
+                                                <button
+                                                    onClick={() => handleDelete(exam._id, exam.title)}
+                                                    className="text-red-500 hover:bg-red-50 p-1 rounded"
+                                                    title="Delete Exam"
+                                                >
                                                     <Trash2 size={16} />
                                                 </button>
                                             </div>
