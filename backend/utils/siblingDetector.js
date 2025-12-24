@@ -6,10 +6,10 @@ const Family = require('../models/Family');
  * @param {String} school_id - School ID
  * @returns {Array} - Array of sibling groups
  */
-async function detectSiblingsByFamily(school_id) {
+async function detectSiblingsByFamily(tenant_id) {
     try {
         const students = await Student.find({
-            school_id,
+            tenant_id,
             is_active: true,
             family_id: { $exists: true, $ne: null }
         }).populate('family_id');
@@ -46,10 +46,10 @@ async function detectSiblingsByFamily(school_id) {
  * @param {String} school_id - School ID
  * @returns {Array} - Array of suggested sibling groups
  */
-async function detectSiblingsByMobile(school_id) {
+async function detectSiblingsByMobile(tenant_id) {
     try {
         const students = await Student.find({
-            school_id,
+            tenant_id,
             is_active: true
         });
 
@@ -103,11 +103,11 @@ async function detectSiblingsByMobile(school_id) {
  * @param {String} school_id - School ID
  * @returns {Object} - Suggested sibling groups
  */
-async function suggestSiblingGroups(school_id) {
+async function suggestSiblingGroups(tenant_id) {
     try {
         const [familyGroups, mobileGroups] = await Promise.all([
-            detectSiblingsByFamily(school_id),
-            detectSiblingsByMobile(school_id)
+            detectSiblingsByFamily(tenant_id),
+            detectSiblingsByMobile(tenant_id)
         ]);
 
         return {
@@ -135,7 +135,7 @@ async function suggestSiblingGroups(school_id) {
  * @param {String} school_id - School ID
  * @returns {Object} - Result of linking operation
  */
-async function linkSiblings(studentIds, familyData, school_id) {
+async function linkSiblings(studentIds, familyData, tenant_id) {
     try {
         // Validate input
         if (!studentIds || studentIds.length < 2) {
@@ -148,7 +148,7 @@ async function linkSiblings(studentIds, familyData, school_id) {
         // Fetch students
         const students = await Student.find({
             _id: { $in: studentIds },
-            school_id
+            tenant_id
         });
 
         if (students.length !== studentIds.length) {
@@ -176,7 +176,7 @@ async function linkSiblings(studentIds, familyData, school_id) {
         } else {
             // Create new family
             family = new Family({
-                school_id,
+                tenant_id,
                 father_name: familyData.father_name || students[0].father_name,
                 father_mobile: familyData.father_mobile || students[0].father_mobile,
                 father_cnic: familyData.father_cnic,
