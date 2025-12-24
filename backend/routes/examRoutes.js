@@ -204,9 +204,37 @@ const Fee = require('../models/Fee'); // Add Fee model import
 router.get('/results', protect, async (req, res) => {
     try {
         const { exam_id, class_id, section_id } = req.query;
-        const results = await Result.find({ exam_id, class_id, section_id, tenant_id: req.tenant_id })
+
+        console.log('=== RESULTS QUERY DEBUG ===');
+        console.log('Query params:', { exam_id, class_id, section_id });
+        console.log('Tenant ID:', req.tenant_id);
+
+        const query = {
+            exam_id,
+            class_id,
+            section_id,
+            tenant_id: req.tenant_id
+        };
+
+        console.log('MongoDB query:', query);
+
+        const results = await Result.find(query)
             .populate('student_id')
             .populate('exam_id');
+
+        console.log(`Found ${results.length} results`);
+
+        if (results.length > 0) {
+            console.log('Sample result:', {
+                student_id: results[0].student_id?._id,
+                exam_id: results[0].exam_id?._id,
+                class_id: results[0].class_id,
+                section_id: results[0].section_id,
+                subjects: results[0].subjects.length,
+                tenant_id: results[0].tenant_id,
+                school_id: results[0].school_id
+            });
+        }
 
         // Aggregate Stats (Attendance, Fees, Behavior)
         const detailedResults = await Promise.all(results.map(async (r) => {
