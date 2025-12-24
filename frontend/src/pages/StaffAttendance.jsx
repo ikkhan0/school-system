@@ -146,36 +146,36 @@ const StaffAttendance = () => {
         <div className="p-4 max-w-7xl mx-auto">
             <div className="bg-white rounded-lg shadow-lg p-6">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                     <div className="flex items-center gap-3">
-                        <Users size={32} className="text-purple-600" />
+                        <Users size={28} className="text-purple-600 sm:w-8 sm:h-8" />
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-800">Staff Attendance</h1>
-                            <p className="text-sm text-gray-600">Mark daily attendance for all staff members</p>
+                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Staff Attendance</h1>
+                            <p className="text-xs sm:text-sm text-gray-600">Mark daily attendance for all staff members</p>
                         </div>
                     </div>
                     <button
                         onClick={() => navigate('/staff')}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                        className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm sm:text-base"
                     >
-                        <ArrowLeft size={18} />
+                        <ArrowLeft size={16} className="sm:w-[18px] sm:h-[18px]" />
                         Back to Staff
                     </button>
                 </div>
 
                 {/* Date Selector */}
-                <div className="mb-6 flex items-center gap-4">
+                <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                     <div className="flex items-center gap-2">
-                        <Calendar className="text-blue-600" size={20} />
-                        <label className="font-semibold text-gray-700">Date:</label>
+                        <Calendar className="text-blue-600 w-[18px] h-[18px] sm:w-5 sm:h-5" />
+                        <label className="font-semibold text-gray-700 text-sm sm:text-base">Date:</label>
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                            className="px-3 py-2 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+                        />
                     </div>
-                    <input
-                        type="date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        className="px-4 py-2 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    />
-                    <div className="ml-auto flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:ml-auto">
                         <button
                             onClick={() => handleMarkAll('Present')}
                             className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
@@ -185,9 +185,9 @@ const StaffAttendance = () => {
                         <button
                             onClick={handleSave}
                             disabled={loading}
-                            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
+                            className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 text-sm sm:text-base"
                         >
-                            <Save size={18} />
+                            <Save size={16} className="sm:w-[18px] sm:h-[18px]" />
                             {loading ? 'Saving...' : 'Save Attendance'}
                         </button>
                     </div>
@@ -242,18 +242,19 @@ const StaffAttendance = () => {
                                 </div>
 
                                 {/* Status Buttons */}
-                                <div className="flex gap-2">
+                                <div className="flex flex-wrap gap-2">
                                     {['Present', 'Absent', 'Leave', 'Half-Day', 'Late'].map(status => (
                                         <button
                                             key={status}
                                             onClick={() => handleStatusChange(member._id, status)}
-                                            className={`flex items-center gap-1 px-3 py-2 rounded-lg border-2 transition ${attendance[member._id]?.status === status
+                                            className={`flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border-2 transition text-xs sm:text-sm ${attendance[member._id]?.status === status
                                                 ? getStatusColor(status) + ' font-bold'
                                                 : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
                                                 }`}
                                         >
                                             {getStatusIcon(status)}
-                                            <span className="text-xs">{status}</span>
+                                            <span className="hidden sm:inline">{status}</span>
+                                            <span className="sm:hidden">{status.substring(0, 1)}</span>
                                         </button>
                                     ))}
                                 </div>

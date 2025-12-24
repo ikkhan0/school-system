@@ -85,45 +85,45 @@ const ResultGeneration = () => {
     return (
         <div className="max-w-6xl mx-auto p-4">
             <div className="no-print mb-6 bg-white p-4 shadow rounded space-y-4">
-                <div className="flex justify-between items-center">
-                    <h1 className="text-xl font-bold">Result Card Generation</h1>
-                    <div className="flex gap-4">
-                        <select className="border p-2 rounded" value={selectedExam} onChange={e => setSelectedExam(e.target.value)}>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                    <h1 className="text-xl sm:text-2xl font-bold">Result Card Generation</h1>
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                        <select className="border p-2 rounded text-sm sm:text-base" value={selectedExam} onChange={e => setSelectedExam(e.target.value)}>
                             {exams.map(ex => <option key={ex._id} value={ex._id}>{ex.title}</option>)}
                         </select>
-                        <select className="border p-2 rounded" value={selectedClass} onChange={e => {
+                        <select className="border p-2 rounded text-sm sm:text-base" value={selectedClass} onChange={e => {
                             setSelectedClass(e.target.value);
                             const cls = classes.find(c => c.name === e.target.value);
                             if (cls && cls.sections.length > 0) setSelectedSection(cls.sections[0]);
                         }}>
                             {classes.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
                         </select>
-                        <select className="border p-2 rounded" value={selectedSection} onChange={e => setSelectedSection(e.target.value)}>
+                        <select className="border p-2 rounded text-sm sm:text-base" value={selectedSection} onChange={e => setSelectedSection(e.target.value)}>
                             {classes.find(c => c.name === selectedClass)?.sections.map(sec => (
                                 <option key={sec} value={sec}>{sec}</option>
                             )) || <option value="A">A</option>}
                         </select>
-                        <button onClick={fetchResults} className="bg-blue-600 text-white px-4 py-2 rounded">Load Results</button>
+                        <button onClick={fetchResults} className="bg-blue-600 text-white px-4 py-2 rounded text-sm sm:text-base hover:bg-blue-700">Load Results</button>
                     </div>
                 </div>
 
                 {/* Toggles */}
-                <div className="flex gap-6 items-center border-t pt-4">
-                    <label className="flex items-center gap-2 font-semibold text-sm cursor-pointer">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 items-start sm:items-center border-t pt-4">
+                    <label className="flex items-center gap-2 font-semibold text-xs sm:text-sm cursor-pointer">
                         <input type="checkbox" checked={showAttendance} onChange={e => setShowAttendance(e.target.checked)} className="w-4 h-4" />
                         Attendance Report
                     </label>
-                    <label className="flex items-center gap-2 font-semibold text-sm cursor-pointer">
+                    <label className="flex items-center gap-2 font-semibold text-xs sm:text-sm cursor-pointer">
                         <input type="checkbox" checked={showFees} onChange={e => setShowFees(e.target.checked)} className="w-4 h-4" />
                         Fee Status
                     </label>
-                    <label className="flex items-center gap-2 font-semibold text-sm cursor-pointer">
+                    <label className="flex items-center gap-2 font-semibold text-xs sm:text-sm cursor-pointer">
                         <input type="checkbox" checked={showBehavior} onChange={e => setShowBehavior(e.target.checked)} className="w-4 h-4" />
                         Evaluation Report
                     </label>
 
-                    <button onClick={() => window.print()} className="ml-auto bg-gray-800 text-white px-4 py-2 rounded flex gap-2 items-center">
-                        <Printer size={18} /> Print Cards
+                    <button onClick={() => window.print()} className="sm:ml-auto bg-gray-800 text-white px-4 py-2 rounded flex gap-2 items-center text-sm sm:text-base hover:bg-gray-900">
+                        <Printer size={16} className="sm:w-[18px] sm:h-[18px]" /> Print Cards
                     </button>
                 </div>
             </div>

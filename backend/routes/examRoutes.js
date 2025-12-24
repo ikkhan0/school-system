@@ -16,6 +16,10 @@ router.post('/', protect, async (req, res) => {
         });
         res.status(201).json(exam);
     } catch (error) {
+        // Check for duplicate key error (MongoDB error code 11000)
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.title) {
+            return res.status(400).json({ message: 'An exam with this title already exists. Please use a different title.' });
+        }
         res.status(400).json({ message: error.message });
     }
 });

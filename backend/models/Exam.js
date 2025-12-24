@@ -22,4 +22,7 @@ const examSchema = mongoose.Schema({
     }]
 }, { timestamps: true });
 
+// Compound unique index to prevent duplicate exam titles within the same tenant
+examSchema.index({ tenant_id: 1, title: 1 }, { unique: true });
+
 module.exports = mongoose.model('Exam', examSchema);

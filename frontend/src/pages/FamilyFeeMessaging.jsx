@@ -112,21 +112,22 @@ const FamilyFeeMessaging = () => {
         <div className="max-w-7xl mx-auto p-4">
             <div className="bg-white rounded-lg shadow-lg p-6">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2">
                             <MessageCircle className="text-green-600" />
                             Family Fee Messaging
                         </h1>
-                        <p className="text-gray-600">Send consolidated fee reminders via WhatsApp</p>
+                        <p className="text-sm sm:text-base text-gray-600">Send consolidated fee reminders via WhatsApp</p>
                     </div>
                     <button
                         onClick={handleBulkSend}
                         disabled={loading}
-                        className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400"
+                        className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 text-sm sm:text-base"
                     >
-                        <Send size={20} />
-                        Generate Bulk Messages
+                        <Send size={18} className="sm:w-5 sm:h-5" />
+                        <span className="hidden sm:inline">Generate Bulk Messages</span>
+                        <span className="sm:hidden">Bulk Send</span>
                     </button>
                 </div>
 
@@ -184,44 +185,44 @@ const FamilyFeeMessaging = () => {
                         </div>
                     ) : (
                         families.map(family => (
-                            <div key={family._id} className="border-2 rounded-lg p-4 hover:shadow-md transition">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4 flex-1">
+                            <div key={family._id} className="border-2 rounded-lg p-3 sm:p-4 hover:shadow-md transition">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                                    <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1">
                                         <input
                                             type="checkbox"
                                             checked={selectedFamilies.includes(family._id)}
                                             onChange={() => toggleFamilySelection(family._id)}
-                                            className="w-5 h-5"
+                                            className="w-5 h-5 mt-1 sm:mt-0"
                                         />
-                                        <div className="flex-1">
-                                            <h3 className="font-bold text-lg flex items-center gap-2">
-                                                <Users size={20} className="text-blue-600" />
-                                                {family.father_name || family.family_head_name}
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="font-bold text-base sm:text-lg flex items-center gap-2">
+                                                <Users size={18} className="text-blue-600 flex-shrink-0" />
+                                                <span className="truncate">{family.father_name || family.family_head_name}</span>
                                             </h3>
-                                            <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-gray-600 mt-1">
                                                 <span className="flex items-center gap-1">
-                                                    <Phone size={14} />
+                                                    <Phone size={12} className="sm:w-3.5 sm:h-3.5" />
                                                     {family.father_mobile}
                                                 </span>
                                                 <span className="flex items-center gap-1">
-                                                    <Users size={14} />
+                                                    <Users size={12} className="sm:w-3.5 sm:h-3.5" />
                                                     {family.student_count || 0} Children
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 sm:flex-shrink-0">
                                         <button
                                             onClick={() => handlePreviewMessage(family)}
-                                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                            className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
                                         >
                                             Preview
                                         </button>
                                         <button
                                             onClick={() => handleSendMessage(family._id)}
-                                            className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
                                         >
-                                            <MessageCircle size={16} />
+                                            <MessageCircle size={14} className="sm:w-4 sm:h-4" />
                                             Send
                                         </button>
                                     </div>
