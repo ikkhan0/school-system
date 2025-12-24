@@ -196,7 +196,7 @@ const Dashboard = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100">
             {/* Header */}
-            <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
+            <div className="px-2 sm:px-4 lg:px-6 pt-6 pb-4">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
                     Welcome back, {user?.full_name || user?.username || 'School Administrator'}! 👋
                 </h1>
@@ -204,7 +204,7 @@ const Dashboard = () => {
             </div>
 
             {/* Stat Cards Grid - Full Width */}
-            <div className="px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8">
+            <div className="px-2 sm:px-4 lg:px-6 mb-6 sm:mb-8">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                     {statCards.map((card, index) => (
                         <div
@@ -251,7 +251,7 @@ const Dashboard = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8">
+            <div className="px-2 sm:px-4 lg:px-6 mb-6 sm:mb-8">
                 <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
                     <h2 className="text-xl lg:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
                         <MessageSquare size={24} className="text-blue-600" />
@@ -275,7 +275,7 @@ const Dashboard = () => {
             </div>
 
             {/* Charts Section - Full Width */}
-            <div className="px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8">
+            <div className="px-2 sm:px-4 lg:px-6 mb-6 sm:mb-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                     {/* Fee Collection Chart */}
                     <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
@@ -363,7 +363,7 @@ const Dashboard = () => {
             </div>
 
             {/* Info Cards */}
-            <div className="px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8">
+            <div className="px-2 sm:px-4 lg:px-6 mb-6 sm:mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
                     {/* Today's Summary */}
                     <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
@@ -417,7 +417,7 @@ const Dashboard = () => {
 
             {/* Today's Absent Students */}
             {absentStudents.length > 0 && (
-                <div className="px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8">
+                <div className="px-2 sm:px-4 lg:px-6 mb-6 sm:mb-8">
                     <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8 mt-6 lg:mt-8">
                         <h3 className="text-xl lg:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
                             <AlertCircle className="text-red-600" size={24} />
