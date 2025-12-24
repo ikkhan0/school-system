@@ -126,7 +126,11 @@ router.post('/marks', protect, async (req, res) => {
         for (const data of marks_data) {
             console.log(`Processing student ${data.student_id}: ${data.obtained_marks}/${data.total_marks}`);
 
-            let result = await Result.findOne({ exam_id, student_id: data.student_id, tenant_id: req.tenant_id });
+            let result = await Result.findOne({
+                exam_id,
+                student_id: data.student_id,
+                school_id: req.tenant_id
+            });
 
             if (!result) {
                 console.log('Creating new result record for student:', data.student_id);
