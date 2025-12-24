@@ -169,10 +169,15 @@ const DailyEvaluation = () => {
 
     return (
         <div className="max-w-7xl mx-auto p-4">
-            <header className="bg-white shadow rounded-lg p-4 mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div className="flex items-center gap-4 w-full md:w-auto">
-                    <h1 className="text-xl font-bold whitespace-nowrap hidden md:block">Daily Evaluation</h1>
-                    <div className="flex gap-2 flex-1">
+            <header className="bg-white shadow rounded-lg p-3 sm:p-4 mb-4">
+                <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                        <h1 className="text-lg sm:text-xl font-bold">Daily Evaluation</h1>
+                        <button onClick={handleSave} disabled={saving} className="bg-blue-600 text-white px-4 sm:px-6 py-2 rounded shadow font-bold flex items-center gap-2 hover:bg-blue-700 text-sm sm:text-base">
+                            <Save size={16} className="sm:w-[18px] sm:h-[18px]" /> {saving ? 'Saving...' : 'Save'}
+                        </button>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2">
                         <select
                             value={selectedClass}
                             onChange={(e) => {
@@ -180,33 +185,31 @@ const DailyEvaluation = () => {
                                 const cls = classes.find(c => c.name === e.target.value);
                                 if (cls && cls.sections.length > 0) setSelectedSection(cls.sections[0]);
                             }}
-                            className="border rounded p-2 text-sm flex-1"
+                            className="border rounded p-2 text-sm flex-1 sm:flex-none"
                         >
                             {classes.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
                         </select>
                         <select
                             value={selectedSection}
                             onChange={(e) => setSelectedSection(e.target.value)}
-                            className="border rounded p-2 text-sm w-24"
+                            className="border rounded p-2 text-sm flex-1 sm:flex-none sm:w-32"
                         >
                             {classes.find(c => c.name === selectedClass)?.sections.map(sec => (
-                                <option key={sec} value={sec}>Sec {sec}</option>
-                            )) || <option value="A">Sec A</option>}
+                                <option key={sec} value={sec}>Section {sec}</option>
+                            )) || <option value="A">Section A</option>}
                         </select>
                         <input
                             type="date"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
-                            className="border rounded p-2 text-sm"
+                            className="border rounded p-2 text-sm flex-1 sm:flex-none"
                         />
                     </div>
                 </div>
-                <button onClick={handleSave} disabled={saving} className="bg-blue-600 text-white px-6 py-2 rounded shadow font-bold flex items-center gap-2 hover:bg-blue-700 w-full md:w-auto justify-center">
-                    <Save size={18} /> {saving ? 'Saving...' : 'Save All Changes'}
-                </button>
             </header>
 
-            <div className="bg-white shadow rounded-lg overflow-hidden border border-gray-200">
+            {/* Desktop Table View */}
+            <div className="bg-white shadow rounded-lg overflow-hidden border border-gray-200 hidden md:block">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-gray-100 text-gray-700 text-sm uppercase">
@@ -286,6 +289,81 @@ const DailyEvaluation = () => {
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-3">
+                {students.map((student) => (
+                    <div key={student.student_id} className="bg-white shadow rounded-lg border border-gray-200 p-3">
+                        {/* Student Info */}
+                        <div className="flex items-start justify-between mb-3 pb-3 border-b">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="bg-gray-100 text-gray-700 font-mono font-bold text-xs px-2 py-1 rounded">#{student.roll_no}</span>
+                                    <h3 className="font-bold text-gray-900">{student.name}</h3>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">Father: {student.father_mobile || 'N/A'}</p>
+                            </div>
+                            <button
+                                onClick={() => handleSendReport(student)}
+                                className="text-green-600 hover:text-green-800 p-2 rounded hover:bg-green-50"
+                                title="Send WhatsApp Report"
+                            >
+                                <MessageCircle size={20} />
+                            </button>
+                        </div>
+
+                        {/* Attendance Buttons */}
+                        <div className="mb-3">
+                            <label className="text-xs font-semibold text-gray-600 mb-1 block">Attendance</label>
+                            <div className="flex gap-2">
+                                {['Present', 'Absent', 'Leave'].map(status => (
+                                    <button
+                                        key={status}
+                                        onClick={() => handleStatusChange(student.student_id, status)}
+                                        className={`flex-1 py-2 rounded-lg font-bold text-xs transition-all ${student.status === status
+                                            ? (status === 'Present' ? 'bg-green-600 text-white shadow-md'
+                                                : status === 'Absent' ? 'bg-red-600 text-white shadow-md'
+                                                    : 'bg-yellow-500 text-white shadow-md')
+                                            : 'bg-gray-100 border text-gray-600'
+                                            }`}
+                                    >
+                                        {status}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Violations */}
+                        <div className="mb-3">
+                            <button
+                                onClick={() => openEvaluationModal(student.student_id)}
+                                className={`w-full py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 ${getViolationCount(student) > 0
+                                    ? 'bg-red-100 text-red-700 border border-red-200'
+                                    : 'bg-gray-50 text-gray-400 border border-gray-200'
+                                    }`}
+                            >
+                                {getViolationCount(student) > 0 ? (
+                                    <><AlertTriangle size={14} /> {getViolationCount(student)} Issues - Tap to Edit</>
+                                ) : (
+                                    <>No Issues - Tap to Add</>
+                                )}
+                            </button>
+                        </div>
+
+                        {/* Remarks */}
+                        <div>
+                            <label className="text-xs font-semibold text-gray-600 mb-1 block">Remarks</label>
+                            <input
+                                type="text"
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                                placeholder="Type remarks..."
+                                value={student.teacher_remarks || ''}
+                                onChange={(e) => setStudents(prev => prev.map(s => s.student_id === student.student_id ? { ...s, teacher_remarks: e.target.value } : s))}
+                            />
+                        </div>
+                    </div>
+                ))}
             </div>
 
             {/* Modal - Kept same logic but cleaner UI */}
