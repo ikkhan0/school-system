@@ -12,6 +12,7 @@ const AddStudent = () => {
     const [subjects, setSubjects] = useState([]);
     const [staff, setStaff] = useState([]);
     const [isStaffChild, setIsStaffChild] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         full_name: '',
         father_name: '',

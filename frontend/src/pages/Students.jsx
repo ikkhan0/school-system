@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Search, Phone, MessageCircle, User, Edit, Plus, Upload } from 'lucide-react';
+import { Search, Phone, MessageCircle, User, Edit, Plus, Upload, Trash2 } from 'lucide-react';
 import API_URL from '../config';
 
 const Students = () => {
@@ -98,6 +98,25 @@ const Students = () => {
             alert(`Failed to ${action} student`);
         }
     };
+
+    const handleDeleteStudent = async (studentId, studentName) => {
+        if (!confirm(`⚠️ PERMANENT DELETE\n\nAre you sure you want to permanently delete ${studentName}?\n\nThis action CANNOT be undone!`)) return;
+
+        // Double confirmation for safety
+        if (!confirm(`Final confirmation: Delete ${studentName} permanently?`)) return;
+
+        try {
+            await axios.delete(`${API_URL}/api/students/${studentId}`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            alert('Student deleted permanently');
+            fetchStudents();
+        } catch (error) {
+            console.error(error);
+            alert(`Failed to delete student: ${error.response?.data?.message || error.message}`);
+        }
+    };
+
 
     return (
         <div className="p-3 sm:p-4 max-w-7xl mx-auto">
@@ -236,7 +255,7 @@ const Students = () => {
                             )}
 
                             {/* Action Buttons */}
-                            <div className="grid grid-cols-5 gap-1 sm:gap-2">
+                            <div className="grid grid-cols-6 gap-1 sm:gap-2">
                                 <button
                                     onClick={() => sendWhatsApp(student.family_id?.father_mobile || student.father_mobile)}
                                     className="flex flex-col items-center justify-center p-1.5 sm:p-2 bg-green-50 text-green-600 rounded hover:bg-green-100"
@@ -284,6 +303,14 @@ const Students = () => {
                                         )}
                                     </div>
                                     <span className="text-xs mt-1">{student.is_active ? 'DEACT' : 'ACT'}</span>
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteStudent(student._id, student.full_name)}
+                                    className="flex flex-col items-center justify-center p-2 bg-red-50 text-red-600 rounded hover:bg-red-100"
+                                    title="Delete Permanently"
+                                >
+                                    <Trash2 size={18} />
+                                    <span className="text-xs mt-1">DEL</span>
                                 </button>
                             </div>
                         </div>
