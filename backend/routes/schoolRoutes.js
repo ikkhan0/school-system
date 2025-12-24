@@ -3,12 +3,20 @@ const router = express.Router();
 const { protect } = require('../middleware/auth');
 const School = require('../models/School');
 const multer = require('multer');
+const { uploadToCloudinary, deleteFromCloudinary, getPublicIdFromUrl } = require('../config/cloudinary');
 
-// Simple memory storage for base64 conversion
+// Memory storage for Cloudinary upload
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+        // Accept images only
+        if (!file.mimetype.startsWith('image/')) {
+            return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+    }
 });
 
 // @desc    Get School Details
@@ -25,7 +33,6 @@ router.get('/', protect, async (req, res) => {
 
 // @desc    Update School Details
 // @route   PUT /api/school
-// Simple base64 upload - no external services needed
 router.put('/', protect, upload.single('logo'), async (req, res) => {
     try {
         console.log('=== SCHOOL UPDATE DEBUG ===');
@@ -40,14 +47,40 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
         if (req.body.phone !== undefined) updateData.phone = req.body.phone;
         if (req.body.email !== undefined) updateData.email = req.body.email;
 
-        // Convert uploaded file to base64 if present
+        // Upload to Cloudinary if file present
         if (req.file) {
-            const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
-            updateData.logo = base64Image;
-            console.log('Logo converted to base64, size:', base64Image.length);
+            try {
+                console.log('Uploading logo to Cloudinary...');
+
+                // Delete old logo from Cloudinary if exists
+                const existingSchool = await School.findById(req.tenant_id);
+                if (existingSchool && existingSchool.logo) {
+                    const oldPublicId = getPublicIdFromUrl(existingSchool.logo);
+                    if (oldPublicId) {
+                        await deleteFromCloudinary(oldPublicId);
+                        console.log('Old logo deleted from Cloudinary');
+                    }
+                }
+
+                // Upload new logo
+                const result = await uploadToCloudinary(
+                    req.file.buffer,
+                    'school-logos',
+                    `school_${req.tenant_id}_logo`
+                );
+
+                updateData.logo = result.secure_url;
+                console.log('Logo uploaded to Cloudinary:', result.secure_url);
+            } catch (uploadError) {
+                console.error('Cloudinary upload error:', uploadError);
+                return res.status(500).json({
+                    message: 'Failed to upload logo to Cloudinary',
+                    error: uploadError.message
+                });
+            }
         }
 
-        console.log('Update data:', { ...updateData, logo: updateData.logo ? 'base64 image' : undefined });
+        console.log('Update data:', { ...updateData, logo: updateData.logo ? 'Cloudinary URL' : undefined });
 
         // Use findOneAndUpdate with upsert to create if doesn't exist
         const school = await School.findOneAndUpdate(

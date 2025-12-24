@@ -4,24 +4,19 @@ const { protect } = require('../middleware/auth');
 const checkPermission = require('../middleware/checkPermission');
 const Student = require('../models/Student');
 const Family = require('../models/Family');
+const { uploadToCloudinary, deleteFromCloudinary, getPublicIdFromUrl } = require('../config/cloudinary');
 
 const multer = require('multer');
 const path = require('path');
 const { parseFile, validateStudentData, generateSampleCSV } = require('../utils/importStudents');
 
 
-// Multer Config
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, `student-${Date.now()}${path.extname(file.originalname)}`);
-    }
-});
+// Multer Config - Memory storage for Cloudinary
+const storage = multer.memoryStorage();
 
 const upload = multer({
     storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     fileFilter: (req, file, cb) => {
         const filetypes = /jpeg|jpg|png/;
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -258,9 +253,26 @@ router.post('/add', protect, checkPermission('students.create'), upload.single('
             }
         }
 
+        // Upload photo to Cloudinary if provided
+        let photoUrl = '';
+        if (req.file) {
+            try {
+                const result = await uploadToCloudinary(
+                    req.file.buffer,
+                    'student-photos',
+                    `student_${Date.now()}`
+                );
+                photoUrl = result.secure_url;
+                console.log('Student photo uploaded to Cloudinary:', photoUrl);
+            } catch (uploadError) {
+                console.error('Cloudinary upload error:', uploadError);
+                // Continue without photo if upload fails
+            }
+        }
+
         const student = await Student.create({
             ...studentData,
-            photo: req.file ? `/uploads/${req.file.filename}` : '',
+            photo: photoUrl,
             family_id: family._id,
             father_name: father_name, // keep denormalized copy
             tenant_id: req.tenant_id,
@@ -754,7 +766,27 @@ router.put('/:id', protect, upload.single('image'), async (req, res) => {
 
         // Update photo if new file uploaded
         if (req.file) {
-            student.photo = `/uploads/${req.file.filename}`;
+            try {
+                // Delete old photo from Cloudinary if exists
+                if (student.photo) {
+                    const oldPublicId = getPublicIdFromUrl(student.photo);
+                    if (oldPublicId) {
+                        await deleteFromCloudinary(oldPublicId);
+                    }
+                }
+
+                // Upload new photo
+                const result = await uploadToCloudinary(
+                    req.file.buffer,
+                    'student-photos',
+                    `student_${student._id}_${Date.now()}`
+                );
+                student.photo = result.secure_url;
+                console.log('Student photo updated on Cloudinary:', result.secure_url);
+            } catch (uploadError) {
+                console.error('Cloudinary upload error:', uploadError);
+                // Continue without updating photo if upload fails
+            }
         }
 
         // Update subjects if provided
