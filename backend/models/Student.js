@@ -10,7 +10,7 @@ const studentSchema = mongoose.Schema({
     },
     school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: false }, // Legacy, kept for backward compatibility
     family_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Family' },
-    roll_no: { type: String, required: true },
+    roll_no: { type: String, required: true, unique: true },
     full_name: { type: String, required: true },
     father_name: { type: String }, // Denormalized for easier access
     dob: { type: Date },

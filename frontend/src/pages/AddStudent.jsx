@@ -233,15 +233,25 @@ const AddStudent = () => {
 
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">Section *</label>
-                                <input
-                                    type="text"
+                                <select
                                     name="section_id"
                                     value={formData.section_id}
                                     onChange={handleChange}
-                                    placeholder="A/B/C"
                                     className="w-full p-2 border rounded"
                                     required
-                                />
+                                    disabled={!formData.class_id}
+                                >
+                                    <option value="">Select Section</option>
+                                    {formData.class_id && classes
+                                        .find(c => c.name === formData.class_id)
+                                        ?.sections.map(section => (
+                                            <option key={section} value={section}>{section}</option>
+                                        ))
+                                    }
+                                </select>
+                                {!formData.class_id && (
+                                    <p className="text-xs text-gray-500 mt-1">Please select a class first</p>
+                                )}
                             </div>
 
                             <div>
