@@ -1,6 +1,7 @@
 const cloudinary = require('cloudinary').v2;
 
-// Configure Cloudinary
+// Configure Cloudinary with environment variables
+// Environment variables are now set in Vercel dashboard
 const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'dcp9y6xas';
 const apiKey = process.env.CLOUDINARY_API_KEY || '629531215784715';
 const apiSecret = process.env.CLOUDINARY_API_SECRET || 'KKzS_ZGjje84ejLMxYK7glBCabs';
