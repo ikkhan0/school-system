@@ -347,7 +347,12 @@ const DefaultersReport = ({ data, sendWhatsApp }) => {
 };
 
 const ShortageReport = ({ data, sendWhatsApp }) => {
-    if (!data || data.length === 0) {
+    // Add better error handling
+    if (!data) {
+        return <EmptyState type="attendance" title="Loading..." description="Please wait while we load the data." />;
+    }
+
+    if (!Array.isArray(data) || data.length === 0) {
         return <EmptyState type="attendance" title="No shortage" description="All students have good attendance!" />;
     }
 
@@ -365,31 +370,48 @@ const ShortageReport = ({ data, sendWhatsApp }) => {
                     </tr>
                 </thead>
                 <tbody className="divide-y">
-                    {data.map((item, idx) => (
-                        <tr key={idx} className="hover:bg-gray-50">
-                            <td className="p-3 font-mono text-sm">{item.student.roll_no}</td>
-                            <td className="p-3">
-                                <div className="font-semibold">{item.student.full_name}</div>
-                                <div className="text-xs text-gray-500">{item.father_name}</div>
-                            </td>
-                            <td className="p-3">{item.student.class_id}-{item.student.section_id}</td>
-                            <td className="p-3 text-right font-bold text-orange-600">{item.percentage}%</td>
-                            <td className="p-3 text-center">{item.present}/{item.totalDays}</td>
-                            <td className="p-3 text-center no-print">
-                                <button
-                                    onClick={() => sendWhatsApp(item.father_mobile, `Dear Parent, ${item.student.full_name} has low attendance (${item.percentage}%). Please ensure regularity. - School Admin`)}
-                                    className="text-green-600 hover:bg-green-50 p-2 rounded-lg"
-                                >
-                                    <MessageCircle size={18} />
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                    {data.map((item, idx) => {
+                        // Safely access nested properties
+                        const student = item.student || {};
+                        const rollNo = student.roll_no || 'N/A';
+                        const fullName = student.full_name || 'Unknown';
+                        const classId = student.class_id || '';
+                        const sectionId = student.section_id || '';
+                        const fatherName = item.father_name || 'N/A';
+                        const fatherMobile = item.father_mobile || '';
+                        const percentage = item.percentage || '0';
+                        const present = item.present || 0;
+                        const totalDays = item.totalDays || 0;
+
+                        return (
+                            <tr key={idx} className="hover:bg-gray-50">
+                                <td className="p-3 font-mono text-sm">{rollNo}</td>
+                                <td className="p-3">
+                                    <div className="font-semibold">{fullName}</div>
+                                    <div className="text-xs text-gray-500">{fatherName}</div>
+                                </td>
+                                <td className="p-3">{classId}{sectionId ? `-${sectionId}` : ''}</td>
+                                <td className="p-3 text-right font-bold text-orange-600">{percentage}%</td>
+                                <td className="p-3 text-center">{present}/{totalDays}</td>
+                                <td className="p-3 text-center no-print">
+                                    {fatherMobile && (
+                                        <button
+                                            onClick={() => sendWhatsApp(fatherMobile, `Dear Parent, ${fullName} has low attendance (${percentage}%). Please ensure regularity. - School Admin`)}
+                                            className="text-green-600 hover:bg-green-50 p-2 rounded-lg"
+                                        >
+                                            <MessageCircle size={18} />
+                                        </button>
+                                    )}
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
         </div>
     );
 };
+
 
 const AttendanceReport = ({ data, sendWhatsApp, consecutiveAbsences = [] }) => {
     if (!data.report || data.report.length === 0) {
