@@ -19,7 +19,7 @@ const subjectSchema = new mongoose.Schema({
     school_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'School',
-        required: true
+        required: false
     },
     is_active: {
         type: Boolean,
