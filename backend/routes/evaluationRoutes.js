@@ -63,24 +63,39 @@ router.get('/list', protect, async (req, res) => {
 router.post('/save', protect, async (req, res) => {
     try {
         const { date, evaluations } = req.body;
+
+        console.log('📝 Saving evaluations:', {
+            date,
+            count: evaluations?.length,
+            tenant_id: req.tenant_id,
+            user_id: req.user?._id
+        });
+
+        if (!evaluations || evaluations.length === 0) {
+            return res.status(400).json({ message: 'No evaluations provided' });
+        }
+
         const logDate = new Date(date);
         logDate.setHours(0, 0, 0, 0);
 
         const bulkOps = evaluations.map(evalData => ({
             updateOne: {
-                filter: { student_id: evalData.student_id, date: logDate, tenant_id: req.tenant_id },
+                filter: { student_id: evalData.student_id, date: logDate },
                 update: { $set: { ...evalData, date: logDate, tenant_id: req.tenant_id } },
                 upsert: true
             }
         }));
 
-        await DailyLog.bulkWrite(bulkOps);
+        const result = await DailyLog.bulkWrite(bulkOps);
+        console.log('✅ Bulk write result:', result);
 
         const absentees = evaluations.filter(e => e.status === 'Absent');
         res.json({ message: 'Saved successfully', absentees_count: absentees.length });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('❌ Error saving evaluations:', error);
+        res.status(500).json({ message: error.message, error: error.stack });
     }
 });
 
 module.exports = router;
+```
