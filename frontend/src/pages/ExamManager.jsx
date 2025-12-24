@@ -90,6 +90,30 @@ const ExamManager = () => {
         }
     };
 
+    const handleToggleActive = async (examId, currentStatus, examTitle) => {
+        const action = currentStatus ? 'deactivate' : 'activate';
+        if (!confirm(`Are you sure you want to ${action} "${examTitle}"?${currentStatus ? '\n\nDeactivated exams cannot have marks changed.' : ''}`)) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/api/exams/${examId}/toggle-active`, {
+                method: 'PATCH',
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                alert(data.message);
+                fetchExams();
+            } else {
+                alert(data.message || `Failed to ${action} exam`);
+            }
+        } catch (err) {
+            alert(`Error ${action}ing exam: ` + err.message);
+        }
+    };
+
     return (
         <div className="max-w-4xl mx-auto p-3 sm:p-4">
             <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Exam Management</h1>
@@ -181,6 +205,13 @@ const ExamManager = () => {
                                         </td>
                                         <td className="p-2 text-right">
                                             <div className="flex justify-end gap-2">
+                                                <button
+                                                    onClick={() => handleToggleActive(exam._id, exam.is_active, exam.title)}
+                                                    className={`px-3 py-1 rounded text-xs font-semibold ${exam.is_active ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' : 'bg-green-100 text-green-700 hover:bg-green-200'}`}
+                                                    title={exam.is_active ? 'Deactivate Exam' : 'Activate Exam'}
+                                                >
+                                                    {exam.is_active ? 'Deactivate' : 'Activate'}
+                                                </button>
                                                 <button
                                                     onClick={() => navigate(`/exams/edit/${exam._id}`)}
                                                     className="text-blue-600 hover:bg-blue-50 p-1 rounded"

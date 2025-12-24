@@ -15,6 +15,7 @@ const Students = () => {
     const [classes, setClasses] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterClass, setFilterClass] = useState('');
+    const [statusFilter, setStatusFilter] = useState('active'); // 'active' or 'deactivated'
 
     useEffect(() => {
         if (!user) return;
@@ -24,9 +25,20 @@ const Students = () => {
 
     useEffect(() => {
         let result = students;
+
+        // Filter by status
+        if (statusFilter === 'active') {
+            result = result.filter(s => s.is_active !== false); // Show active students
+        } else {
+            result = result.filter(s => s.is_active === false); // Show deactivated students
+        }
+
+        // Filter by class
         if (filterClass) {
             result = result.filter(s => s.class_id === filterClass);
         }
+
+        // Filter by search term
         if (searchTerm) {
             result = result.filter(s =>
                 s.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -34,7 +46,7 @@ const Students = () => {
             );
         }
         setFilteredStudents(result);
-    }, [students, filterClass, searchTerm]);
+    }, [students, filterClass, searchTerm, statusFilter]);
 
     const fetchStudents = async () => {
         try {
@@ -109,6 +121,28 @@ const Students = () => {
                             <span>Add New</span>
                         </button>
                     </div>
+                </div>
+
+                {/* Status Tabs */}
+                <div className="flex gap-2 mb-4">
+                    <button
+                        onClick={() => setStatusFilter('active')}
+                        className={`flex-1 sm:flex-none px-4 py-2 rounded-lg font-semibold transition ${statusFilter === 'active'
+                            ? 'bg-green-600 text-white shadow-md'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                    >
+                        Active Students
+                    </button>
+                    <button
+                        onClick={() => setStatusFilter('deactivated')}
+                        className={`flex-1 sm:flex-none px-4 py-2 rounded-lg font-semibold transition ${statusFilter === 'deactivated'
+                            ? 'bg-orange-600 text-white shadow-md'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                    >
+                        Deactivated Students
+                    </button>
                 </div>
 
                 {/* Search and Filters */}

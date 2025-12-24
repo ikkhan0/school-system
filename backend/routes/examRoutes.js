@@ -44,11 +44,12 @@ router.put('/:id', protect, async (req, res) => {
     }
 });
 
-// @desc    Get Active Exams
+// @desc    Get All Exams (Active and Inactive)
 // @route   GET /api/exams
 router.get('/', protect, async (req, res) => {
     try {
-        const exams = await Exam.find({ is_active: true, tenant_id: req.tenant_id });
+        // Return all exams, not just active ones
+        const exams = await Exam.find({ tenant_id: req.tenant_id }).sort({ createdAt: -1 });
         res.json(exams);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -79,6 +80,29 @@ router.delete('/:id', protect, async (req, res) => {
         // No results found, safe to delete
         await Exam.findByIdAndDelete(req.params.id);
         res.json({ message: 'Exam deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Toggle Exam Active Status
+// @route   PATCH /api/exams/:id/toggle-active
+router.patch('/:id/toggle-active', protect, async (req, res) => {
+    try {
+        const exam = await Exam.findOne({ _id: req.params.id, tenant_id: req.tenant_id });
+
+        if (!exam) {
+            return res.status(404).json({ message: 'Exam not found' });
+        }
+
+        // Toggle the is_active status
+        exam.is_active = !exam.is_active;
+        await exam.save();
+
+        res.json({
+            message: `Exam ${exam.is_active ? 'activated' : 'deactivated'} successfully`,
+            exam: exam
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
