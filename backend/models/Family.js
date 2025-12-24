@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const familySchema = mongoose.Schema({
     tenant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tenant', required: false, index: true },
-    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true },
+    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: false },
 
     // Father Information
     father_name: { type: String, required: true },

@@ -8,7 +8,7 @@ const studentSchema = mongoose.Schema({
         required: false, // Optional for backward compatibility
         index: true // Index for faster queries
     },
-    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true }, // Legacy, kept for backward compatibility
+    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: false }, // Legacy, kept for backward compatibility
     family_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Family' },
     roll_no: { type: String, required: true },
     full_name: { type: String, required: true },

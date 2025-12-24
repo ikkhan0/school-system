@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const examSchema = mongoose.Schema({
     tenant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tenant', required: false, index: true },
-    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true },
+    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: false },
     title: { type: String, required: true }, // e.g., "Mid-Term 2025"
     start_date: { type: Date },
     end_date: { type: Date },

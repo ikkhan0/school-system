@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const dailyLogSchema = mongoose.Schema({
     student_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
-    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true },
+    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: false },
     date: { type: Date, required: true },
     status: { type: String, enum: ['Present', 'Absent', 'Leave', 'Late'], default: 'Present' },
 
