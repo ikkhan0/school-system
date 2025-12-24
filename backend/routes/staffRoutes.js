@@ -70,6 +70,29 @@ router.post('/add', protect, upload.single('photo'), async (req, res) => {
     }
 });
 
+// @desc    Get all staff members (alias for /list)
+// @route   GET /api/staff
+router.get('/', protect, async (req, res) => {
+    try {
+        const { designation, department, status } = req.query;
+
+        let query = { tenant_id: req.tenant_id };
+
+        if (designation) query.designation = designation;
+        if (department) query.department = department;
+        if (status) query.is_active = status === 'active';
+        else query.is_active = true; // Default to active only
+
+        const staff = await Staff.find(query)
+            .populate('assigned_subjects.subject_id')
+            .sort({ full_name: 1 });
+
+        res.json(staff);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // @desc    Get all staff members
 // @route   GET /api/staff/list
 router.get('/list', protect, async (req, res) => {
