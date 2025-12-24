@@ -182,7 +182,11 @@ const Students = () => {
                             <div className="flex items-start gap-2 sm:gap-3 mb-3">
                                 <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
                                     {student.photo ? (
-                                        <img src={`${API_URL}${student.photo}`} alt={student.full_name} className="w-full h-full object-cover" />
+                                        <img
+                                            src={student.photo.startsWith('http') ? student.photo : `${API_URL}${student.photo}`}
+                                            alt={student.full_name}
+                                            className="w-full h-full object-cover"
+                                        />
                                     ) : (
                                         <User className="w-full h-full p-3 text-gray-400" />
                                     )}

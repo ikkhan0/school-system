@@ -164,7 +164,11 @@ const StudentProfile = () => {
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-full overflow-hidden border-4 border-white flex-shrink-0 mx-auto sm:mx-0">
                             {student.photo ? (
-                                <img src={`${API_URL}${student.photo}`} alt={student.full_name} className="w-full h-full object-cover" />
+                                <img
+                                    src={student.photo.startsWith('http') ? student.photo : `${API_URL}${student.photo}`}
+                                    alt={student.full_name}
+                                    className="w-full h-full object-cover"
+                                />
                             ) : (
                                 <User className="w-full h-full p-4 text-gray-400" />
                             )}
