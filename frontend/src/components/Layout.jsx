@@ -13,6 +13,9 @@ const Layout = ({ children }) => {
         return children;
     }
 
+    // Check if current page is dashboard for full-width layout
+    const isDashboard = location.pathname === '/dashboard';
+
     return (
         <div className="flex h-screen overflow-hidden bg-gray-50">
             {/* Sidebar */}
@@ -23,8 +26,8 @@ const Layout = ({ children }) => {
                 {/* Top Header */}
                 <TopHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
-                {/* Page Content - Full width with padding */}
-                <main className="flex-1 overflow-auto bg-gray-50">
+                {/* Page Content - Full width for dashboard, normal for others */}
+                <main className={`flex-1 overflow-auto ${isDashboard ? '' : 'bg-gray-50'}`}>
                     <div className="h-full">
                         {children}
                     </div>
