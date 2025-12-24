@@ -129,6 +129,11 @@ const AddStudent = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Prevent double submission
+        if (loading) return;
+
+        setLoading(true);
         try {
             const data = new FormData();
             Object.keys(formData).forEach(key => {
@@ -163,6 +168,8 @@ const AddStudent = () => {
         } catch (error) {
             console.error('Error adding student:', error);
             alert(`Failed to add student: ${error.response?.data?.message || error.message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -593,10 +600,11 @@ const AddStudent = () => {
                         </button>
                         <button
                             type="submit"
-                            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            disabled={loading}
+                            className={`flex items-center gap-2 px-6 py-3 text-white rounded ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
                         >
                             <Save size={20} />
-                            Save Student
+                            {loading ? 'Saving...' : 'Save Student'}
                         </button>
                     </div>
                 </form>
