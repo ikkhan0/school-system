@@ -111,6 +111,10 @@ app.use('/api/families', protect, ensureTenant, require('./routes/familyRoutes')
 app.use('/api/users', protect, ensureTenant, require('./routes/userRoutes'));
 app.use('/api/expenses', protect, ensureTenant, require('./routes/expenseRoutes'));
 
+// Test Routes (for debugging)
+app.use('/api/test', require('./routes/testRoutes'));
+
+
 if (require.main === module) {
     app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);

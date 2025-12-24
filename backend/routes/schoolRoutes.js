@@ -50,19 +50,23 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
         // Upload to Cloudinary if file present
         if (req.file) {
             try {
-                console.log('Uploading logo to Cloudinary...');
+                console.log('📤 Starting logo upload to Cloudinary...');
+                console.log('File size:', req.file.size, 'bytes');
+                console.log('File mimetype:', req.file.mimetype);
 
                 // Delete old logo from Cloudinary if exists
                 const existingSchool = await School.findById(req.tenant_id);
                 if (existingSchool && existingSchool.logo) {
                     const oldPublicId = getPublicIdFromUrl(existingSchool.logo);
                     if (oldPublicId) {
+                        console.log('🗑️ Deleting old logo:', oldPublicId);
                         await deleteFromCloudinary(oldPublicId);
-                        console.log('Old logo deleted from Cloudinary');
+                        console.log('✅ Old logo deleted from Cloudinary');
                     }
                 }
 
                 // Upload new logo
+                console.log('⬆️ Uploading new logo...');
                 const result = await uploadToCloudinary(
                     req.file.buffer,
                     'school-logos',
@@ -70,12 +74,18 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
                 );
 
                 updateData.logo = result.secure_url;
-                console.log('Logo uploaded to Cloudinary:', result.secure_url);
+                console.log('✅ Logo uploaded successfully to Cloudinary:', result.secure_url);
             } catch (uploadError) {
-                console.error('Cloudinary upload error:', uploadError);
+                console.error('❌ Cloudinary upload error:', uploadError);
+                console.error('Error details:', {
+                    message: uploadError.message,
+                    stack: uploadError.stack,
+                    name: uploadError.name
+                });
                 return res.status(500).json({
                     message: 'Failed to upload logo to Cloudinary',
-                    error: uploadError.message
+                    error: uploadError.message,
+                    details: uploadError.toString()
                 });
             }
         }

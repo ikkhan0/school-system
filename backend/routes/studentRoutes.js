@@ -257,16 +257,26 @@ router.post('/add', protect, checkPermission('students.create'), upload.single('
         let photoUrl = '';
         if (req.file) {
             try {
+                console.log('📤 Starting student photo upload to Cloudinary...');
+                console.log('File size:', req.file.size, 'bytes');
+                console.log('File mimetype:', req.file.mimetype);
+
                 const result = await uploadToCloudinary(
                     req.file.buffer,
                     'student-photos',
                     `student_${Date.now()}`
                 );
                 photoUrl = result.secure_url;
-                console.log('Student photo uploaded to Cloudinary:', photoUrl);
+                console.log('✅ Student photo uploaded to Cloudinary:', photoUrl);
             } catch (uploadError) {
-                console.error('Cloudinary upload error:', uploadError);
+                console.error('❌ Cloudinary upload error:', uploadError);
+                console.error('Error details:', {
+                    message: uploadError.message,
+                    stack: uploadError.stack,
+                    name: uploadError.name
+                });
                 // Continue without photo if upload fails
+                console.warn('⚠️ Continuing student creation without photo');
             }
         }
 
