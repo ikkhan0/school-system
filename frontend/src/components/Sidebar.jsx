@@ -98,6 +98,16 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             ]
         },
         {
+            title: 'Expenses',
+            icon: DollarSign,
+            type: 'group',
+            paths: ['/expense'],
+            items: [
+                { title: 'Expense Heads', path: '/expense-heads' },
+                { title: 'Expense Manager', path: '/expenses' }
+            ]
+        },
+        {
             title: 'Users',
             icon: Shield,
             path: '/users',

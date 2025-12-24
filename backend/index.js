@@ -109,6 +109,7 @@ app.use('/api/staff', protect, ensureTenant, require('./routes/staffRoutes'));
 app.use('/api/discounts', protect, ensureTenant, require('./routes/discountRoutes'));
 app.use('/api/families', protect, ensureTenant, require('./routes/familyRoutes'));
 app.use('/api/users', protect, ensureTenant, require('./routes/userRoutes'));
+app.use('/api/expenses', protect, ensureTenant, require('./routes/expenseRoutes'));
 
 if (require.main === module) {
     app.listen(PORT, () => {

@@ -41,6 +41,8 @@ import EditExam from './pages/EditExam';
 import Settings from './pages/Settings';
 import AdvancedReports from './pages/reports/AdvancedReports';
 import UserManagement from './pages/UserManagement';
+import ExpenseHeads from './pages/ExpenseHeads';
+import Expenses from './pages/Expenses';
 
 import './App.css';
 
@@ -88,6 +90,8 @@ function App() {
               <Route path="/advanced-reports" element={<ProtectedRoute><AdvancedReports /></ProtectedRoute>} />
               <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/expense-heads" element={<ProtectedRoute><ExpenseHeads /></ProtectedRoute>} />
+              <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
             </Routes>
           </Layout>
         </AuthProvider>
