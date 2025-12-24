@@ -133,10 +133,15 @@ router.post('/marks', protect, async (req, res) => {
                 result = new Result({
                     exam_id,
                     tenant_id: req.tenant_id,
+                    school_id: req.tenant_id, // Required field
                     student_id: data.student_id,
                     class_id,
                     section_id,
-                    subjects: []
+                    subjects: [],
+                    total_obtained: 0,
+                    total_max: 0,
+                    percentage: 0,
+                    grade: 'F'
                 });
             } else {
                 console.log('Found existing result record for student:', data.student_id);
