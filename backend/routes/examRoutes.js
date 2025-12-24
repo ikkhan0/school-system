@@ -116,9 +116,20 @@ router.post('/marks', protect, async (req, res) => {
         const { exam_id, class_id, section_id, subject, marks_data } = req.body;
         // marks_data = [{ student_id, obtained_marks, total_marks }]
 
+        console.log('=== MARKS SAVE DEBUG ===');
+        console.log('Exam ID:', exam_id);
+        console.log('Class:', class_id);
+        console.log('Section:', section_id);
+        console.log('Subject:', subject);
+        console.log('Number of students:', marks_data.length);
+
         for (const data of marks_data) {
+            console.log(`Processing student ${data.student_id}: ${data.obtained_marks}/${data.total_marks}`);
+
             let result = await Result.findOne({ exam_id, student_id: data.student_id, tenant_id: req.tenant_id });
+
             if (!result) {
+                console.log('Creating new result record for student:', data.student_id);
                 result = new Result({
                     exam_id,
                     tenant_id: req.tenant_id,
@@ -127,14 +138,18 @@ router.post('/marks', protect, async (req, res) => {
                     section_id,
                     subjects: []
                 });
+            } else {
+                console.log('Found existing result record for student:', data.student_id);
             }
 
             // Update or Add Subject
             const subIndex = result.subjects.findIndex(s => s.subject_name === subject);
             if (subIndex > -1) {
+                console.log(`Updating existing subject ${subject} at index ${subIndex}`);
                 result.subjects[subIndex].obtained_marks = data.obtained_marks;
                 result.subjects[subIndex].total_marks = data.total_marks;
             } else {
+                console.log(`Adding new subject ${subject}`);
                 result.subjects.push({
                     subject_name: subject,
                     obtained_marks: data.obtained_marks,
@@ -155,11 +170,23 @@ router.post('/marks', protect, async (req, res) => {
             else if (result.percentage >= 50) result.grade = 'D';
             else result.grade = 'F';
 
+            console.log('Saving result:', {
+                student_id: data.student_id,
+                subjects: result.subjects.length,
+                total: `${result.total_obtained}/${result.total_max}`,
+                percentage: result.percentage,
+                grade: result.grade
+            });
+
             await result.save();
+            console.log('✅ Result saved successfully for student:', data.student_id);
         }
 
+        console.log('=== ALL MARKS SAVED ===');
         res.json({ message: 'Marks saved successfully' });
     } catch (error) {
+        console.error('❌ Error saving marks:', error);
+        console.error('Error stack:', error.stack);
         res.status(500).json({ message: error.message });
     }
 });
