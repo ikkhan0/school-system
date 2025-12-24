@@ -17,7 +17,7 @@ const expenseHeadSchema = new mongoose.Schema({
     },
     school_id: {
         type: String,
-        required: true,
+        required: false,
         index: true
     },
     is_active: {

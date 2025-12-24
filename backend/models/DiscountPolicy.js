@@ -4,7 +4,7 @@ const discountPolicySchema = new mongoose.Schema({
     school_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'School',
-        required: true
+        required: false
     },
     policy_name: {
         type: String,
