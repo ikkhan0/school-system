@@ -22,15 +22,36 @@ const Settings = () => {
 
     const fetchSchoolDetails = async () => {
         try {
+            console.log('Fetching school details...');
             const res = await axios.get(`${API_URL}/api/school`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
+            console.log('School data received:', res.data);
+
             const { name, address, phone, email, logo } = res.data;
-            setFormData(prev => ({ ...prev, name, address, phone, email }));
+            console.log('Extracted fields:', { name, address, phone, email, hasLogo: !!logo });
+
+            setFormData(prev => ({
+                ...prev,
+                name: name || '',
+                address: address || '',
+                phone: phone || '',
+                email: email || ''
+            }));
+
             // Logo is now base64, display directly
-            if (logo) setPreview(logo);
+            if (logo) {
+                console.log('Setting logo preview');
+                setPreview(logo);
+            }
         } catch (error) {
             console.error("Error fetching school details:", error);
+            console.error("Error response:", error.response?.data);
+
+            // If school not found (404), that's okay - user can create new settings
+            if (error.response?.status === 404) {
+                console.log('No school settings found yet - will create on save');
+            }
         }
     };
 
