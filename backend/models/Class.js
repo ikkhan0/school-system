@@ -6,7 +6,7 @@ const classSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true },
+    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: false },
     sections: [{
         type: String,
         required: true
