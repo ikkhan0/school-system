@@ -283,6 +283,8 @@ router.get('/bulk-slips', protect, checkPermission('fees.view'), async (req, res
                 const monthlyFee = student.monthly_fee || 5000;
                 currentFee = {
                     month,
+                    title: 'Monthly Fee',
+                    fee_type: 'Tuition',
                     tuition_fee: monthlyFee,
                     concession: 0,
                     other_charges: 0,

@@ -46,6 +46,7 @@ import ExpenseHeads from './pages/ExpenseHeads';
 import Expenses from './pages/Expenses';
 import SessionManagement from './pages/SessionManagement';
 import StudentPromotion from './pages/StudentPromotion';
+import Funds from './pages/Funds';
 
 import './App.css';
 
@@ -98,6 +99,7 @@ function App() {
                 <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
                 <Route path="/sessions" element={<ProtectedRoute><SessionManagement /></ProtectedRoute>} />
                 <Route path="/student-promotion" element={<ProtectedRoute><StudentPromotion /></ProtectedRoute>} />
+                <Route path="/funds" element={<ProtectedRoute><Funds /></ProtectedRoute>} />
               </Routes>
             </Layout>
           </SessionProvider>

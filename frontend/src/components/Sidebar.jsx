@@ -59,6 +59,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             items: [
                 { title: 'Fee Collection', path: '/fee-collection' },
                 { title: 'Bulk Fee Slips', path: '/bulk-slips' },
+                { title: 'Manage Funds', path: '/funds' },
                 { title: 'Discount Policies', path: '/discount-policies' },
                 { title: 'Family Messaging', path: '/family-messaging' }
             ]

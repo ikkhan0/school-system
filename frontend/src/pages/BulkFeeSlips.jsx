@@ -139,7 +139,7 @@ const BulkFeeSlips = () => {
 
                             <div className="border-t-2 border-black pt-2">
                                 <div className="flex justify-between py-1 border-b border-gray-300">
-                                    <span>Tuition Fee:</span>
+                                    <span>{slip.fee.title || 'Tuition Fee'}:</span>
                                     <span className="font-bold">{slip.fee.fee_due || slip.fee.tuition_fee || slip.fee.balance || 0}</span>
                                 </div>
                                 <div className="flex justify-between py-1 border-b border-gray-300">

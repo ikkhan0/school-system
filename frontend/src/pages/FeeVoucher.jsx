@@ -134,7 +134,7 @@ const FeeVoucher = () => {
                     </thead>
                     <tbody>
                         <tr>
-                            <td className="border-2 border-black p-3">Tuition Fee</td>
+                            <td className="border-2 border-black p-3">{fee.title || 'Tuition Fee'}</td>
                             <td className="border-2 border-black p-3 text-right font-semibold">{fee.tuition_fee}</td>
                         </tr>
                         {fee.other_charges > 0 && (

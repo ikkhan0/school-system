@@ -14,6 +14,8 @@ const feeSchema = mongoose.Schema({
     },
 
     month: { type: String, required: true }, // e.g., "Jan-2025" or "Opening Balance"
+    fee_type: { type: String, enum: ['Tuition', 'Fund', 'Other'], default: 'Tuition' }, // Differentiates Monthly Fee vs Funds
+    title: { type: String }, // e.g., "Examination Fee", "Paper Charges"
 
     tuition_fee: { type: Number, required: true },
     concession: { type: Number, default: 0 }, // Legacy field, kept for backward compatibility
