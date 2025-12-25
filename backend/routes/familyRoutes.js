@@ -12,11 +12,25 @@ const {
 } = require('../utils/whatsappMessageGenerator');
 
 // @route   GET /api/families
-// @desc    Get all families for the school
+// @desc    Get all families for the school (with optional search)
 // @access  Private
 router.get('/', protect, async (req, res) => {
     try {
-        const families = await Family.find({ tenant_id: req.tenant_id })
+        const { search } = req.query;
+
+        // Build query
+        const query = { tenant_id: req.tenant_id };
+
+        // Add search filter if provided
+        if (search) {
+            query.$or = [
+                { father_name: { $regex: search, $options: 'i' } },
+                { father_mobile: { $regex: search, $options: 'i' } },
+                { mother_mobile: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        const families = await Family.find(query)
             .sort({ father_name: 1 });
 
         // Get student count for each family

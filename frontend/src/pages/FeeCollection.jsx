@@ -18,9 +18,12 @@ const FeeCollection = () => {
     const [bulkStudents, setBulkStudents] = useState([]);
     const [bulkPayments, setBulkPayments] = useState({}); // { student_id: amount }
 
-    // Family View State (Original)
+    // Family View State
     const [familyData, setFamilyData] = useState(null);
     const [schoolInfo, setSchoolInfo] = useState(null);
+    const [familySearchTerm, setFamilySearchTerm] = useState('');
+    const [familyMonth, setFamilyMonth] = useState('');
+    const [familyLoading, setFamilyLoading] = useState(false);
 
     // Load Classes and School Info on mount
     useEffect(() => {
@@ -152,6 +155,158 @@ const FeeCollection = () => {
         if (num.length === 11 && num.startsWith('0')) num = '92' + num.substring(1);
 
         window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
+    };
+
+    const fetchFamilyData = async (e) => {
+        e.preventDefault();
+        setFamilyLoading(true);
+        try {
+            // Search for family by father name or mobile
+            const res = await fetch(`${API_URL}/api/families?search=${familySearchTerm}`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            const families = await res.json();
+
+            if (families.length === 0) {
+                alert("Family not found");
+                setFamilyLoading(false);
+                return;
+            }
+
+            // Get first matching family
+            const family = families[0];
+
+            // Fetch consolidated fees for this family
+            const currentMonth = familyMonth || new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            const feeRes = await fetch(`${API_URL}/api/families/${family._id}/consolidated-fees?month=${currentMonth}`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            const feeData = await feeRes.json();
+
+            setFamilyData(feeData);
+        } catch (error) {
+            console.error(error);
+            alert("Error fetching family data");
+        } finally {
+            setFamilyLoading(false);
+        }
+    };
+
+    const sendWhatsAppFamily = async () => {
+        if (!familyData) return;
+
+        try {
+            const res = await fetch(`${API_URL}/api/families/${familyData.family._id}/whatsapp-message`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${user.token}`
+                },
+                body: JSON.stringify({ month: familyData.month })
+            });
+            const data = await res.json();
+
+            if (data.whatsapp_link) {
+                window.open(data.whatsapp_link, '_blank');
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error sending WhatsApp message");
+        }
+    };
+
+    const printFamilyReceipt = () => {
+        if (!familyData) return;
+
+        // Create printable content
+        const printWindow = window.open('', '_blank');
+        const content = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Family Fee Receipt - ${familyData.family.father_name}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+                    .school-name { font-size: 24px; font-weight: bold; }
+                    .family-info { margin: 20px 0; padding: 10px; background: #f5f5f5; }
+                    .student-card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; }
+                    .fee-row { display: flex; justify-content: space-between; margin: 5px 0; }
+                    .totals { margin-top: 20px; padding: 15px; background: #e8f4f8; border: 2px solid #333; }
+                    .total-amount { font-size: 20px; font-weight: bold; }
+                    @media print { button { display: none; } }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div class="school-name">${schoolInfo?.name || 'School Management System'}</div>
+                    <div>${schoolInfo?.address || ''}</div>
+                    <div>Phone: ${schoolInfo?.phone || ''}</div>
+                </div>
+                
+                <h2>Family Fee Receipt</h2>
+                
+                <div class="family-info">
+                    <strong>Family Head:</strong> ${familyData.family.father_name}<br>
+                    <strong>Mobile:</strong> ${familyData.family.father_mobile}<br>
+                    <strong>Month:</strong> ${familyData.month}<br>
+                    <strong>Date:</strong> ${new Date().toLocaleDateString()}
+                </div>
+                
+                <h3>Children Fee Details:</h3>
+                ${familyData.students_with_fees.map(item => `
+                    <div class="student-card">
+                        <h4>${item.student.full_name} (Roll No: ${item.student.roll_no})</h4>
+                        <p>Class: ${item.student.class_id}-${item.student.section_id}</p>
+                        <div class="fee-row">
+                            <span>Tuition Fee:</span>
+                            <span>Rs. ${item.fee.tuition_fee || 0}</span>
+                        </div>
+                        ${item.fee.other_charges > 0 ? `
+                        <div class="fee-row">
+                            <span>Other Charges:</span>
+                            <span>Rs. ${item.fee.other_charges}</span>
+                        </div>` : ''}
+                        ${item.fee.arrears > 0 ? `
+                        <div class="fee-row">
+                            <span>Arrears:</span>
+                            <span>Rs. ${item.fee.arrears}</span>
+                        </div>` : ''}
+                        <div class="fee-row">
+                            <span>Paid:</span>
+                            <span style="color: green;">Rs. ${item.fee.paid_amount || 0}</span>
+                        </div>
+                        <div class="fee-row" style="font-weight: bold; border-top: 1px solid #333; padding-top: 5px;">
+                            <span>Balance:</span>
+                            <span style="color: red;">Rs. ${item.fee.balance || 0}</span>
+                        </div>
+                    </div>
+                `).join('')}
+                
+                <div class="totals">
+                    <div class="fee-row">
+                        <span>Total Due:</span>
+                        <span>Rs. ${familyData.totals.total_due}</span>
+                    </div>
+                    <div class="fee-row">
+                        <span>Total Paid:</span>
+                        <span style="color: green;">Rs. ${familyData.totals.total_paid}</span>
+                    </div>
+                    <div class="fee-row total-amount">
+                        <span>Total Balance:</span>
+                        <span style="color: red;">Rs. ${familyData.totals.total_balance}</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 40px; text-align: center;">
+                    <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Print Receipt</button>
+                </div>
+            </body>
+            </html>
+        `;
+
+        printWindow.document.write(content);
+        printWindow.document.close();
     };
 
     return (
@@ -312,17 +467,128 @@ const FeeCollection = () => {
                 </div>
             )}
 
-            {/* --- FAMILY TAB (Legacy/Existing) --- */}
+            {/* --- FAMILY TAB --- */}
             {activeTab === 'family' && (
-                <div className="text-center py-8">
-                    <p className="text-gray-500">Search by Family/Student to view Family Receipt (Original View).</p>
-                    {/* Reuse old component logic here if needed, or link to it. For now, simple placeholder or re-embed old logic if user wants strictly mixed. */}
-                    {/* In a real refactor, I'd move the old FeeCollection return JSX into a SubComponent <FamilyFeeView /> and render it here. */}
-                    {/* For brevity, I'll instruct User to use the new Ledger primarily, but I can re-paste the old logic if critical. */}
-                    <div className="bg-yellow-50 p-4 border border-yellow-200 inline-block rounded text-yellow-800">
-                        Please use "Student Ledger" for individual tracking. <br />
-                        (Family View is temporarily disabled in this refactor to keep code clean, but can be restored if vital).
-                    </div>
+                <div>
+                    <form onSubmit={fetchFamilyData} className="flex flex-col sm:flex-row gap-2 max-w-lg mb-4 sm:mb-6">
+                        <input
+                            type="text"
+                            placeholder="Search by Father Name or Mobile..."
+                            className="border p-2 rounded flex-1 text-sm sm:text-base"
+                            value={familySearchTerm}
+                            onChange={e => setFamilySearchTerm(e.target.value)}
+                        />
+                        <button className="bg-purple-600 text-white px-4 py-2 rounded font-bold text-sm sm:text-base">Search Family</button>
+                    </form>
+
+                    {familyLoading && (
+                        <div className="text-center py-8">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+                            <p className="mt-4 text-gray-600">Loading family data...</p>
+                        </div>
+                    )}
+
+                    {familyData && (
+                        <div className="bg-white shadow rounded p-4 sm:p-6">
+                            {/* Family Header */}
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b">
+                                <div>
+                                    <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+                                        <Users size={24} className="text-purple-600" />
+                                        {familyData.family.father_name}
+                                    </h2>
+                                    <p className="text-gray-600 text-sm sm:text-base mt-1">
+                                        Mobile: {familyData.family.father_mobile}
+                                    </p>
+                                    <p className="text-gray-600 text-sm sm:text-base">
+                                        Children: {familyData.students_with_fees.length}
+                                    </p>
+                                </div>
+                                <div className="flex gap-2 w-full sm:w-auto">
+                                    <button
+                                        onClick={sendWhatsAppFamily}
+                                        className="flex-1 sm:flex-none bg-green-100 text-green-700 px-4 py-2 rounded flex items-center justify-center gap-2 font-bold hover:bg-green-200 text-sm sm:text-base"
+                                    >
+                                        <MessageCircle size={18} /> WhatsApp
+                                    </button>
+                                    <button
+                                        onClick={printFamilyReceipt}
+                                        className="flex-1 sm:flex-none bg-blue-100 text-blue-700 px-4 py-2 rounded flex items-center justify-center gap-2 font-bold hover:bg-blue-200 text-sm sm:text-base"
+                                    >
+                                        <Printer size={18} /> Print
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Students List */}
+                            <div className="space-y-4">
+                                {familyData.students_with_fees.map((item, idx) => (
+                                    <div key={idx} className="border-2 border-gray-200 rounded-lg p-3 sm:p-4 hover:border-purple-300 transition">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
+                                            <div>
+                                                <h3 className="font-bold text-base sm:text-lg">{item.student.full_name}</h3>
+                                                <p className="text-gray-600 text-xs sm:text-sm">
+                                                    Roll No: {item.student.roll_no} | Class: {item.student.class_id}-{item.student.section_id}
+                                                </p>
+                                            </div>
+                                            <span className={`px-3 py-1 rounded text-xs sm:text-sm font-bold ${item.fee.status === 'Paid' ? 'bg-green-100 text-green-700' :
+                                                item.fee.status === 'Partial' ? 'bg-yellow-100 text-yellow-700' :
+                                                    'bg-red-100 text-red-700'
+                                                }`}>
+                                                {item.fee.status || 'Pending'}
+                                            </span>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm">
+                                            <div>
+                                                <p className="text-gray-500">Tuition Fee</p>
+                                                <p className="font-bold">Rs. {item.fee.tuition_fee || 0}</p>
+                                            </div>
+                                            {item.fee.other_charges > 0 && (
+                                                <div>
+                                                    <p className="text-gray-500">Other Charges</p>
+                                                    <p className="font-bold">Rs. {item.fee.other_charges}</p>
+                                                </div>
+                                            )}
+                                            {item.fee.arrears > 0 && (
+                                                <div>
+                                                    <p className="text-gray-500">Arrears</p>
+                                                    <p className="font-bold text-red-600">Rs. {item.fee.arrears}</p>
+                                                </div>
+                                            )}
+                                            <div>
+                                                <p className="text-gray-500">Paid</p>
+                                                <p className="font-bold text-green-600">Rs. {item.fee.paid_amount || 0}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-gray-500">Balance</p>
+                                                <p className="font-bold text-lg text-red-600">Rs. {item.fee.balance || 0}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Totals */}
+                            <div className="mt-6 bg-purple-50 p-4 rounded-lg border-2 border-purple-200">
+                                <h3 className="font-bold text-lg mb-3">Family Totals</h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                                    <div>
+                                        <p className="text-gray-600 text-sm">Total Due</p>
+                                        <p className="font-bold text-xl">Rs. {familyData.totals.total_due}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-600 text-sm">Total Paid</p>
+                                        <p className="font-bold text-xl text-green-600">Rs. {familyData.totals.total_paid}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-600 text-sm">Total Balance</p>
+                                        <p className="font-bold text-2xl text-red-600">Rs. {familyData.totals.total_balance}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
