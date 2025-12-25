@@ -200,10 +200,30 @@ const StudentProfile = () => {
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const currentMonth = `${monthNames[currentDate.getMonth()]}-${currentDate.getFullYear()}`;
 
-        // Calculate total balance
-        const totalBalance = fees.reduce((sum, fee) => sum + (fee.balance || 0), 0);
+        // Separate Funds and Arrears
+        let arrears = 0;
+        let currentFeeAmount = 0;
+        let currentFeeFound = false;
+        const outstanding_funds = [];
+
+        fees.forEach(fee => {
+            if (fee.status !== 'Paid' && (fee.balance || 0) > 0) {
+                if (fee.fee_type === 'Fund') {
+                    outstanding_funds.push({ title: fee.title, amount: fee.balance });
+                } else if (fee.month === currentMonth && (fee.fee_type === 'Tuition' || !fee.fee_type)) {
+                    currentFeeFound = true;
+                    currentFeeAmount = fee.balance;
+                } else {
+                    arrears += (fee.balance || 0);
+                }
+            }
+        });
+
+        const mainAmount = currentFeeFound ? currentFeeAmount : (student.monthly_fee || 5000);
+        const fundsTotal = outstanding_funds.reduce((sum, f) => sum + f.amount, 0);
         const discountAmount = parseFloat(voucherDiscount) || 0;
-        const finalAmount = totalBalance - discountAmount;
+
+        const totalAmount = (mainAmount + arrears + fundsTotal) - discountAmount;
 
         // Calculate due date (10 days from now)
         const dueDate = new Date();
@@ -212,14 +232,12 @@ const StudentProfile = () => {
         // Create fee voucher data
         return {
             month: currentMonth,
-            tuition_fee: student.monthly_fee || 5000,
-            arrears: totalBalance - (student.monthly_fee || 5000),
-            concession: discountAmount,
+            title: 'Monthly Fee',
+            gross_amount: mainAmount,
+            arrears: arrears,
+            outstanding_funds: outstanding_funds,
             discount_amount: discountAmount,
-            gross_amount: totalBalance,
-            total_amount: finalAmount > 0 ? finalAmount : 0,
-            paid_amount: 0,
-            balance: finalAmount > 0 ? finalAmount : 0,
+            total_amount: totalAmount > 0 ? totalAmount : 0,
             status: 'Unpaid',
             due_date: dueDate.toLocaleDateString(),
             printed_by: user?.full_name || user?.username || 'System'

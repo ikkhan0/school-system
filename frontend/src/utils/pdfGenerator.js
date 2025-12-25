@@ -41,13 +41,31 @@ export const generateFeeVoucherPDF = (student, feeData, schoolInfo = {}) => {
     doc.text(`Due Date: ${feeData.due_date || 'N/A'}`, 130, studentInfoY + 14);
 
     // Fee Details Table
-    const tableData = [
-        ['Description', 'Amount (Rs.)'],
-        [feeData.title || 'Monthly Fee', feeData.gross_amount || feeData.monthly_fee || 0],
-        ['Discount', `- ${feeData.discount_amount || 0}`],
-        ['Previous Balance', feeData.previous_balance || feeData.arrears || 0],
-        ['Total Payable', feeData.total_amount || feeData.gross_amount || 0]
-    ];
+    const tableData = [['Description', 'Amount (Rs.)']];
+
+    // Main Fee
+    tableData.push([feeData.title || 'Monthly Fee', feeData.gross_amount || feeData.monthly_fee || 0]);
+
+    // Outstanding Funds
+    if (feeData.outstanding_funds && Array.isArray(feeData.outstanding_funds)) {
+        feeData.outstanding_funds.forEach(f => {
+            tableData.push([f.title, f.amount]);
+        });
+    }
+
+    // Discount
+    if (feeData.discount_amount > 0) {
+        tableData.push(['Discount', `- ${feeData.discount_amount}`]);
+    }
+
+    // Previous Balance
+    const arrears = feeData.previous_balance || feeData.arrears || 0;
+    if (arrears > 0) {
+        tableData.push(['Previous Balance', arrears]);
+    }
+
+    // Total
+    tableData.push(['Total Payable', feeData.total_amount || feeData.gross_amount || 0]);
 
     doc.autoTable({
         startY: studentInfoY + 35,
