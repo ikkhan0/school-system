@@ -361,7 +361,7 @@ const FeeCollection = () => {
                 <button onClick={() => setActiveTab('ledger')} className={`pb-2 px-3 sm:px-4 font-bold flex gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap ${activeTab === 'ledger' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}>
                     <FileText size={16} className="sm:w-[18px] sm:h-[18px]" /> Student Ledger
                 </button>
-                <button onClick={() => setActiveTab('bulk')} className={`pb-2 px-3 sm:px-4 font-bold flex gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap ${activeTab === 'bulk' ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-500'}`}>
+                <button onClick={() => { setActiveTab('bulk'); fetchBulkList(); }} className={`pb-2 px-3 sm:px-4 font-bold flex gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap ${activeTab === 'bulk' ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-500'}`}>
                     <Users size={16} className="sm:w-[18px] sm:h-[18px]" /> Bulk Collection
                 </button>
                 <button onClick={() => setActiveTab('family')} className={`pb-2 px-3 sm:px-4 font-bold flex gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap ${activeTab === 'family' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-gray-500'}`}>
