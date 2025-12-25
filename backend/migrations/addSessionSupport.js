@@ -20,6 +20,8 @@ const AcademicSession = require('../models/AcademicSession');
 const Student = require('../models/Student');
 const Fee = require('../models/Fee');
 const DailyLog = require('../models/DailyLog');
+const ExamResult = require('../models/ExamResult');
+const Result = require('../models/Result');
 
 async function migrateToSessions() {
     try {
@@ -113,7 +115,45 @@ async function migrateToSessions() {
 
                 console.log(`  ✅ Updated ${dailyLogUpdateResult.modifiedCount} attendance records`);
             } catch (error) {
-                console.log(`  ⚠️  DailyLog update skipped (model may not have session field yet)`);
+                console.log(`  ⚠️  DailyLog update skipped: ${error.message}`);
+            }
+
+            // Update all exam results for this school
+            try {
+                const examResultUpdateResult = await ExamResult.updateMany(
+                    {
+                        tenant_id: schoolId,
+                        session_id: { $exists: false }
+                    },
+                    {
+                        $set: {
+                            session_id: session._id
+                        }
+                    }
+                );
+
+                console.log(`  ✅ Updated ${examResultUpdateResult.modifiedCount} exam result records`);
+            } catch (error) {
+                console.log(`  ⚠️  ExamResult update skipped: ${error.message}`);
+            }
+
+            // Update all results for this school
+            try {
+                const resultUpdateResult = await Result.updateMany(
+                    {
+                        tenant_id: schoolId,
+                        session_id: { $exists: false }
+                    },
+                    {
+                        $set: {
+                            session_id: session._id
+                        }
+                    }
+                );
+
+                console.log(`  ✅ Updated ${resultUpdateResult.modifiedCount} result records`);
+            } catch (error) {
+                console.log(`  ⚠️  Result update skipped: ${error.message}`);
             }
         }
 

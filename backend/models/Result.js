@@ -1,6 +1,21 @@
 const mongoose = require('mongoose');
 
 const resultSchema = mongoose.Schema({
+    // Multi-tenant support
+    tenant_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tenant',
+        required: false,
+        index: true
+    },
+
+    // Academic Session Reference
+    session_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'AcademicSession',
+        index: true
+    },
+
     school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: false },
     exam_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Exam', required: true },
     student_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
@@ -18,7 +33,7 @@ const resultSchema = mongoose.Schema({
     remarks: { type: String }
 }, { timestamps: true });
 
-// Ensure one result set per student per exam
-resultSchema.index({ exam_id: 1, student_id: 1 }, { unique: true });
+// Ensure one result set per student per exam per session
+resultSchema.index({ exam_id: 1, student_id: 1, session_id: 1 }, { unique: true });
 
 module.exports = mongoose.model('Result', resultSchema);
