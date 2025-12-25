@@ -136,6 +136,39 @@ const FeeCollection = () => {
         }
     };
 
+    const generateFees = async () => {
+        if (!confirm(`Generate fees for ${selectedClass}-${selectedSection} for ${selectedMonth}?\n\nThis will create fee records for all students who don't have one yet.`)) return;
+
+        setLoading(true);
+        try {
+            const res = await fetch(`${API_URL}/api/fee-generation/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${user.token}`
+                },
+                body: JSON.stringify({
+                    class_id: selectedClass,
+                    section_id: selectedSection,
+                    month: selectedMonth
+                })
+            });
+            const result = await res.json();
+
+            if (res.ok) {
+                alert(`✅ Fee Generation Complete!\n\nCreated: ${result.created}\nSkipped (already exists): ${result.skipped}\nFailed: ${result.failed || 0}`);
+                fetchBulkList(); // Refresh the list
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            alert("Error generating fees");
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const sendWhatsAppLedger = () => {
         if (!studentLedger) return;
         const s = studentLedger.student;
@@ -417,8 +450,11 @@ const FeeCollection = () => {
                             <label className="block text-xs sm:text-sm font-bold mb-1">Month</label>
                             <input type="text" value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base" />
                         </div>
-                        <div className="flex items-end">
+                        <div className="flex items-end gap-2">
                             <button onClick={fetchBulkList} className="bg-blue-600 text-white px-4 sm:px-6 py-2 rounded font-bold hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base">Load List</button>
+                            <button onClick={generateFees} className="bg-purple-600 text-white px-4 sm:px-6 py-2 rounded font-bold hover:bg-purple-700 w-full sm:w-auto text-sm sm:text-base flex items-center gap-2">
+                                <FileText size={18} /> Generate Fees
+                            </button>
                         </div>
                     </div>
 

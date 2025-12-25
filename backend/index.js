@@ -101,6 +101,7 @@ app.use('/api/students', protect, ensureTenant, sessionContext, require('./route
 app.use('/api/evaluation', protect, ensureTenant, sessionContext, require('./routes/evaluationRoutes'));
 app.use('/api/exams', protect, ensureTenant, sessionContext, require('./routes/examRoutes'));
 app.use('/api/fees', protect, ensureTenant, sessionContext, require('./routes/feeRoutes'));
+app.use('/api/fee-generation', protect, ensureTenant, sessionContext, require('./routes/feeGenerationRoutes'));
 app.use('/api/classes', protect, ensureTenant, require('./routes/classRoutes'));
 app.use('/api/subjects', protect, ensureTenant, require('./routes/subjectRoutes'));
 app.use('/api/dashboard', protect, ensureTenant, sessionContext, require('./routes/dashboardRoutes'));
