@@ -84,7 +84,7 @@ const BulkFeeSlips = () => {
                             onChange={(e) => setPrintFormat(e.target.value)}
                             className="w-4 h-4"
                         />
-                        <span>A4 Grid (4 per page)</span>
+                        <span>A4 Grid (2 per page)</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -173,22 +173,21 @@ const BulkFeeSlips = () => {
                         .no-print { display: none; }
                         body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; }
                         
-                        /* A4 Grid Layout */
+                        /* A4 Grid Layout - 2 slips per page */
                         .print-format-a4 {
-                            @page { size: A4; margin: 5mm; }
+                            @page { size: A4; margin: 10mm; }
                         }
                         
                         .print-format-a4 .print-area { 
                             display: grid; 
                             grid-template-columns: 1fr 1fr; 
-                            grid-template-rows: repeat(2, 1fr);
                             width: 100%;
-                            height: 100%;
                             gap: 10mm;
                         }
 
                         .print-format-a4 .fee-slip-card {
-                            height: 135mm;
+                            height: auto;
+                            min-height: 270mm;
                             box-sizing: border-box;
                             page-break-inside: avoid;
                             background: white;
