@@ -35,7 +35,17 @@ const StudentProfile = () => {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setStudent(studentRes.data);
-            setEditFormData(studentRes.data);
+
+            // Properly flatten student data for editing
+            const flattenedData = {
+                ...studentRes.data,
+                // Preserve father_mobile from either family_id or direct field
+                father_mobile: studentRes.data.father_mobile || studentRes.data.family_id?.father_mobile || '',
+                father_name: studentRes.data.father_name || studentRes.data.family_id?.father_name || '',
+                // Keep enrolled_subjects as is (don't modify)
+                enrolled_subjects: studentRes.data.enrolled_subjects || []
+            };
+            setEditFormData(flattenedData);
 
             const attendanceRes = await axios.get(`${API_URL}/api/students/${id}/attendance-summary`, {
                 headers: { Authorization: `Bearer ${user.token}` }
@@ -71,7 +81,31 @@ const StudentProfile = () => {
 
     const handleSaveEdit = async () => {
         try {
-            await axios.put(`${API_URL}/api/students/${id}`, editFormData, {
+            // Create update payload - only send fields that can be updated
+            const updatePayload = {
+                full_name: editFormData.full_name,
+                roll_no: editFormData.roll_no,
+                father_name: editFormData.father_name,
+                father_mobile: editFormData.father_mobile,
+                mother_name: editFormData.mother_name,
+                mother_mobile: editFormData.mother_mobile,
+                gender: editFormData.gender,
+                dob: editFormData.dob,
+                blood_group: editFormData.blood_group,
+                religion: editFormData.religion,
+                nationality: editFormData.nationality,
+                address: editFormData.address,
+                current_address: editFormData.current_address,
+                city: editFormData.city,
+                emergency_contact: editFormData.emergency_contact,
+                medical_conditions: editFormData.medical_conditions,
+                allergies: editFormData.allergies,
+                monthly_fee: editFormData.monthly_fee,
+                // Preserve enrolled_subjects - don't modify
+                enrolled_subjects: editFormData.enrolled_subjects
+            };
+
+            await axios.put(`${API_URL}/api/students/${id}`, updatePayload, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             alert('Student information updated successfully!');
