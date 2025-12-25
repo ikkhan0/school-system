@@ -87,6 +87,7 @@ app.use('/uploads', express.static('uploads'));
 // Import tenant isolation middleware
 const ensureTenant = require('./middleware/ensureTenant');
 const { protect } = require('./middleware/auth');
+const sessionContext = require('./middleware/sessionContext');
 
 // Super Admin Routes (No tenant isolation)
 app.use('/api/super-admin', require('./routes/superAdminRoutes'));
@@ -94,25 +95,24 @@ app.use('/api/super-admin', require('./routes/superAdminRoutes'));
 // Auth Routes (No tenant isolation - needed for login)
 app.use('/api/auth', require('./routes/authRoutes'));
 
-// Protected Routes WITH Tenant Isolation
-// All routes below require authentication and tenant context
-app.use('/api/students', protect, ensureTenant, require('./routes/studentRoutes'));
-app.use('/api/evaluation', protect, ensureTenant, require('./routes/evaluationRoutes'));
-app.use('/api/exams', protect, ensureTenant, require('./routes/examRoutes'));
-app.use('/api/fees', protect, ensureTenant, require('./routes/feeRoutes'));
+// Protected Routes WITH Tenant Isolation AND Session Context
+// All routes below require authentication, tenant context, and session context
+app.use('/api/students', protect, ensureTenant, sessionContext, require('./routes/studentRoutes'));
+app.use('/api/evaluation', protect, ensureTenant, sessionContext, require('./routes/evaluationRoutes'));
+app.use('/api/exams', protect, ensureTenant, sessionContext, require('./routes/examRoutes'));
+app.use('/api/fees', protect, ensureTenant, sessionContext, require('./routes/feeRoutes'));
 app.use('/api/classes', protect, ensureTenant, require('./routes/classRoutes'));
 app.use('/api/subjects', protect, ensureTenant, require('./routes/subjectRoutes'));
-app.use('/api/dashboard', protect, ensureTenant, require('./routes/dashboardRoutes'));
-app.use('/api/reports', protect, ensureTenant, require('./routes/reportsRoutes'));
+app.use('/api/dashboard', protect, ensureTenant, sessionContext, require('./routes/dashboardRoutes'));
+app.use('/api/reports', protect, ensureTenant, sessionContext, require('./routes/reportsRoutes'));
 app.use('/api/school', protect, ensureTenant, require('./routes/schoolRoutes'));
 app.use('/api/staff', protect, ensureTenant, require('./routes/staffRoutes'));
 app.use('/api/discounts', protect, ensureTenant, require('./routes/discountRoutes'));
-app.use('/api/families', protect, ensureTenant, require('./routes/familyRoutes'));
+app.use('/api/families', protect, ensureTenant, sessionContext, require('./routes/familyRoutes'));
 app.use('/api/users', protect, ensureTenant, require('./routes/userRoutes'));
 app.use('/api/expenses', protect, ensureTenant, require('./routes/expenseRoutes'));
 
-// Session Management Routes (with session context middleware)
-const sessionContext = require('./middleware/sessionContext');
+// Session Management Routes
 app.use('/api/sessions', protect, ensureTenant, sessionContext, require('./routes/sessionRoutes'));
 app.use('/api/promotions', protect, ensureTenant, sessionContext, require('./routes/promotionRoutes'));
 

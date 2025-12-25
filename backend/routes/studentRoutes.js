@@ -350,6 +350,11 @@ router.get('/list', protect, async (req, res) => {
 
         let query = { tenant_id: req.tenant_id, is_active: true }; // Only show active students
 
+        // Add session filter if available
+        if (req.session_id) {
+            query.current_session_id = req.session_id;
+        }
+
         // Add filters if provided
         if (class_id) query.class_id = class_id;
         if (section_id) query.section_id = section_id;

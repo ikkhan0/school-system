@@ -18,14 +18,22 @@ router.get('/list', protect, async (req, res) => {
         const queryDate = new Date(date);
         queryDate.setHours(0, 0, 0, 0);
 
-        // 1. Get all students
-        const students = await Student.find({ class_id, section_id, is_active: true, tenant_id: req.tenant_id }).populate('family_id'); // Added school_id check
+        // 1. Get all students (filtered by session if available)
+        const studentQuery = { class_id, section_id, is_active: true, tenant_id: req.tenant_id };
+        if (req.session_id) {
+            studentQuery.current_session_id = req.session_id;
+        }
+        const students = await Student.find(studentQuery).populate('family_id');
 
-        // 2. Get existing logs
-        const existingLogs = await DailyLog.find({
+        // 2. Get existing logs (filtered by session if available)
+        const logQuery = {
             student_id: { $in: students.map(s => s._id) },
             date: queryDate
-        });
+        };
+        if (req.session_id) {
+            logQuery.session_id = req.session_id;
+        }
+        const existingLogs = await DailyLog.find(logQuery);
 
         // 3. Merge
         const responseList = students.map(student => {
@@ -78,13 +86,24 @@ router.post('/save', protect, async (req, res) => {
         const logDate = new Date(date);
         logDate.setHours(0, 0, 0, 0);
 
-        const bulkOps = evaluations.map(evalData => ({
-            updateOne: {
-                filter: { student_id: evalData.student_id, date: logDate },
-                update: { $set: { ...evalData, date: logDate, tenant_id: req.tenant_id } },
-                upsert: true
+        const bulkOps = evaluations.map(evalData => {
+            const filter = { student_id: evalData.student_id, date: logDate };
+            const updateData = { ...evalData, date: logDate, tenant_id: req.tenant_id };
+
+            // Add session_id if available
+            if (req.session_id) {
+                filter.session_id = req.session_id;
+                updateData.session_id = req.session_id;
             }
-        }));
+
+            return {
+                updateOne: {
+                    filter,
+                    update: { $set: updateData },
+                    upsert: true
+                }
+            };
+        });
 
         const result = await DailyLog.bulkWrite(bulkOps);
         console.log('✅ Bulk write result:', result);
