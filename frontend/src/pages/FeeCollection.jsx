@@ -446,9 +446,9 @@ const FeeCollection = () => {
                                         <tr key={idx} className="hover:bg-gray-50">
                                             <td className="p-3 font-mono">{item.student.roll_no}</td>
                                             <td className="p-3 font-bold">{item.student.full_name}</td>
-                                            <td className="p-3 text-right">{item.fee.tuition_fee}</td>
-                                            <td className="p-3 text-right text-red-500">{item.fee.arrears}</td>
-                                            <td className="p-3 text-right font-bold text-lg">{item.fee.balance}</td>
+                                            <td className="p-3 text-right">{item.fee.fee_due || item.fee.balance || 0}</td>
+                                            <td className="p-3 text-right text-red-500">{item.fee.arrears || 0}</td>
+                                            <td className="p-3 text-right font-bold text-lg">{item.fee.total_payable || item.fee.balance || 0}</td>
                                             <td className="p-3 text-right">
                                                 <input
                                                     type="number"

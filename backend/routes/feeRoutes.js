@@ -113,8 +113,9 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
                     });
                 }
 
+
                 // Check if already fully paid
-                if (fee.status === 'Paid' && fee.balance <= 0) {
+                if (fee.status === 'Paid' && fee.balance <= 0 && (!fee.arrears || fee.arrears <= 0)) {
                     errors.push({
                         student_id: p.student_id,
                         month: p.month,
@@ -123,24 +124,47 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
                     continue;
                 }
 
+                // Calculate total due (current month + arrears)
+                const currentArrears = fee.arrears || 0;
+                const currentMonthDue = fee.balance || 0;
+                const totalDue = currentMonthDue + currentArrears;
+
                 // Calculate new amounts
                 const amountPaying = Number(p.amount_paying) || 0;
-                const newPaid = fee.paid_amount + amountPaying;
-                const newBalance = fee.gross_amount - newPaid;
 
                 // Prevent overpayment
-                if (newBalance < 0) {
+                if (amountPaying > totalDue) {
                     errors.push({
                         student_id: p.student_id,
                         month: p.month,
-                        error: `Overpayment: Trying to pay ${amountPaying} but only ${fee.balance} is due`
+                        error: `Overpayment: Trying to pay ${amountPaying} but only ${totalDue} is due (Fee: ${currentMonthDue}, Arrears: ${currentArrears})`
                     });
                     continue;
                 }
 
+                // Payment logic: First pay arrears, then current month
+                let remainingPayment = amountPaying;
+                let newArrears = currentArrears;
+                let newPaid = fee.paid_amount;
+
+                // Pay arrears first
+                if (currentArrears > 0 && remainingPayment > 0) {
+                    const arrearsPayment = Math.min(remainingPayment, currentArrears);
+                    newArrears -= arrearsPayment;
+                    remainingPayment -= arrearsPayment;
+                }
+
+                // Then pay current month
+                if (remainingPayment > 0) {
+                    newPaid += remainingPayment;
+                }
+
+                const newBalance = fee.gross_amount - newPaid;
+
                 fee.paid_amount = newPaid;
                 fee.balance = newBalance;
-                fee.status = newBalance <= 0 ? 'Paid' : (newPaid > 0 ? 'Partial' : 'Pending');
+                fee.arrears = newArrears;
+                fee.status = (newBalance <= 0 && newArrears <= 0) ? 'Paid' : (newPaid > 0 || newArrears < currentArrears ? 'Partial' : 'Pending');
                 fee.payment_date = new Date();
 
                 await fee.save();
@@ -199,29 +223,76 @@ router.post('/add', protect, checkPermission('fees.create'), async (req, res) =>
 router.get('/bulk-slips', protect, checkPermission('fees.view'), async (req, res) => {
     try {
         const { class_id, section_id, month } = req.query;
-        // Search loose to allow just class
+
+        // Build student query
         const query = { is_active: true, tenant_id: req.tenant_id };
         if (class_id) query.class_id = class_id;
         if (section_id) query.section_id = section_id;
 
+        // Add session filter if available
+        if (req.session_id) {
+            query.current_session_id = req.session_id;
+        }
+
         const students = await Student.find(query).populate('family_id');
 
         const slips = await Promise.all(students.map(async (student) => {
-            let fee = await Fee.findOne({ student_id: student._id, month });
-            if (!fee) {
-                // Mock Preview
-                fee = {
-                    month,
-                    tuition_fee: student.monthly_fee || 5000,
-                    arrears: 0,
-                    gross_amount: student.monthly_fee || 5000,
-                    balance: student.monthly_fee || 5000
-                };
+            // Get current month fee
+            let currentFee = await Fee.findOne({
+                student_id: student._id,
+                month,
+                tenant_id: req.tenant_id
+            });
+
+            // Calculate arrears (all previous unpaid fees in this session)
+            const feeQuery = {
+                student_id: student._id,
+                tenant_id: req.tenant_id,
+                status: { $in: ['Pending', 'Partial'] },
+                month: { $ne: month }, // Exclude current month
+                balance: { $gt: 0 }
+            };
+            if (req.session_id) {
+                feeQuery.session_id = req.session_id;
             }
+
+            const previousFees = await Fee.find(feeQuery);
+            const arrears = previousFees.reduce((sum, f) => sum + (f.balance || 0), 0);
+
+            if (!currentFee) {
+                // Create preview/mock fee for current month
+                const monthlyFee = student.monthly_fee || 5000;
+                currentFee = {
+                    month,
+                    tuition_fee: monthlyFee,
+                    concession: 0,
+                    other_charges: 0,
+                    arrears: arrears,
+                    gross_amount: monthlyFee,
+                    paid_amount: 0,
+                    balance: monthlyFee,
+                    status: 'Pending',
+                    _isPreview: true // Flag to indicate this is not saved yet
+                };
+            } else {
+                // Update arrears in existing fee if needed
+                if (currentFee.arrears !== arrears) {
+                    currentFee.arrears = arrears;
+                }
+            }
+
+            // Calculate total payable = current month balance + arrears
+            const totalPayable = (currentFee.balance || 0) + arrears;
+
             return {
                 student: student,
                 father_name: student.family_id?.father_name || student.father_name || 'N/A',
-                fee: fee
+                fee: {
+                    ...currentFee,
+                    arrears: Math.round(arrears),
+                    total_payable: Math.round(totalPayable),
+                    fee_due: currentFee.balance || currentFee.gross_amount || 0
+                }
             };
         }));
 
