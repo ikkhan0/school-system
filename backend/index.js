@@ -117,6 +117,9 @@ app.use('/api/expenses', protect, ensureTenant, require('./routes/expenseRoutes'
 app.use('/api/sessions', protect, ensureTenant, sessionContext, require('./routes/sessionRoutes'));
 app.use('/api/promotions', protect, ensureTenant, sessionContext, require('./routes/promotionRoutes'));
 
+// Health Check Routes (No auth required)
+app.use('/api/health', require('./routes/healthRoutes'));
+
 // Test Routes (for debugging)
 app.use('/api/test', require('./routes/testRoutes'));
 
