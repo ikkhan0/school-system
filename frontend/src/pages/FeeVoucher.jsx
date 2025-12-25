@@ -184,7 +184,9 @@ const FeeVoucher = () => {
 
                         <tr className="bg-gray-100">
                             <td className="border-2 border-black p-3 font-bold text-lg">TOTAL PAYABLE</td>
-                            <td className="border-2 border-black p-3 text-right font-bold text-xl">Rs. {fee.final_amount || fee.gross_amount}</td>
+                            <td className="border-2 border-black p-3 text-right font-bold text-xl">
+                                Rs. {(fee.balance || fee.final_amount || fee.gross_amount) + (fee.arrears || 0)}
+                            </td>
                         </tr>
                     </tbody>
                 </table>
