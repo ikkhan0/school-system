@@ -88,11 +88,12 @@ router.delete('/:id', protect, async (req, res) => {
 });
 
 // @route   PUT /api/classes/:id/subjects
-// @desc    Assign subjects to a class
+// @desc    Assign subjects to a class and auto-assign to all students in that class
 // @access  Private
 router.put('/:id/subjects', protect, async (req, res) => {
     try {
         const { subjects } = req.body; // Array of subject IDs
+        const Student = require('../models/Student');
 
         const classData = await Class.findOne({
             _id: req.params.id,
@@ -103,11 +104,48 @@ router.put('/:id/subjects', protect, async (req, res) => {
             return res.status(404).json({ message: 'Class not found' });
         }
 
+        // Update class subjects
         classData.subjects = subjects;
         await classData.save();
 
+        // Auto-assign subjects to all students in this class
+        const students = await Student.find({
+            class_id: classData.name,
+            tenant_id: req.tenant_id,
+            is_active: true
+        });
+
+        console.log(`Found ${students.length} students in class ${classData.name}`);
+
+        // Update each student's enrolled_subjects
+        for (const student of students) {
+            // Get existing subject IDs
+            const existingSubjectIds = student.enrolled_subjects.map(es => es.subject_id.toString());
+
+            // Add new subjects that aren't already enrolled
+            for (const subjectId of subjects) {
+                if (!existingSubjectIds.includes(subjectId.toString())) {
+                    student.enrolled_subjects.push({
+                        subject_id: subjectId,
+                        enrollment_date: new Date(),
+                        is_active: true
+                    });
+                }
+            }
+
+            // Remove subjects that are no longer in the class
+            student.enrolled_subjects = student.enrolled_subjects.filter(es =>
+                subjects.some(subId => subId.toString() === es.subject_id.toString())
+            );
+
+            await student.save();
+        }
+
         const populated = await Class.findById(classData._id).populate('subjects');
-        res.json(populated);
+        res.json({
+            class: populated,
+            message: `Subjects assigned to class and ${students.length} students updated`
+        });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

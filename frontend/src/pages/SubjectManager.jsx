@@ -148,7 +148,7 @@ const SubjectManager = () => {
 
     const saveAssignment = async () => {
         try {
-            await fetch(`${API_URL}/api/classes/${selectedClass}/subjects`, {
+            const res = await fetch(`${API_URL}/api/classes/${selectedClass}/subjects`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -156,7 +156,8 @@ const SubjectManager = () => {
                 },
                 body: JSON.stringify({ subjects: assignedSubjects })
             });
-            alert('Subjects assigned successfully!');
+            const data = await res.json();
+            alert(data.message || 'Subjects assigned successfully!');
             fetchClasses();
         } catch (error) {
             alert('Error assigning subjects');
