@@ -165,6 +165,10 @@ const StudentProfile = () => {
         const discountAmount = parseFloat(voucherDiscount) || 0;
         const finalAmount = totalBalance - discountAmount;
 
+        // Calculate due date (10 days from now)
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 10);
+
         // Create fee voucher data
         return {
             month: currentMonth,
@@ -177,46 +181,72 @@ const StudentProfile = () => {
             paid_amount: 0,
             balance: finalAmount > 0 ? finalAmount : 0,
             status: 'Unpaid',
-            due_date: new Date(currentDate.setDate(currentDate.getDate() + 10)).toLocaleDateString()
+            due_date: dueDate.toLocaleDateString()
         };
     };
 
     const handlePrintVoucher = () => {
-        const voucherData = generateVoucherData();
-        const doc = generateFeeVoucherPDF(student, voucherData, {});
+        try {
+            const voucherData = generateVoucherData();
+            const doc = generateFeeVoucherPDF(student, voucherData, {});
 
-        // Open print dialog
-        const pdfBlob = doc.output('blob');
-        const url = URL.createObjectURL(pdfBlob);
-        const printWindow = window.open(url);
-        printWindow.addEventListener('load', () => {
-            printWindow.print();
-        });
+            // Open print dialog
+            const pdfBlob = doc.output('blob');
+            const url = URL.createObjectURL(pdfBlob);
+            const printWindow = window.open(url);
 
-        setShowFeeVoucherModal(false);
-        setVoucherDiscount(0);
+            if (printWindow) {
+                printWindow.addEventListener('load', () => {
+                    printWindow.print();
+                });
+            } else {
+                alert('Please allow popups to print the voucher.');
+            }
+
+            setShowFeeVoucherModal(false);
+            setVoucherDiscount(0);
+        } catch (error) {
+            console.error('Error printing voucher:', error);
+            alert('Error printing voucher: ' + error.message);
+        }
     };
 
     const handleSavePDF = () => {
-        const voucherData = generateVoucherData();
-        const currentMonth = voucherData.month;
-        const doc = generateFeeVoucherPDF(student, voucherData, {});
-        downloadPDF(doc, `Fee_Voucher_${student.roll_no}_${currentMonth}.pdf`);
+        try {
+            const voucherData = generateVoucherData();
+            const currentMonth = voucherData.month;
+            const doc = generateFeeVoucherPDF(student, voucherData, {});
+            downloadPDF(doc, `Fee_Voucher_${student.roll_no}_${currentMonth}.pdf`);
 
-        setShowFeeVoucherModal(false);
-        setVoucherDiscount(0);
+            setShowFeeVoucherModal(false);
+            setVoucherDiscount(0);
+        } catch (error) {
+            console.error('Error saving PDF:', error);
+            alert('Error saving PDF: ' + error.message);
+        }
     };
 
     const handleWhatsAppVoucher = () => {
-        const voucherData = generateVoucherData();
-        const currentMonth = voucherData.month;
-        const mobile = student.family_id?.father_mobile || student.father_mobile;
-        const doc = generateFeeVoucherPDF(student, voucherData, {});
-        const message = `Dear Parent, please find the fee voucher for ${student.full_name} (${student.roll_no}) for ${currentMonth}. Total Amount: Rs. ${voucherData.total_amount}`;
-        sharePDFViaWhatsApp(doc, `Fee_Voucher_${student.roll_no}_${currentMonth}.pdf`, mobile, message);
+        try {
+            const voucherData = generateVoucherData();
+            const currentMonth = voucherData.month;
+            const mobile = student.family_id?.father_mobile || student.father_mobile;
 
-        setShowFeeVoucherModal(false);
-        setVoucherDiscount(0);
+            if (!mobile) {
+                alert('No mobile number found for this student.');
+                return;
+            }
+
+            const doc = generateFeeVoucherPDF(student, voucherData, {});
+            const message = `Dear Parent, please find the fee voucher for ${student.full_name} (${student.roll_no}) for ${currentMonth}. Total Amount: Rs. ${voucherData.total_amount}`;
+            sharePDFViaWhatsApp(doc, `Fee_Voucher_${student.roll_no}_${currentMonth}.pdf`, mobile, message);
+
+            setShowFeeVoucherModal(false);
+            setVoucherDiscount(0);
+        } catch (error) {
+            console.error('Error sharing via WhatsApp:', error);
+            alert('Error sharing via WhatsApp: ' + error.message);
+        }
     };
 
     if (loading) {
