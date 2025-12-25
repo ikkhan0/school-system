@@ -20,6 +20,7 @@ const StudentProfile = () => {
     const [editFormData, setEditFormData] = useState({});
     const [showFeeVoucherModal, setShowFeeVoucherModal] = useState(false);
     const [voucherDiscount, setVoucherDiscount] = useState(0);
+    const [schoolInfo, setSchoolInfo] = useState(null);
 
     useEffect(() => {
         if (!user) return;
@@ -50,6 +51,11 @@ const StudentProfile = () => {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setResults(resultsRes.data);
+
+            const schoolRes = await axios.get(`${API_URL}/api/school`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            setSchoolInfo(schoolRes.data);
 
             setLoading(false);
         } catch (error) {
@@ -109,25 +115,25 @@ const StudentProfile = () => {
     };
 
     const handleDownloadFeeVoucher = (fee) => {
-        const doc = generateFeeVoucherPDF(student, fee, {});
+        const doc = generateFeeVoucherPDF(student, fee, schoolInfo || {});
         downloadPDF(doc, `Fee_Voucher_${student.roll_no}_${fee.month}.pdf`);
     };
 
     const handleShareFeeVoucher = (fee) => {
         const mobile = student.family_id?.father_mobile || student.father_mobile;
-        const doc = generateFeeVoucherPDF(student, fee, {});
+        const doc = generateFeeVoucherPDF(student, fee, schoolInfo || {});
         const message = `Dear Parent, please find the fee voucher for ${student.full_name} (${student.roll_no}) for ${fee.month}.`;
         sharePDFViaWhatsApp(doc, `Fee_Voucher_${student.roll_no}_${fee.month}.pdf`, mobile, message);
     };
 
     const handleDownloadResultCard = (result) => {
-        const doc = generateResultCardPDF(student, result, {});
+        const doc = generateResultCardPDF(student, result, schoolInfo || {});
         downloadPDF(doc, `Result_Card_${student.roll_no}_${result.exam_id?.name || 'Exam'}.pdf`);
     };
 
     const handleShareResultCard = (result) => {
         const mobile = student.family_id?.father_mobile || student.father_mobile;
-        const doc = generateResultCardPDF(student, result, {});
+        const doc = generateResultCardPDF(student, result, schoolInfo || {});
         const message = `Dear Parent, please find the result card for ${student.full_name} (${student.roll_no}) for ${result.exam_id?.name || 'Exam'}.`;
         sharePDFViaWhatsApp(doc, `Result_Card_${student.roll_no}_${result.exam_id?.name || 'Exam'}.pdf`, mobile, message);
     };
@@ -188,7 +194,7 @@ const StudentProfile = () => {
     const handlePrintVoucher = () => {
         try {
             const voucherData = generateVoucherData();
-            const doc = generateFeeVoucherPDF(student, voucherData, {});
+            const doc = generateFeeVoucherPDF(student, voucherData, schoolInfo || {});
 
             // Open print dialog
             const pdfBlob = doc.output('blob');
@@ -215,7 +221,7 @@ const StudentProfile = () => {
         try {
             const voucherData = generateVoucherData();
             const currentMonth = voucherData.month;
-            const doc = generateFeeVoucherPDF(student, voucherData, {});
+            const doc = generateFeeVoucherPDF(student, voucherData, schoolInfo || {});
             downloadPDF(doc, `Fee_Voucher_${student.roll_no}_${currentMonth}.pdf`);
 
             setShowFeeVoucherModal(false);
@@ -237,7 +243,7 @@ const StudentProfile = () => {
                 return;
             }
 
-            const doc = generateFeeVoucherPDF(student, voucherData, {});
+            const doc = generateFeeVoucherPDF(student, voucherData, schoolInfo || {});
             const message = `Dear Parent, please find the fee voucher for ${student.full_name} (${student.roll_no}) for ${currentMonth}. Total Amount: Rs. ${voucherData.total_amount}`;
             sharePDFViaWhatsApp(doc, `Fee_Voucher_${student.roll_no}_${currentMonth}.pdf`, mobile, message);
 
