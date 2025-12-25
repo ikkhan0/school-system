@@ -115,7 +115,7 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
 
 
                 // Check if already fully paid
-                if (fee.status === 'Paid' && fee.balance <= 0 && (!fee.arrears || fee.arrears <= 0)) {
+                if (fee.status === 'Paid' && fee.balance <= 0) {
                     errors.push({
                         student_id: p.student_id,
                         month: p.month,
@@ -124,10 +124,24 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
                     continue;
                 }
 
-                // Calculate total due (current month + arrears)
-                const currentArrears = fee.arrears || 0;
+                // Get all unpaid previous fees (arrears) - OLDEST FIRST
+                const previousFeesQuery = {
+                    student_id: p.student_id,
+                    tenant_id: req.tenant_id,
+                    status: { $in: ['Pending', 'Partial'] },
+                    month: { $ne: p.month }, // Exclude current month
+                    balance: { $gt: 0 }
+                };
+                if (req.session_id) {
+                    previousFeesQuery.session_id = req.session_id;
+                }
+
+                const previousFees = await Fee.find(previousFeesQuery).sort({ createdAt: 1 }); // Oldest first
+                const totalArrears = previousFees.reduce((sum, f) => sum + (f.balance || 0), 0);
+
+                // Calculate total due
                 const currentMonthDue = fee.balance || 0;
-                const totalDue = currentMonthDue + currentArrears;
+                const totalDue = currentMonthDue + totalArrears;
 
                 // Calculate new amounts
                 const amountPaying = Number(p.amount_paying) || 0;
@@ -137,34 +151,37 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
                     errors.push({
                         student_id: p.student_id,
                         month: p.month,
-                        error: `Overpayment: Trying to pay ${amountPaying} but only ${totalDue} is due (Fee: ${currentMonthDue}, Arrears: ${currentArrears})`
+                        error: `Overpayment: Trying to pay ${amountPaying} but only ${totalDue} is due (Current: ${currentMonthDue}, Arrears: ${totalArrears})`
                     });
                     continue;
                 }
 
-                // Payment logic: First pay arrears, then current month
+                // Payment logic: First pay OLD fees (arrears), then current month
                 let remainingPayment = amountPaying;
-                let newArrears = currentArrears;
-                let newPaid = fee.paid_amount;
 
-                // Pay arrears first
-                if (currentArrears > 0 && remainingPayment > 0) {
-                    const arrearsPayment = Math.min(remainingPayment, currentArrears);
-                    newArrears -= arrearsPayment;
-                    remainingPayment -= arrearsPayment;
+                // Pay previous fees first (oldest to newest)
+                for (const oldFee of previousFees) {
+                    if (remainingPayment <= 0) break;
+
+                    const oldBalance = oldFee.balance || 0;
+                    const paymentForThis = Math.min(remainingPayment, oldBalance);
+
+                    oldFee.paid_amount += paymentForThis;
+                    oldFee.balance -= paymentForThis;
+                    oldFee.status = oldFee.balance <= 0 ? 'Paid' : 'Partial';
+                    oldFee.payment_date = new Date();
+
+                    await oldFee.save();
+                    remainingPayment -= paymentForThis;
                 }
 
-                // Then pay current month
+                // Then pay current month with whatever is left
                 if (remainingPayment > 0) {
-                    newPaid += remainingPayment;
+                    fee.paid_amount += remainingPayment;
+                    fee.balance = fee.gross_amount - fee.paid_amount;
                 }
 
-                const newBalance = fee.gross_amount - newPaid;
-
-                fee.paid_amount = newPaid;
-                fee.balance = newBalance;
-                fee.arrears = newArrears;
-                fee.status = (newBalance <= 0 && newArrears <= 0) ? 'Paid' : (newPaid > 0 || newArrears < currentArrears ? 'Partial' : 'Pending');
+                fee.status = fee.balance <= 0 ? 'Paid' : (fee.paid_amount > 0 ? 'Partial' : 'Pending');
                 fee.payment_date = new Date();
 
                 await fee.save();
