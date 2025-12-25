@@ -7,13 +7,26 @@ const TopHeader = ({ onMenuClick }) => {
     const { user, logout } = useContext(AuthContext);
     const navigate = useNavigate();
     const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
     const profileRef = useRef(null);
+    const notificationsRef = useRef(null);
 
-    // Close dropdown when clicking outside
+    // Sample notifications - replace with actual data from API
+    const notifications = [
+        { id: 1, title: 'New Student Admission', message: 'Ali Ahmed has been admitted to Class 5-A', time: '5 min ago', unread: true },
+        { id: 2, title: 'Fee Payment Received', message: 'Rs. 5000 received from Student ID: 101', time: '1 hour ago', unread: true },
+        { id: 3, title: 'Attendance Alert', message: '3 students absent for 3 consecutive days', time: '2 hours ago', unread: true },
+        { id: 4, title: 'Exam Results Published', message: 'Mid-term results are now available', time: '1 day ago', unread: false },
+    ];
+
+    // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (profileRef.current && !profileRef.current.contains(event.target)) {
                 setShowProfileMenu(false);
+            }
+            if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+                setShowNotifications(false);
             }
         };
 
@@ -57,12 +70,74 @@ const TopHeader = ({ onMenuClick }) => {
                 </div>
 
                 {/* Notifications */}
-                <button className="relative text-gray-600 hover:text-gray-900">
-                    <Bell size={20} />
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                        3
-                    </span>
-                </button>
+                <div className="relative" ref={notificationsRef}>
+                    <button
+                        onClick={() => setShowNotifications(!showNotifications)}
+                        className="relative text-gray-600 hover:text-gray-900"
+                    >
+                        <Bell size={20} />
+                        {notifications.filter(n => n.unread).length > 0 && (
+                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                                {notifications.filter(n => n.unread).length}
+                            </span>
+                        )}
+                    </button>
+
+                    {/* Notifications Dropdown */}
+                    {showNotifications && (
+                        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto z-50">
+                            <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                                <h3 className="font-semibold text-gray-900">Notifications</h3>
+                                <span className="text-xs text-gray-500">
+                                    {notifications.filter(n => n.unread).length} unread
+                                </span>
+                            </div>
+
+                            <div className="divide-y divide-gray-100">
+                                {notifications.length > 0 ? (
+                                    notifications.map(notification => (
+                                        <div
+                                            key={notification.id}
+                                            className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition ${notification.unread ? 'bg-blue-50' : ''
+                                                }`}
+                                            onClick={() => {
+                                                // Handle notification click - navigate or mark as read
+                                                setShowNotifications(false);
+                                            }}
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-medium text-gray-900">
+                                                        {notification.title}
+                                                    </p>
+                                                    <p className="text-xs text-gray-600 mt-1">
+                                                        {notification.message}
+                                                    </p>
+                                                    <p className="text-xs text-gray-400 mt-1">
+                                                        {notification.time}
+                                                    </p>
+                                                </div>
+                                                {notification.unread && (
+                                                    <div className="w-2 h-2 bg-blue-600 rounded-full ml-2 mt-1"></div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="px-4 py-8 text-center text-gray-500 text-sm">
+                                        No notifications
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="px-4 py-2 border-t border-gray-200 text-center">
+                                <button className="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                    View All Notifications
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 {/* Profile Dropdown */}
                 <div className="relative" ref={profileRef}>
