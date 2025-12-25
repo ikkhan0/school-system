@@ -154,7 +154,7 @@ const StudentProfile = () => {
         setShowFeeVoucherModal(true);
     };
 
-    const handleGenerateFeeVoucher = () => {
+    const generateVoucherData = () => {
         // Get current month
         const currentDate = new Date();
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -166,19 +166,54 @@ const StudentProfile = () => {
         const finalAmount = totalBalance - discountAmount;
 
         // Create fee voucher data
-        const voucherData = {
+        return {
             month: currentMonth,
             tuition_fee: student.monthly_fee || 5000,
             arrears: totalBalance - (student.monthly_fee || 5000),
             concession: discountAmount,
+            discount_amount: discountAmount,
             gross_amount: totalBalance,
+            total_amount: finalAmount > 0 ? finalAmount : 0,
             paid_amount: 0,
             balance: finalAmount > 0 ? finalAmount : 0,
-            status: 'Unpaid'
+            status: 'Unpaid',
+            due_date: new Date(currentDate.setDate(currentDate.getDate() + 10)).toLocaleDateString()
         };
+    };
 
+    const handlePrintVoucher = () => {
+        const voucherData = generateVoucherData();
+        const doc = generateFeeVoucherPDF(student, voucherData, {});
+
+        // Open print dialog
+        const pdfBlob = doc.output('blob');
+        const url = URL.createObjectURL(pdfBlob);
+        const printWindow = window.open(url);
+        printWindow.addEventListener('load', () => {
+            printWindow.print();
+        });
+
+        setShowFeeVoucherModal(false);
+        setVoucherDiscount(0);
+    };
+
+    const handleSavePDF = () => {
+        const voucherData = generateVoucherData();
+        const currentMonth = voucherData.month;
         const doc = generateFeeVoucherPDF(student, voucherData, {});
         downloadPDF(doc, `Fee_Voucher_${student.roll_no}_${currentMonth}.pdf`);
+
+        setShowFeeVoucherModal(false);
+        setVoucherDiscount(0);
+    };
+
+    const handleWhatsAppVoucher = () => {
+        const voucherData = generateVoucherData();
+        const currentMonth = voucherData.month;
+        const mobile = student.family_id?.father_mobile || student.father_mobile;
+        const doc = generateFeeVoucherPDF(student, voucherData, {});
+        const message = `Dear Parent, please find the fee voucher for ${student.full_name} (${student.roll_no}) for ${currentMonth}. Total Amount: Rs. ${voucherData.total_amount}`;
+        sharePDFViaWhatsApp(doc, `Fee_Voucher_${student.roll_no}_${currentMonth}.pdf`, mobile, message);
 
         setShowFeeVoucherModal(false);
         setVoucherDiscount(0);
@@ -882,19 +917,36 @@ const StudentProfile = () => {
                                 )}
                             </div>
 
-                            <div className="flex gap-4">
+                            <div className="flex flex-col gap-3">
                                 <button
-                                    onClick={() => { setShowFeeVoucherModal(false); setVoucherDiscount(0); }}
-                                    className="flex-1 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-semibold"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleGenerateFeeVoucher}
-                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-semibold"
+                                    onClick={handlePrintVoucher}
+                                    className="flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold"
                                 >
                                     <Printer size={18} />
                                     Print Voucher
+                                </button>
+
+                                <button
+                                    onClick={handleSavePDF}
+                                    className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+                                >
+                                    <Download size={18} />
+                                    Save as PDF
+                                </button>
+
+                                <button
+                                    onClick={handleWhatsAppVoucher}
+                                    className="flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold"
+                                >
+                                    <MessageCircle size={18} />
+                                    Send via WhatsApp
+                                </button>
+
+                                <button
+                                    onClick={() => { setShowFeeVoucherModal(false); setVoucherDiscount(0); }}
+                                    className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-semibold"
+                                >
+                                    Cancel
                                 </button>
                             </div>
                         </div>
