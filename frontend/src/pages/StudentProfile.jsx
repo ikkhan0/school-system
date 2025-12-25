@@ -18,6 +18,8 @@ const StudentProfile = () => {
     const [loading, setLoading] = useState(true);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editFormData, setEditFormData] = useState({});
+    const [showFeeVoucherModal, setShowFeeVoucherModal] = useState(false);
+    const [voucherDiscount, setVoucherDiscount] = useState(0);
 
     useEffect(() => {
         if (!user) return;
@@ -140,6 +142,48 @@ const StudentProfile = () => {
         window.location.href = `tel:${mobile}`;
     };
 
+    const handlePrintCurrentFeeVoucher = () => {
+        // Calculate total outstanding balance
+        const totalBalance = fees.reduce((sum, fee) => sum + (fee.balance || 0), 0);
+
+        if (totalBalance <= 0) {
+            alert('No outstanding balance to print voucher for.');
+            return;
+        }
+
+        setShowFeeVoucherModal(true);
+    };
+
+    const handleGenerateFeeVoucher = () => {
+        // Get current month
+        const currentDate = new Date();
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const currentMonth = `${monthNames[currentDate.getMonth()]}-${currentDate.getFullYear()}`;
+
+        // Calculate total balance
+        const totalBalance = fees.reduce((sum, fee) => sum + (fee.balance || 0), 0);
+        const discountAmount = parseFloat(voucherDiscount) || 0;
+        const finalAmount = totalBalance - discountAmount;
+
+        // Create fee voucher data
+        const voucherData = {
+            month: currentMonth,
+            tuition_fee: student.monthly_fee || 5000,
+            arrears: totalBalance - (student.monthly_fee || 5000),
+            concession: discountAmount,
+            gross_amount: totalBalance,
+            paid_amount: 0,
+            balance: finalAmount > 0 ? finalAmount : 0,
+            status: 'Unpaid'
+        };
+
+        const doc = generateFeeVoucherPDF(student, voucherData, {});
+        downloadPDF(doc, `Fee_Voucher_${student.roll_no}_${currentMonth}.pdf`);
+
+        setShowFeeVoucherModal(false);
+        setVoucherDiscount(0);
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-screen">
@@ -211,6 +255,13 @@ const StudentProfile = () => {
                         >
                             <Printer size={16} className="md:w-[18px] md:h-[18px]" />
                             <span className="hidden sm:inline">Print</span>
+                        </button>
+                        <button
+                            onClick={handlePrintCurrentFeeVoucher}
+                            className="flex items-center justify-center gap-1 md:gap-2 px-3 md:px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 text-sm md:text-base col-span-2 sm:col-span-1"
+                        >
+                            <FileText size={16} className="md:w-[18px] md:h-[18px]" />
+                            <span>Fee Voucher</span>
                         </button>
                         <button
                             onClick={() => setShowEditModal(true)}
@@ -779,6 +830,71 @@ const StudentProfile = () => {
                                 >
                                     <Save size={18} />
                                     Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Fee Voucher Modal */}
+            {showFeeVoucherModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 no-print">
+                    <div className="bg-white rounded-lg shadow-2xl max-w-md w-full">
+                        <div className="bg-orange-600 text-white p-6 flex justify-between items-center rounded-t-lg">
+                            <h2 className="text-2xl font-bold">Print Fee Voucher</h2>
+                            <button onClick={() => { setShowFeeVoucherModal(false); setVoucherDiscount(0); }} className="text-white hover:text-gray-200">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="p-6">
+                            <div className="mb-6">
+                                <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                                    <h3 className="font-bold text-lg text-blue-700 mb-2">Outstanding Balance</h3>
+                                    <p className="text-3xl font-bold text-blue-900">
+                                        Rs. {fees.reduce((sum, fee) => sum + (fee.balance || 0), 0).toFixed(2)}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Apply Discount (Optional)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={voucherDiscount}
+                                        onChange={(e) => setVoucherDiscount(e.target.value)}
+                                        placeholder="Enter discount amount"
+                                        className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:outline-none"
+                                        min="0"
+                                        step="0.01"
+                                    />
+                                </div>
+
+                                {voucherDiscount > 0 && (
+                                    <div className="mt-4 bg-green-50 p-4 rounded-lg">
+                                        <p className="text-sm text-gray-600">Final Amount After Discount:</p>
+                                        <p className="text-2xl font-bold text-green-700">
+                                            Rs. {(fees.reduce((sum, fee) => sum + (fee.balance || 0), 0) - parseFloat(voucherDiscount)).toFixed(2)}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => { setShowFeeVoucherModal(false); setVoucherDiscount(0); }}
+                                    className="flex-1 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-semibold"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleGenerateFeeVoucher}
+                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-semibold"
+                                >
+                                    <Printer size={18} />
+                                    Print Voucher
                                 </button>
                             </div>
                         </div>
