@@ -277,7 +277,7 @@ const StudentProfile = () => {
         user.role === 'super_admin' ||
         user.role === 'school_admin' ||
         user.role === 'accountant' ||
-        (user.permissions && (user.permissions.includes('fees:discount') || user.permissions.includes('fees:*')))
+        (user.permissions && (user.permissions.includes('fees.discount') || user.permissions.includes('fees.*')))
     );
 
     return (

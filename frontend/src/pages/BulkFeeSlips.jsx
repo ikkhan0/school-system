@@ -84,7 +84,7 @@ const BulkFeeSlips = () => {
                             onChange={(e) => setPrintFormat(e.target.value)}
                             className="w-4 h-4"
                         />
-                        <span>A4 Grid (2 per page)</span>
+                        <span>A4 Grid (3 per page)</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -173,16 +173,16 @@ const BulkFeeSlips = () => {
                         .no-print { display: none; }
                         body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; }
                         
-                        /* A4 Grid Layout - 2 slips per page */
+                        /* A4 Grid Layout - 3 slips per page */
                         .print-format-a4 {
-                            @page { size: A4; margin: 10mm; }
+                            @page { size: A4; margin: 8mm; }
                         }
                         
                         .print-format-a4 .print-area { 
                             display: grid; 
-                            grid-template-columns: 1fr 1fr; 
+                            grid-template-columns: 1fr 1fr 1fr; 
                             width: 100%;
-                            gap: 10mm;
+                            gap: 6mm;
                         }
 
                         .print-format-a4 .fee-slip-card {
@@ -191,6 +191,16 @@ const BulkFeeSlips = () => {
                             box-sizing: border-box;
                             page-break-inside: avoid;
                             background: white;
+                            font-size: 11px;
+                        }
+
+                        .print-format-a4 .fee-slip-card h2 {
+                            font-size: 14px;
+                        }
+
+                        .print-format-a4 .fee-slip-card p,
+                        .print-format-a4 .fee-slip-card span {
+                            font-size: 10px;
                         }
                         
                         .print-format-a4 .receipt-cut-line {
@@ -239,7 +249,7 @@ const BulkFeeSlips = () => {
                     @media screen {
                         .print-format-a4 .print-area {
                             display: grid;
-                            grid-template-columns: 1fr 1fr;
+                            grid-template-columns: 1fr 1fr 1fr;
                             gap: 20px;
                         }
                         

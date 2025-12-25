@@ -19,6 +19,7 @@ export const PERMISSIONS = {
     'fees.collect': 'Collect Payments',
     'fees.edit': 'Edit Fees',
     'fees.delete': 'Delete Fees',
+    'fees.discount': 'Apply Discounts',
 
     // Attendance
     'attendance.view': 'View Attendance',
@@ -74,6 +75,7 @@ export const ROLE_TEMPLATES = {
         'fees.create',
         'fees.collect',
         'fees.edit',
+        'fees.discount',
         'reports.view',
         'reports.export'
     ],
