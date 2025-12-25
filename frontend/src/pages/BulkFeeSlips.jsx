@@ -133,15 +133,15 @@ const BulkFeeSlips = () => {
                         <div className="border-t-2 border-black pt-2">
                             <div className="flex justify-between py-1 border-b border-gray-300">
                                 <span>Tuition Fee:</span>
-                                <span className="font-bold">{slip.fee.tuition_fee}</span>
+                                <span className="font-bold">{slip.fee.fee_due || slip.fee.tuition_fee || slip.fee.balance || 0}</span>
                             </div>
                             <div className="flex justify-between py-1 border-b border-gray-300">
                                 <span>Arrears:</span>
-                                <span>{slip.fee.arrears}</span>
+                                <span className="text-red-600 font-semibold">{slip.fee.arrears || 0}</span>
                             </div>
                             <div className="flex justify-between py-2 border-2 border-black bg-gray-100 px-2 mt-2 items-center">
                                 <span className="font-bold uppercase text-sm">Total Payable:</span>
-                                <span className="font-bold text-lg">Rs. {slip.fee.balance}</span>
+                                <span className="font-bold text-lg">Rs. {slip.fee.total_payable || (slip.fee.balance || 0) + (slip.fee.arrears || 0)}</span>
                             </div>
                         </div>
 
