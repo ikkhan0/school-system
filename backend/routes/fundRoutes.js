@@ -70,7 +70,7 @@ router.post('/generate', protect, checkPermission('fees.create'), async (req, re
         };
         if (section_id && section_id !== 'All') query.section_id = section_id;
         // Session filter
-        if (req.session_id) query.session_id = req.session_id;
+        if (req.session_id) query.current_session_id = req.session_id;
 
         const students = await Student.find(query);
 

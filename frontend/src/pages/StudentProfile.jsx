@@ -156,7 +156,7 @@ const StudentProfile = () => {
     const handleShareFeeVoucher = (fee) => {
         const mobile = student.family_id?.father_mobile || student.father_mobile;
         const doc = generateFeeVoucherPDF(student, fee, schoolInfo || {});
-        const message = `Dear Parent, please find the fee voucher for ${student.full_name} (${student.roll_no}) for ${fee.month}.`;
+        const message = `Dear Parent, please find the fee voucher for ${student.full_name} (${student.roll_no}) for ${fee.title || fee.month}. Amount: Rs. ${fee.gross_amount}.`;
         sharePDFViaWhatsApp(doc, `Fee_Voucher_${student.roll_no}_${fee.month}.pdf`, mobile, message);
     };
 

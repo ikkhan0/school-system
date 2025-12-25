@@ -212,6 +212,21 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
 
 
 
+// @desc    Get Student Fee Ledger
+// @route   GET /api/fees/ledger/:student_id
+router.get('/ledger/:student_id', protect, checkPermission('fees.view'), async (req, res) => {
+    try {
+        const fees = await Fee.find({
+            student_id: req.params.student_id,
+            tenant_id: req.tenant_id
+        }).sort({ payment_date: -1, month: -1, _id: -1 });
+
+        res.json(fees);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // @desc    Add a Fee Manually for a Student
 // @route   POST /api/fees/add
 router.post('/add', protect, checkPermission('fees.create'), async (req, res) => {

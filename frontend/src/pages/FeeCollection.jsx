@@ -417,7 +417,10 @@ const FeeCollection = () => {
                                             ) : (
                                                 studentLedger.history.map(rec => (
                                                     <tr key={rec._id}>
-                                                        <td className="p-2 sm:p-3 font-medium text-xs sm:text-sm">{rec.month}</td>
+                                                        <td className="p-2 sm:p-3 font-medium text-xs sm:text-sm">
+                                                            {rec.month}
+                                                            {rec.title && rec.title !== 'Monthly Fee' && <div className="text-[10px] text-gray-500 font-normal">{rec.title}</div>}
+                                                        </td>
                                                         <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">{rec.gross_amount}</td>
                                                         <td className="p-2 sm:p-3 text-right text-green-600 font-bold text-xs sm:text-sm">{rec.paid_amount}</td>
                                                         <td className="p-2 sm:p-3 text-right text-red-600 font-bold text-xs sm:text-sm">{rec.balance}</td>
