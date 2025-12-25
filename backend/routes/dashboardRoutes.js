@@ -26,16 +26,22 @@ router.get('/stats', async (req, res) => {
         const todayPresent = todayAttendance.filter(a => a.status === 'Present').length;
         const todayAbsent = todayAttendance.filter(a => a.status === 'Absent').length;
 
-        // Fee defaulters
-        const defaulters = await Fee.find({ tenant_id: tenantId, status: { $ne: 'Paid' } });
-        const totalFeeOutstanding = defaulters.reduce((sum, f) => sum + f.balance, 0);
+        // Fee defaulters - Only for active students
+        const defaulters = await Fee.find({
+            tenant_id: tenantId,
+            status: { $ne: 'Paid' }
+        }).populate('student_id');
+
+        // Filter to only include active students
+        const activeDefaulters = defaulters.filter(fee => fee.student_id && fee.student_id.is_active);
+        const totalFeeOutstanding = activeDefaulters.reduce((sum, f) => sum + f.balance, 0);
 
         res.json({
             totalStudents,
             totalStaff,
             todayPresent,
             todayAbsent,
-            feeDefaulters: defaulters.length,
+            feeDefaulters: activeDefaulters.length,
             totalFeeOutstanding
         });
     } catch (error) {
