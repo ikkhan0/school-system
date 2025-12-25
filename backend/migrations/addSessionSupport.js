@@ -12,16 +12,39 @@
 
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const path = require('path');
 
-dotenv.config();
+// Load environment variables from .env file
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
-// Import models
+console.log('📝 Environment check:');
+console.log(`   MONGO_URI exists: ${!!process.env.MONGO_URI}`);
+console.log(`   MONGO_URI starts with: ${process.env.MONGO_URI?.substring(0, 20)}...`);
+console.log('');
+
+// Import models with error handling
 const AcademicSession = require('../models/AcademicSession');
 const Student = require('../models/Student');
 const Fee = require('../models/Fee');
-const DailyLog = require('../models/DailyLog');
-const ExamResult = require('../models/ExamResult');
-const Result = require('../models/Result');
+
+let DailyLog, ExamResult, Result;
+try {
+    DailyLog = require('../models/DailyLog');
+} catch (e) {
+    console.log('⚠️  DailyLog model not found, skipping');
+}
+
+try {
+    ExamResult = require('../models/ExamResult');
+} catch (e) {
+    console.log('⚠️  ExamResult model not found, skipping');
+}
+
+try {
+    Result = require('../models/Result');
+} catch (e) {
+    console.log('⚠️  Result model not found, skipping');
+}
 
 async function migrateToSessions() {
     try {
@@ -42,118 +65,153 @@ async function migrateToSessions() {
 
             console.log(`\n🏫 Processing school: ${schoolId}`);
 
-            // Check if session already exists
-            let session = await AcademicSession.findOne({
-                tenant_id: schoolId,
-                session_name: '2024-2025'
-            });
-
-            if (!session) {
-                // Create default 2024-2025 session
-                session = await AcademicSession.create({
+            try {
+                // Check if session already exists
+                let session = await AcademicSession.findOne({
                     tenant_id: schoolId,
-                    session_name: '2024-2025',
-                    start_date: new Date('2024-04-01'),
-                    end_date: new Date('2025-03-31'),
-                    is_active: true,
-                    is_current: true,
-                    is_locked: false,
-                    notes: 'Auto-created during migration'
+                    session_name: '2024-2025'
                 });
 
-                console.log(`  ✅ Created session: ${session.session_name}`);
-            } else {
-                console.log(`  ℹ️  Session already exists: ${session.session_name}`);
-            }
+                if (!session) {
+                    // Create default 2024-2025 session
+                    console.log(`  📝 Creating new session...`);
+                    try {
+                        session = await AcademicSession.create({
+                            tenant_id: schoolId,
+                            session_name: '2024-2025',
+                            start_date: new Date('2024-04-01'),
+                            end_date: new Date('2025-03-31'),
+                            is_active: true,
+                            is_current: true,
+                            is_locked: false,
+                            notes: 'Auto-created during migration'
+                        });
 
-            // Update all students for this school
-            const studentUpdateResult = await Student.updateMany(
-                {
-                    tenant_id: schoolId,
-                    current_session_id: { $exists: false }
-                },
-                {
-                    $set: {
-                        current_session_id: session._id
-                    },
-                    $setOnInsert: {
-                        session_history: []
+                        console.log(`  ✅ Created session: ${session.session_name}`);
+                    } catch (error) {
+                        console.error(`  ❌ Error creating session for school ${schoolId}:`);
+                        console.error(`     Error: ${error.message}`);
+                        if (error.errors) {
+                            Object.keys(error.errors).forEach(key => {
+                                console.error(`     - ${key}: ${error.errors[key].message}`);
+                            });
+                        }
+                        console.error(`     Stack: ${error.stack}`);
+                        continue; // Skip this school and continue with next
+                    }
+                } else {
+                    console.log(`  ℹ️  Session already exists: ${session.session_name}`);
+                }
+
+                // Update all students for this school
+                try {
+                    const studentUpdateResult = await Student.updateMany(
+                        {
+                            tenant_id: schoolId,
+                            current_session_id: { $exists: false }
+                        },
+                        {
+                            $set: {
+                                current_session_id: session._id
+                            },
+                            $setOnInsert: {
+                                session_history: []
+                            }
+                        }
+                    );
+
+                    console.log(`  ✅ Updated ${studentUpdateResult.modifiedCount} students`);
+                } catch (error) {
+                    console.log(`  ⚠️  Student update failed: ${error.message}`);
+                }
+
+                // Update all fees for this school
+                try {
+                    const feeUpdateResult = await Fee.updateMany(
+                        {
+                            tenant_id: schoolId,
+                            session_id: { $exists: false }
+                        },
+                        {
+                            $set: {
+                                session_id: session._id
+                            }
+                        }
+                    );
+
+                    console.log(`  ✅ Updated ${feeUpdateResult.modifiedCount} fee records`);
+                } catch (error) {
+                    console.log(`  ⚠️  Fee update failed: ${error.message}`);
+                }
+
+                // Update all daily logs for this school (if model exists)
+                if (DailyLog) {
+                    try {
+                        const dailyLogUpdateResult = await DailyLog.updateMany(
+                            {
+                                tenant_id: schoolId,
+                                session_id: { $exists: false }
+                            },
+                            {
+                                $set: {
+                                    session_id: session._id
+                                }
+                            }
+                        );
+
+                        console.log(`  ✅ Updated ${dailyLogUpdateResult.modifiedCount} attendance records`);
+                    } catch (error) {
+                        console.log(`  ⚠️  DailyLog update skipped: ${error.message}`);
                     }
                 }
-            );
 
-            console.log(`  ✅ Updated ${studentUpdateResult.modifiedCount} students`);
 
-            // Update all fees for this school
-            const feeUpdateResult = await Fee.updateMany(
-                {
-                    tenant_id: schoolId,
-                    session_id: { $exists: false }
-                },
-                {
-                    $set: {
-                        session_id: session._id
+                // Update all exam results for this school (if model exists)
+                if (ExamResult) {
+                    try {
+                        const examResultUpdateResult = await ExamResult.updateMany(
+                            {
+                                tenant_id: schoolId,
+                                session_id: { $exists: false }
+                            },
+                            {
+                                $set: {
+                                    session_id: session._id
+                                }
+                            }
+                        );
+
+                        console.log(`  ✅ Updated ${examResultUpdateResult.modifiedCount} exam result records`);
+                    } catch (error) {
+                        console.log(`  ⚠️  ExamResult update skipped: ${error.message}`);
                     }
                 }
-            );
 
-            console.log(`  ✅ Updated ${feeUpdateResult.modifiedCount} fee records`);
 
-            // Update all daily logs for this school (if model has session support)
-            try {
-                const dailyLogUpdateResult = await DailyLog.updateMany(
-                    {
-                        tenant_id: schoolId,
-                        session_id: { $exists: false }
-                    },
-                    {
-                        $set: {
-                            session_id: session._id
-                        }
+                // Update all results for this school (if model exists)
+                if (Result) {
+                    try {
+                        const resultUpdateResult = await Result.updateMany(
+                            {
+                                tenant_id: schoolId,
+                                session_id: { $exists: false }
+                            },
+                            {
+                                $set: {
+                                    session_id: session._id
+                                }
+                            }
+                        );
+
+                        console.log(`  ✅ Updated ${resultUpdateResult.modifiedCount} result records`);
+                    } catch (error) {
+                        console.log(`  ⚠️  Result update skipped: ${error.message}`);
                     }
-                );
-
-                console.log(`  ✅ Updated ${dailyLogUpdateResult.modifiedCount} attendance records`);
-            } catch (error) {
-                console.log(`  ⚠️  DailyLog update skipped: ${error.message}`);
-            }
-
-            // Update all exam results for this school
-            try {
-                const examResultUpdateResult = await ExamResult.updateMany(
-                    {
-                        tenant_id: schoolId,
-                        session_id: { $exists: false }
-                    },
-                    {
-                        $set: {
-                            session_id: session._id
-                        }
-                    }
-                );
-
-                console.log(`  ✅ Updated ${examResultUpdateResult.modifiedCount} exam result records`);
-            } catch (error) {
-                console.log(`  ⚠️  ExamResult update skipped: ${error.message}`);
-            }
-
-            // Update all results for this school
-            try {
-                const resultUpdateResult = await Result.updateMany(
-                    {
-                        tenant_id: schoolId,
-                        session_id: { $exists: false }
-                    },
-                    {
-                        $set: {
-                            session_id: session._id
-                        }
-                    }
-                );
-
-                console.log(`  ✅ Updated ${resultUpdateResult.modifiedCount} result records`);
-            } catch (error) {
-                console.log(`  ⚠️  Result update skipped: ${error.message}`);
+                }
+            } catch (schoolError) {
+                console.error(`\n❌ Error processing school ${schoolId}:`);
+                console.error(`   ${schoolError.message}`);
+                console.error(`   Continuing with next school...\n`);
             }
         }
 

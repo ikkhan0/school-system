@@ -67,11 +67,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             title: 'Academic',
             icon: BookOpen,
             type: 'group',
-            paths: ['/classes', '/subjects', '/evaluation'],
+            paths: ['/classes', '/subjects', '/evaluation', '/sessions', '/student-promotion'],
             items: [
                 { title: 'Classes', path: '/classes' },
                 { title: 'Subjects', path: '/subjects' },
-                { title: 'Attendance', path: '/evaluation' }
+                { title: 'Attendance', path: '/evaluation' },
+                { title: 'Sessions', path: '/sessions' },
+                { title: 'Student Promotion', path: '/student-promotion' }
             ]
         },
         {
