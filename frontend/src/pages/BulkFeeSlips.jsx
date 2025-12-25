@@ -146,6 +146,12 @@ const BulkFeeSlips = () => {
                                     <span>Arrears:</span>
                                     <span className="text-red-600 font-semibold">{slip.fee.arrears || 0}</span>
                                 </div>
+                                {slip.fee.outstanding_funds?.map((fund, i) => (
+                                    <div key={i} className="flex justify-between py-1 border-b border-gray-300 bg-yellow-50">
+                                        <span>{fund.title}:</span>
+                                        <span className="font-semibold">{fund.amount}</span>
+                                    </div>
+                                ))}
                                 <div className="flex justify-between py-2 border-2 border-black bg-gray-100 px-2 mt-2 items-center">
                                     <span className="font-bold uppercase text-sm">Total Payable:</span>
                                     <span className="font-bold text-lg">Rs. {slip.fee.total_payable || (slip.fee.balance || 0) + (slip.fee.arrears || 0)}</span>

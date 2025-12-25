@@ -143,6 +143,12 @@ const FeeVoucher = () => {
                                 <td className="border-2 border-black p-3 text-right">{fee.other_charges}</td>
                             </tr>
                         )}
+                        {fee.outstanding_funds?.map((fund, idx) => (
+                            <tr key={'fund' + idx} className="bg-yellow-50">
+                                <td className="border-2 border-black p-3">{fund.title}</td>
+                                <td className="border-2 border-black p-3 text-right font-semibold">{fund.amount}</td>
+                            </tr>
+                        ))}
                         {fee.arrears > 0 && (
                             <tr>
                                 <td className="border-2 border-black p-3">Arrears</td>

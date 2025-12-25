@@ -291,7 +291,15 @@ router.get('/bulk-slips', protect, checkPermission('fees.view'), async (req, res
             }
 
             const previousFees = await Fee.find(feeQuery);
-            const arrears = previousFees.reduce((sum, f) => sum + (f.balance || 0), 0);
+            let arrears = 0;
+            const outstanding_funds = [];
+            for (const f of previousFees) {
+                if (f.fee_type === 'Fund') {
+                    outstanding_funds.push({ title: f.title, amount: f.balance });
+                } else {
+                    arrears += (f.balance || 0);
+                }
+            }
 
             if (!currentFee) {
                 // Create preview/mock fee for current month
@@ -317,8 +325,10 @@ router.get('/bulk-slips', protect, checkPermission('fees.view'), async (req, res
                 }
             }
 
-            // Calculate total payable = current month balance + arrears
-            const totalPayable = (currentFee.balance || 0) + arrears;
+            // Calculate total payable = current month balance + arrears + funds
+            const fundsTotal = outstanding_funds.reduce((s, f) => s + f.amount, 0);
+            const feeBalance = currentFee.balance !== undefined ? currentFee.balance : currentFee.gross_amount;
+            const totalPayable = (feeBalance || 0) + arrears + fundsTotal;
 
             return {
                 student: student,
@@ -326,8 +336,11 @@ router.get('/bulk-slips', protect, checkPermission('fees.view'), async (req, res
                 fee: {
                     ...currentFee,
                     arrears: Math.round(arrears),
+                    outstanding_funds,
                     total_payable: Math.round(totalPayable),
-                    fee_due: currentFee.balance || currentFee.gross_amount || 0
+                    fee_due: feeBalance || 0,
+                    title: currentFee.title || 'Monthly Fee',
+                    fee_type: currentFee.fee_type || 'Tuition',
                 }
             };
         }));
@@ -378,9 +391,30 @@ router.get('/voucher/:student_id/:month', protect, checkPermission('fees.view'),
         const School = require('../models/School');
         const school = await School.findById(req.tenant_id);
 
+        // Calculate Arrears and Funds
+        const previousFees = await Fee.find({
+            student_id,
+            tenant_id: req.tenant_id,
+            status: { $in: ['Pending', 'Partial'] },
+            _id: { $ne: fee._id },
+            balance: { $gt: 0 }
+        });
+
+        let arrears = 0;
+        const outstanding_funds = [];
+        for (const p of previousFees) {
+            if (p.fee_type === 'Fund') outstanding_funds.push({ title: p.title, amount: p.balance });
+            else arrears += (p.balance || 0);
+        }
+
+        const fObj = fee.toObject();
+        fObj.arrears = arrears;
+        fObj.outstanding_funds = outstanding_funds;
+        fObj.total_payable = (fObj.balance || 0) + arrears + outstanding_funds.reduce((s, x) => s + x.amount, 0);
+
         res.json({
             student,
-            fee,
+            fee: fObj,
             school
         });
     } catch (error) {
