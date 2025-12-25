@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { Search, Printer, DollarSign, MessageCircle, FileText, Users, Download, Save } from 'lucide-react';
+import { Search, Printer, DollarSign, MessageCircle, FileText, Users, Download, Save, Edit, Trash, X } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import API_URL from '../config';
 
@@ -102,6 +102,66 @@ const FeeCollection = () => {
         setBulkPayments(prev => ({ ...prev, [id]: Number(val) }));
     };
 
+    const [editFeeModal, setEditFeeModal] = useState(false);
+    const [selectedFee, setSelectedFee] = useState(null);
+    const [bulkPaymentDate, setBulkPaymentDate] = useState(new Date().toISOString().split('T')[0]);
+
+    // ... (rest of code) ...
+
+    const handleDeleteFee = async (id) => {
+        if (!confirm('Are you sure you want to delete this fee record? This cannot be undone.')) return;
+
+        try {
+            const res = await fetch(`${API_URL}/api/fees/${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+
+            if (res.ok) {
+                alert('Fee record deleted successfully');
+                // Refresh ledger
+                const fakeEvent = { preventDefault: () => { } };
+                fetchLedger(fakeEvent);
+            } else {
+                alert('Failed to delete fee record');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error deleting fee record');
+        }
+    };
+
+    const handleUpdateFee = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await fetch(`${API_URL}/api/fees/${selectedFee._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${user.token}`
+                },
+                body: JSON.stringify({
+                    paid_amount: selectedFee.paid_amount,
+                    payment_date: selectedFee.payment_date,
+                    status: selectedFee.status
+                })
+            });
+
+            if (res.ok) {
+                alert('Fee record updated successfully');
+                setEditFeeModal(false);
+                // Refresh ledger
+                const fakeEvent = { preventDefault: () => { } };
+                fetchLedger(fakeEvent);
+            } else {
+                alert('Failed to update fee record');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error updating fee record');
+        }
+    };
+
     const submitBulkPayments = async () => {
         if (!confirm("Are you sure you want to submit these payments?")) return;
 
@@ -113,7 +173,8 @@ const FeeCollection = () => {
                     student_id,
                     month: selectedMonth,
                     amount_paying: amount,
-                    total_due: item.fee.balance // passing existing due for validation if needed
+                    total_due: item.fee.balance,
+                    payment_date: bulkPaymentDate // Pass selected date
                 };
             });
 
@@ -194,7 +255,6 @@ const FeeCollection = () => {
         e.preventDefault();
         setFamilyLoading(true);
         try {
-            // Search for family by father name or mobile
             const res = await fetch(`${API_URL}/api/families?search=${familySearchTerm}`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
@@ -206,16 +266,12 @@ const FeeCollection = () => {
                 return;
             }
 
-            // Get first matching family
             const family = families[0];
-
-            // Fetch consolidated fees for this family
             const currentMonth = familyMonth || new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
             const feeRes = await fetch(`${API_URL}/api/families/${family._id}/consolidated-fees?month=${currentMonth}`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const feeData = await feeRes.json();
-
             setFamilyData(feeData);
         } catch (error) {
             console.error(error);
@@ -227,21 +283,14 @@ const FeeCollection = () => {
 
     const sendWhatsAppFamily = async () => {
         if (!familyData) return;
-
         try {
             const res = await fetch(`${API_URL}/api/families/${familyData.family._id}/whatsapp-message`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${user.token}`
-                },
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.token}` },
                 body: JSON.stringify({ month: familyData.month })
             });
             const data = await res.json();
-
-            if (data.whatsapp_link) {
-                window.open(data.whatsapp_link, '_blank');
-            }
+            if (data.whatsapp_link) window.open(data.whatsapp_link, '_blank');
         } catch (error) {
             console.error(error);
             alert("Error sending WhatsApp message");
@@ -250,8 +299,6 @@ const FeeCollection = () => {
 
     const printFamilyReceipt = () => {
         if (!familyData) return;
-
-        // Create printable content
         const printWindow = window.open('', '_blank');
         const content = `
             <!DOCTYPE html>
@@ -273,71 +320,32 @@ const FeeCollection = () => {
             <body>
                 <div class="header">
                     <div class="school-name">${schoolInfo?.name || 'School Management System'}</div>
-                    <div>${schoolInfo?.address || ''}</div>
-                    <div>Phone: ${schoolInfo?.phone || ''}</div>
                 </div>
-                
                 <h2>Family Fee Receipt</h2>
-                
                 <div class="family-info">
                     <strong>Family Head:</strong> ${familyData.family.father_name}<br>
                     <strong>Mobile:</strong> ${familyData.family.father_mobile}<br>
                     <strong>Month:</strong> ${familyData.month}<br>
                     <strong>Date:</strong> ${new Date().toLocaleDateString()}
                 </div>
-                
                 <h3>Children Fee Details:</h3>
                 ${familyData.students_with_fees.map(item => `
                     <div class="student-card">
                         <h4>${item.student.full_name} (Roll No: ${item.student.roll_no})</h4>
-                        <p>Class: ${item.student.class_id}-${item.student.section_id}</p>
-                        <div class="fee-row">
-                            <span>Tuition Fee:</span>
-                            <span>Rs. ${item.fee.tuition_fee || 0}</span>
-                        </div>
-                        ${item.fee.other_charges > 0 ? `
-                        <div class="fee-row">
-                            <span>Other Charges:</span>
-                            <span>Rs. ${item.fee.other_charges}</span>
-                        </div>` : ''}
-                        ${item.fee.arrears > 0 ? `
-                        <div class="fee-row">
-                            <span>Arrears:</span>
-                            <span>Rs. ${item.fee.arrears}</span>
-                        </div>` : ''}
-                        <div class="fee-row">
-                            <span>Paid:</span>
-                            <span style="color: green;">Rs. ${item.fee.paid_amount || 0}</span>
-                        </div>
-                        <div class="fee-row" style="font-weight: bold; border-top: 1px solid #333; padding-top: 5px;">
-                            <span>Balance:</span>
-                            <span style="color: red;">Rs. ${item.fee.balance || 0}</span>
-                        </div>
+                        <div class="fee-row"><span>Tuition Fee:</span><span>Rs. ${item.fee.tuition_fee || 0}</span></div>
+                        <div class="fee-row"><span>Paid:</span><span style="color: green;">Rs. ${item.fee.paid_amount || 0}</span></div>
+                        <div class="fee-row"><span>Balance:</span><span style="color: red;">Rs. ${item.fee.balance || 0}</span></div>
                     </div>
                 `).join('')}
-                
                 <div class="totals">
-                    <div class="fee-row">
-                        <span>Total Due:</span>
-                        <span>Rs. ${familyData.totals.total_due}</span>
-                    </div>
-                    <div class="fee-row">
-                        <span>Total Paid:</span>
-                        <span style="color: green;">Rs. ${familyData.totals.total_paid}</span>
-                    </div>
-                    <div class="fee-row total-amount">
-                        <span>Total Balance:</span>
-                        <span style="color: red;">Rs. ${familyData.totals.total_balance}</span>
-                    </div>
+                    <div class="fee-row total-amount"><span>Total Balance:</span><span>Rs. ${familyData.totals.total_balance}</span></div>
                 </div>
-                
                 <div style="margin-top: 40px; text-align: center;">
                     <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Print Receipt</button>
                 </div>
             </body>
             </html>
         `;
-
         printWindow.document.write(content);
         printWindow.document.close();
     };
@@ -362,272 +370,348 @@ const FeeCollection = () => {
             </div>
 
             {/* --- LEDGER TAB --- */}
-            {activeTab === 'ledger' && (
-                <div>
-                    <form onSubmit={fetchLedger} className="flex flex-col sm:flex-row gap-2 max-w-lg mb-4 sm:mb-6">
-                        <input
-                            type="text"
-                            placeholder="Search by Roll No or Name..."
-                            className="border p-2 rounded flex-1 text-sm sm:text-base"
-                            value={searchTerm}
-                            onChange={e => setSearchTerm(e.target.value)}
-                        />
-                        <button className="bg-blue-600 text-white px-4 py-2 rounded font-bold text-sm sm:text-base">Search</button>
-                    </form>
+            {
+                activeTab === 'ledger' && (
+                    <div>
+                        {/* ... Search Form ... */}
+                        <form onSubmit={fetchLedger} className="flex flex-col sm:flex-row gap-2 max-w-lg mb-4 sm:mb-6">
+                            <input
+                                type="text"
+                                placeholder="Search by Roll No or Name..."
+                                className="border p-2 rounded flex-1 text-sm sm:text-base"
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                            />
+                            <button className="bg-blue-600 text-white px-4 py-2 rounded font-bold text-sm sm:text-base">Search</button>
+                        </form>
 
-                    {studentLedger && (
-                        <div className="bg-white shadow rounded p-6">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h2 className="text-xl font-bold">{studentLedger.student.full_name}</h2>
-                                    <p className="text-gray-500">Roll No: {studentLedger.student.roll_no} | Class: {studentLedger.student.class_id}</p>
+                        {studentLedger && (
+                            <div className="bg-white shadow rounded p-6">
+                                {/* ... Header ... */}
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h2 className="text-xl font-bold">{studentLedger.student.full_name}</h2>
+                                        <p className="text-gray-500">Roll No: {studentLedger.student.roll_no} | Class: {studentLedger.student.class_id}</p>
+                                    </div>
+                                    <button onClick={sendWhatsAppLedger} className="bg-green-100 text-green-700 px-4 py-2 rounded flex items-center gap-2 font-bold hover:bg-green-200">
+                                        <MessageCircle size={18} /> WhatsApp Ledger
+                                    </button>
                                 </div>
-                                <button onClick={sendWhatsAppLedger} className="bg-green-100 text-green-700 px-4 py-2 rounded flex items-center gap-2 font-bold hover:bg-green-200">
-                                    <MessageCircle size={18} /> WhatsApp Ledger
+
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left bg-gray-50 rounded overflow-hidden min-w-[600px]">
+                                        <thead className="bg-gray-200 text-gray-700 font-bold text-xs sm:text-sm">
+                                            <tr>
+                                                <th className="p-2 sm:p-3">Month</th>
+                                                <th className="p-2 sm:p-3 text-right">Total Fee</th>
+                                                <th className="p-2 sm:p-3 text-right">Paid</th>
+                                                <th className="p-2 sm:p-3 text-right">Balance</th>
+                                                <th className="p-2 sm:p-3 text-center">Status</th>
+                                                <th className="p-2 sm:p-3 text-right">Date</th>
+                                                <th className="p-2 sm:p-3 text-center">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-200">
+                                            {studentLedger.history.length === 0 ? (
+                                                <tr><td colSpan="7" className="p-4 text-center text-gray-500">No fee records found.</td></tr>
+                                            ) : (
+                                                studentLedger.history.map(rec => (
+                                                    <tr key={rec._id}>
+                                                        <td className="p-2 sm:p-3 font-medium text-xs sm:text-sm">{rec.month}</td>
+                                                        <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">{rec.gross_amount}</td>
+                                                        <td className="p-2 sm:p-3 text-right text-green-600 font-bold text-xs sm:text-sm">{rec.paid_amount}</td>
+                                                        <td className="p-2 sm:p-3 text-right text-red-600 font-bold text-xs sm:text-sm">{rec.balance}</td>
+                                                        <td className="p-2 sm:p-3 text-center">
+                                                            <span className={`px-2 py-1 rounded text-xs text-white ${rec.status === 'Paid' ? 'bg-green-500' :
+                                                                rec.status === 'Partial' ? 'bg-yellow-500' : 'bg-red-500'
+                                                                }`}>
+                                                                {rec.status}
+                                                            </span>
+                                                        </td>
+                                                        <td className="p-2 sm:p-3 text-right text-xs text-gray-500">
+                                                            {rec.payment_date ? new Date(rec.payment_date).toLocaleDateString() : '-'}
+                                                        </td>
+                                                        <td className="p-2 sm:p-3 text-center flex justify-center gap-2">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setSelectedFee(rec);
+                                                                    setEditFeeModal(true);
+                                                                }}
+                                                                className="text-blue-600 hover:text-blue-800"
+                                                                title="Edit"
+                                                            >
+                                                                <Edit size={16} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteFee(rec._id)}
+                                                                className="text-red-600 hover:text-red-800"
+                                                                title="Delete"
+                                                            >
+                                                                <Trash size={16} />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )
+            }
+
+            {/* --- BULK COLLECTION TAB --- */}
+            {
+                activeTab === 'bulk' && (
+                    <div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-4 sm:mb-6 bg-white p-3 sm:p-4 rounded shadow">
+                            <div className="flex-1">
+                                <label className="block text-xs sm:text-sm font-bold mb-1">Class</label>
+                                <select value={selectedClass} onChange={e => setSelectedClass(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base">
+                                    {classes.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs sm:text-sm font-bold mb-1">Section</label>
+                                <select value={selectedSection} onChange={e => setSelectedSection(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base">
+                                    {classes.find(c => c.name === selectedClass)?.sections.map(s => <option key={s} value={s}>{s}</option>) || <option>A</option>}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs sm:text-sm font-bold mb-1">Month</label>
+                                <input type="text" value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base" />
+                            </div>
+                            <div>
+                                <label className="block text-xs sm:text-sm font-bold mb-1">Payment Date</label>
+                                <input type="date" value={bulkPaymentDate} onChange={e => setBulkPaymentDate(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base" />
+                            </div>
+                            <div className="flex items-end gap-2">
+                                <button onClick={fetchBulkList} className="bg-blue-600 text-white px-2 py-2 rounded font-bold hover:bg-blue-700 w-full text-sm sm:text-base">Load List</button>
+                                <button onClick={generateFees} className="bg-purple-600 text-white px-2 py-2 rounded font-bold hover:bg-purple-700 w-full text-sm sm:text-base flex items-center justify-center gap-1">
+                                    <FileText size={16} /> Generate
                                 </button>
                             </div>
-
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left bg-gray-50 rounded overflow-hidden min-w-[600px]">
-                                    <thead className="bg-gray-200 text-gray-700 font-bold text-xs sm:text-sm">
+                        </div>
+                        {/* ... student list ... */}
+                        {bulkStudents.length > 0 && (
+                            <div className="bg-white shadow rounded p-4">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="font-bold text-lg">Student List ({bulkStudents.length})</h3>
+                                    <button onClick={submitBulkPayments} className="bg-green-600 text-white px-6 py-2 rounded font-bold flex items-center gap-2 hover:bg-green-700">
+                                        <Save size={18} /> Submit Payments
+                                    </button>
+                                </div>
+                                <table className="w-full text-left">
+                                    <thead className="bg-gray-100 uppercase text-xs font-bold text-gray-600">
                                         <tr>
-                                            <th className="p-2 sm:p-3">Month</th>
-                                            <th className="p-2 sm:p-3 text-right">Total Fee</th>
-                                            <th className="p-2 sm:p-3 text-right">Paid</th>
-                                            <th className="p-2 sm:p-3 text-right">Balance</th>
-                                            <th className="p-2 sm:p-3 text-center">Status</th>
-                                            <th className="p-2 sm:p-3 text-right">Date</th>
+                                            <th className="p-3">Roll No</th>
+                                            <th className="p-3">Name</th>
+                                            <th className="p-3 text-right">Fee Due</th>
+                                            <th className="p-3 text-right">Arrears</th>
+                                            <th className="p-3 text-right">Total Payable</th>
+                                            <th className="p-3 w-48 text-right">Paying Amount</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-200">
-                                        {studentLedger.history.length === 0 ? (
-                                            <tr><td colSpan="6" className="p-4 text-center text-gray-500">No fee records found.</td></tr>
-                                        ) : (
-                                            studentLedger.history.map(rec => (
-                                                <tr key={rec._id}>
-                                                    <td className="p-2 sm:p-3 font-medium text-xs sm:text-sm">{rec.month}</td>
-                                                    <td className="p-2 sm:p-3 text-right text-xs sm:text-sm">{rec.gross_amount}</td>
-                                                    <td className="p-2 sm:p-3 text-right text-green-600 font-bold text-xs sm:text-sm">{rec.paid_amount}</td>
-                                                    <td className="p-2 sm:p-3 text-right text-red-600 font-bold text-xs sm:text-sm">{rec.balance}</td>
-                                                    <td className="p-2 sm:p-3 text-center">
-                                                        <span className={`px-2 py-1 rounded text-xs text-white ${rec.status === 'Paid' ? 'bg-green-500' :
-                                                            rec.status === 'Partial' ? 'bg-yellow-500' : 'bg-red-500'
-                                                            }`}>
-                                                            {rec.status}
-                                                        </span>
-                                                    </td>
-                                                    <td className="p-2 sm:p-3 text-right text-xs text-gray-500">
-                                                        {rec.payment_date ? new Date(rec.payment_date).toLocaleDateString() : '-'}
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
+                                    <tbody className="divide-y">
+                                        {bulkStudents.map((item, idx) => (
+                                            <tr key={idx} className="hover:bg-gray-50">
+                                                <td className="p-3 font-mono">{item.student.roll_no}</td>
+                                                <td className="p-3 font-bold">{item.student.full_name}</td>
+                                                <td className="p-3 text-right">{item.fee.fee_due || item.fee.balance || 0}</td>
+                                                <td className="p-3 text-right text-red-500">{item.fee.arrears || 0}</td>
+                                                <td className="p-3 text-right font-bold text-lg">{item.fee.total_payable || item.fee.balance || 0}</td>
+                                                <td className="p-3 text-right">
+                                                    <input
+                                                        type="number"
+                                                        className="border border-green-300 rounded p-1 w-32 text-right font-bold text-green-700 bg-green-50 focus:outline-none focus:ring-2 ring-green-500"
+                                                        placeholder="0"
+                                                        value={bulkPayments[item.student._id] || ''}
+                                                        onChange={(e) => handleBulkPaymentChange(item.student._id, e.target.value)}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                    )}
-                </div>
-            )}
+                        )}
+                    </div>
+                )
+            }
 
-            {/* --- BULK COLLECTION TAB --- */}
-            {activeTab === 'bulk' && (
-                <div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6 bg-white p-3 sm:p-4 rounded shadow">
-                        <div className="flex-1">
-                            <label className="block text-xs sm:text-sm font-bold mb-1">Class</label>
-                            <select value={selectedClass} onChange={e => setSelectedClass(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base">
-                                {classes.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-xs sm:text-sm font-bold mb-1">Section</label>
-                            <select value={selectedSection} onChange={e => setSelectedSection(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base">
-                                {classes.find(c => c.name === selectedClass)?.sections.map(s => <option key={s} value={s}>{s}</option>) || <option>A</option>}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-xs sm:text-sm font-bold mb-1">Month</label>
-                            <input type="text" value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base" />
-                        </div>
-                        <div className="flex items-end gap-2">
-                            <button onClick={fetchBulkList} className="bg-blue-600 text-white px-4 sm:px-6 py-2 rounded font-bold hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base">Load List</button>
-                            <button onClick={generateFees} className="bg-purple-600 text-white px-4 sm:px-6 py-2 rounded font-bold hover:bg-purple-700 w-full sm:w-auto text-sm sm:text-base flex items-center gap-2">
-                                <FileText size={18} /> Generate Fees
-                            </button>
+            {/* ... Family Tab ... */}
+
+            {/* Edit Fee Modal */}
+            {
+                editFeeModal && selectedFee && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-xl font-bold">Edit Fee Record</h3>
+                                <button onClick={() => setEditFeeModal(false)}><X size={24} /></button>
+                            </div>
+                            <form onSubmit={handleUpdateFee} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-bold mb-1">Month</label>
+                                    <input type="text" value={selectedFee.month} disabled className="w-full border p-2 rounded bg-gray-100" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold mb-1">Paid Amount</label>
+                                    <input
+                                        type="number"
+                                        value={selectedFee.paid_amount}
+                                        onChange={e => setSelectedFee({ ...selectedFee, paid_amount: e.target.value })}
+                                        className="w-full border p-2 rounded"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold mb-1">Payment Date</label>
+                                    <input
+                                        type="date"
+                                        value={selectedFee.payment_date ? new Date(selectedFee.payment_date).toISOString().split('T')[0] : ''}
+                                        onChange={e => setSelectedFee({ ...selectedFee, payment_date: e.target.value })}
+                                        className="w-full border p-2 rounded"
+                                    />
+                                </div>
+                                <div className="flex justify-end gap-2 pt-2">
+                                    <button type="button" onClick={() => setEditFeeModal(false)} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+                                    <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Update</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-
-                    {bulkStudents.length > 0 && (
-                        <div className="bg-white shadow rounded p-4">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="font-bold text-lg">Student List ({bulkStudents.length})</h3>
-                                <button onClick={submitBulkPayments} className="bg-green-600 text-white px-6 py-2 rounded font-bold flex items-center gap-2 hover:bg-green-700">
-                                    <Save size={18} /> Submit Payments
-                                </button>
-                            </div>
-                            <table className="w-full text-left">
-                                <thead className="bg-gray-100 uppercase text-xs font-bold text-gray-600">
-                                    <tr>
-                                        <th className="p-3">Roll No</th>
-                                        <th className="p-3">Name</th>
-                                        <th className="p-3 text-right">Fee Due</th>
-                                        <th className="p-3 text-right">Arrears</th>
-                                        <th className="p-3 text-right">Total Payable</th>
-                                        <th className="p-3 w-48 text-right">Paying Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y">
-                                    {bulkStudents.map((item, idx) => (
-                                        <tr key={idx} className="hover:bg-gray-50">
-                                            <td className="p-3 font-mono">{item.student.roll_no}</td>
-                                            <td className="p-3 font-bold">{item.student.full_name}</td>
-                                            <td className="p-3 text-right">{item.fee.fee_due || item.fee.balance || 0}</td>
-                                            <td className="p-3 text-right text-red-500">{item.fee.arrears || 0}</td>
-                                            <td className="p-3 text-right font-bold text-lg">{item.fee.total_payable || item.fee.balance || 0}</td>
-                                            <td className="p-3 text-right">
-                                                <input
-                                                    type="number"
-                                                    className="border border-green-300 rounded p-1 w-32 text-right font-bold text-green-700 bg-green-50 focus:outline-none focus:ring-2 ring-green-500"
-                                                    placeholder="0"
-                                                    value={bulkPayments[item.student._id] || ''}
-                                                    onChange={(e) => handleBulkPaymentChange(item.student._id, e.target.value)}
-                                                />
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </div>
-            )}
+                )
+            }
 
             {/* --- FAMILY TAB --- */}
-            {activeTab === 'family' && (
-                <div>
-                    <form onSubmit={fetchFamilyData} className="flex flex-col sm:flex-row gap-2 max-w-lg mb-4 sm:mb-6">
-                        <input
-                            type="text"
-                            placeholder="Search by Father Name or Mobile..."
-                            className="border p-2 rounded flex-1 text-sm sm:text-base"
-                            value={familySearchTerm}
-                            onChange={e => setFamilySearchTerm(e.target.value)}
-                        />
-                        <button className="bg-purple-600 text-white px-4 py-2 rounded font-bold text-sm sm:text-base">Search Family</button>
-                    </form>
+            {
+                activeTab === 'family' && (
+                    <div>
+                        <form onSubmit={fetchFamilyData} className="flex flex-col sm:flex-row gap-2 max-w-lg mb-4 sm:mb-6">
+                            <input
+                                type="text"
+                                placeholder="Search by Father Name or Mobile..."
+                                className="border p-2 rounded flex-1 text-sm sm:text-base"
+                                value={familySearchTerm}
+                                onChange={e => setFamilySearchTerm(e.target.value)}
+                            />
+                            <button className="bg-purple-600 text-white px-4 py-2 rounded font-bold text-sm sm:text-base">Search Family</button>
+                        </form>
 
-                    {familyLoading && (
-                        <div className="text-center py-8">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-                            <p className="mt-4 text-gray-600">Loading family data...</p>
-                        </div>
-                    )}
-
-                    {familyData && (
-                        <div className="bg-white shadow rounded p-4 sm:p-6">
-                            {/* Family Header */}
-                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b">
-                                <div>
-                                    <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                                        <Users size={24} className="text-purple-600" />
-                                        {familyData.family.father_name}
-                                    </h2>
-                                    <p className="text-gray-600 text-sm sm:text-base mt-1">
-                                        Mobile: {familyData.family.father_mobile}
-                                    </p>
-                                    <p className="text-gray-600 text-sm sm:text-base">
-                                        Children: {familyData.students_with_fees.length}
-                                    </p>
-                                </div>
-                                <div className="flex gap-2 w-full sm:w-auto">
-                                    <button
-                                        onClick={sendWhatsAppFamily}
-                                        className="flex-1 sm:flex-none bg-green-100 text-green-700 px-4 py-2 rounded flex items-center justify-center gap-2 font-bold hover:bg-green-200 text-sm sm:text-base"
-                                    >
-                                        <MessageCircle size={18} /> WhatsApp
-                                    </button>
-                                    <button
-                                        onClick={printFamilyReceipt}
-                                        className="flex-1 sm:flex-none bg-blue-100 text-blue-700 px-4 py-2 rounded flex items-center justify-center gap-2 font-bold hover:bg-blue-200 text-sm sm:text-base"
-                                    >
-                                        <Printer size={18} /> Print
-                                    </button>
-                                </div>
+                        {familyLoading && (
+                            <div className="text-center py-8">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+                                <p className="mt-4 text-gray-600">Loading family data...</p>
                             </div>
+                        )}
 
-                            {/* Students List */}
-                            <div className="space-y-4">
-                                {familyData.students_with_fees.map((item, idx) => (
-                                    <div key={idx} className="border-2 border-gray-200 rounded-lg p-3 sm:p-4 hover:border-purple-300 transition">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
-                                            <div>
-                                                <h3 className="font-bold text-base sm:text-lg">{item.student.full_name}</h3>
-                                                <p className="text-gray-600 text-xs sm:text-sm">
-                                                    Roll No: {item.student.roll_no} | Class: {item.student.class_id}-{item.student.section_id}
-                                                </p>
-                                            </div>
-                                            <span className={`px-3 py-1 rounded text-xs sm:text-sm font-bold ${item.fee.status === 'Paid' ? 'bg-green-100 text-green-700' :
-                                                item.fee.status === 'Partial' ? 'bg-yellow-100 text-yellow-700' :
-                                                    'bg-red-100 text-red-700'
-                                                }`}>
-                                                {item.fee.status || 'Pending'}
-                                            </span>
-                                        </div>
+                        {familyData && (
+                            <div className="bg-white shadow rounded p-4 sm:p-6">
+                                {/* Family Header */}
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b">
+                                    <div>
+                                        <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+                                            <Users size={24} className="text-purple-600" />
+                                            {familyData.family.father_name}
+                                        </h2>
+                                        <p className="text-gray-600 text-sm sm:text-base mt-1">
+                                            Mobile: {familyData.family.father_mobile}
+                                        </p>
+                                        <p className="text-gray-600 text-sm sm:text-base">
+                                            Children: {familyData.students_with_fees.length}
+                                        </p>
+                                    </div>
+                                    <div className="flex gap-2 w-full sm:w-auto">
+                                        <button
+                                            onClick={sendWhatsAppFamily}
+                                            className="flex-1 sm:flex-none bg-green-100 text-green-700 px-4 py-2 rounded flex items-center justify-center gap-2 font-bold hover:bg-green-200 text-sm sm:text-base"
+                                        >
+                                            <MessageCircle size={18} /> WhatsApp
+                                        </button>
+                                        <button
+                                            onClick={printFamilyReceipt}
+                                            className="flex-1 sm:flex-none bg-blue-100 text-blue-700 px-4 py-2 rounded flex items-center justify-center gap-2 font-bold hover:bg-blue-200 text-sm sm:text-base"
+                                        >
+                                            <Printer size={18} /> Print
+                                        </button>
+                                    </div>
+                                </div>
 
-                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm">
-                                            <div>
-                                                <p className="text-gray-500">Tuition Fee</p>
-                                                <p className="font-bold">Rs. {item.fee.tuition_fee || 0}</p>
-                                            </div>
-                                            {item.fee.other_charges > 0 && (
+                                {/* Students List */}
+                                <div className="space-y-4">
+                                    {familyData.students_with_fees.map((item, idx) => (
+                                        <div key={idx} className="border-2 border-gray-200 rounded-lg p-3 sm:p-4 hover:border-purple-300 transition">
+                                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
                                                 <div>
-                                                    <p className="text-gray-500">Other Charges</p>
-                                                    <p className="font-bold">Rs. {item.fee.other_charges}</p>
+                                                    <h3 className="font-bold text-base sm:text-lg">{item.student.full_name}</h3>
+                                                    <p className="text-gray-600 text-xs sm:text-sm">
+                                                        Roll No: {item.student.roll_no} | Class: {item.student.class_id}-{item.student.section_id}
+                                                    </p>
                                                 </div>
-                                            )}
-                                            {item.fee.arrears > 0 && (
-                                                <div>
-                                                    <p className="text-gray-500">Arrears</p>
-                                                    <p className="font-bold text-red-600">Rs. {item.fee.arrears}</p>
-                                                </div>
-                                            )}
-                                            <div>
-                                                <p className="text-gray-500">Paid</p>
-                                                <p className="font-bold text-green-600">Rs. {item.fee.paid_amount || 0}</p>
+                                                <span className={`px-3 py-1 rounded text-xs sm:text-sm font-bold ${item.fee.status === 'Paid' ? 'bg-green-100 text-green-700' :
+                                                    item.fee.status === 'Partial' ? 'bg-yellow-100 text-yellow-700' :
+                                                        'bg-red-100 text-red-700'
+                                                    }`}>
+                                                    {item.fee.status || 'Pending'}
+                                                </span>
                                             </div>
-                                            <div>
-                                                <p className="text-gray-500">Balance</p>
-                                                <p className="font-bold text-lg text-red-600">Rs. {item.fee.balance || 0}</p>
+
+                                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm">
+                                                <div>
+                                                    <p className="text-gray-500">Tuition Fee</p>
+                                                    <p className="font-bold">Rs. {item.fee.tuition_fee || 0}</p>
+                                                </div>
+                                                {item.fee.other_charges > 0 && (
+                                                    <div>
+                                                        <p className="text-gray-500">Other Charges</p>
+                                                        <p className="font-bold">Rs. {item.fee.other_charges}</p>
+                                                    </div>
+                                                )}
+                                                {item.fee.arrears > 0 && (
+                                                    <div>
+                                                        <p className="text-gray-500">Arrears</p>
+                                                        <p className="font-bold text-red-600">Rs. {item.fee.arrears}</p>
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <p className="text-gray-500">Paid</p>
+                                                    <p className="font-bold text-green-600">Rs. {item.fee.paid_amount || 0}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-gray-500">Balance</p>
+                                                    <p className="font-bold text-lg text-red-600">Rs. {item.fee.balance || 0}</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
 
-                            {/* Totals */}
-                            <div className="mt-6 bg-purple-50 p-4 rounded-lg border-2 border-purple-200">
-                                <h3 className="font-bold text-lg mb-3">Family Totals</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                                    <div>
-                                        <p className="text-gray-600 text-sm">Total Due</p>
-                                        <p className="font-bold text-xl">Rs. {familyData.totals.total_due}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-gray-600 text-sm">Total Paid</p>
-                                        <p className="font-bold text-xl text-green-600">Rs. {familyData.totals.total_paid}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-gray-600 text-sm">Total Balance</p>
-                                        <p className="font-bold text-2xl text-red-600">Rs. {familyData.totals.total_balance}</p>
+                                {/* Totals */}
+                                <div className="mt-6 bg-purple-50 p-4 rounded-lg border-2 border-purple-200">
+                                    <h3 className="font-bold text-lg mb-3">Family Totals</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                                        <div>
+                                            <p className="text-gray-600 text-sm">Total Due</p>
+                                            <p className="font-bold text-xl">Rs. {familyData.totals.total_due}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-600 text-sm">Total Paid</p>
+                                            <p className="font-bold text-xl text-green-600">Rs. {familyData.totals.total_paid}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-600 text-sm">Total Balance</p>
+                                            <p className="font-bold text-2xl text-red-600">Rs. {familyData.totals.total_balance}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
+                        )}
+                    </div>
+                )
+            }
+        </div >
     );
 };
 

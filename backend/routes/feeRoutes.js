@@ -169,7 +169,8 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
                     oldFee.paid_amount += paymentForThis;
                     oldFee.balance -= paymentForThis;
                     oldFee.status = oldFee.balance <= 0 ? 'Paid' : 'Partial';
-                    oldFee.payment_date = new Date();
+                    oldFee.status = oldFee.balance <= 0 ? 'Paid' : 'Partial';
+                    oldFee.payment_date = p.payment_date ? new Date(p.payment_date) : new Date();
 
                     await oldFee.save();
                     remainingPayment -= paymentForThis;
@@ -182,7 +183,8 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
                 }
 
                 fee.status = fee.balance <= 0 ? 'Paid' : (fee.paid_amount > 0 ? 'Partial' : 'Pending');
-                fee.payment_date = new Date();
+                fee.status = fee.balance <= 0 ? 'Paid' : (fee.paid_amount > 0 ? 'Partial' : 'Pending');
+                fee.payment_date = p.payment_date ? new Date(p.payment_date) : new Date();
 
                 await fee.save();
                 results.push(fee);
@@ -403,6 +405,78 @@ router.put('/:id/discount', protect, checkPermission('fees.edit'), async (req, r
         await fee.save();
 
         res.json({ message: 'Discount updated successfully', fee });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Update Fee Details (Amount, Status, Payment Date)
+// @route   PUT /api/fees/:id
+router.put('/:id', protect, checkPermission('fees.edit'), async (req, res) => {
+    try {
+        const { paid_amount, status, payment_date, tuition_fee, other_charges, concession } = req.body;
+
+        const fee = await Fee.findOne({
+            _id: req.params.id,
+            tenant_id: req.tenant_id
+        });
+
+        if (!fee) {
+            return res.status(404).json({ message: 'Fee record not found' });
+        }
+
+        // Update fields if provided
+        if (paid_amount !== undefined) fee.paid_amount = Number(paid_amount);
+        if (status) fee.status = status;
+        if (payment_date) fee.payment_date = new Date(payment_date);
+
+        // Allow updating fee structure too if needed
+        if (tuition_fee !== undefined) fee.tuition_fee = Number(tuition_fee);
+        if (other_charges !== undefined) fee.other_charges = Number(other_charges);
+        if (concession !== undefined) fee.concession = Number(concession);
+
+        // Recalculate totals
+        // Balance = (Tuition + Other - Concession - Discount) - Paid
+        const gross = (fee.tuition_fee || 0) + (fee.other_charges || 0) - (fee.concession || 0);
+        fee.gross_amount = gross;
+
+        let final = gross;
+        if (fee.discount_applied && fee.discount_applied.total_discount) {
+            final -= fee.discount_applied.total_discount;
+        }
+        fee.final_amount = final;
+
+        fee.balance = fee.final_amount - (fee.paid_amount || 0);
+
+        // Auto-update status if not explicitly set
+        if (!status) {
+            if (fee.balance <= 0) fee.status = 'Paid';
+            else if (fee.paid_amount > 0) fee.status = 'Partial';
+            else fee.status = 'Pending';
+        }
+
+        await fee.save();
+        res.json({ message: 'Fee record updated successfully', fee });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Delete Fee Record
+// @route   DELETE /api/fees/:id
+router.delete('/:id', protect, checkPermission('fees.delete'), async (req, res) => {
+    try {
+        const fee = await Fee.findOne({
+            _id: req.params.id,
+            tenant_id: req.tenant_id
+        });
+
+        if (!fee) {
+            return res.status(404).json({ message: 'Fee record not found' });
+        }
+
+        await fee.deleteOne();
+        res.json({ message: 'Fee record deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
