@@ -68,7 +68,8 @@ router.get('/stats', async (req, res) => {
             totalFeeOutstanding: Math.round(totalFeeOutstanding)
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Dashboard stats error:', error);
+        res.status(500).json({ message: error.message, error: error.toString() });
     }
 });
 
