@@ -66,7 +66,7 @@ const academicSessionSchema = new mongoose.Schema({
 academicSessionSchema.index({ tenant_id: 1, session_name: 1 }, { unique: true });
 
 // Ensure only one current session per tenant
-academicSessionSchema.pre('save', async function (next) {
+academicSessionSchema.pre('save', async function () {
     if (this.is_current && this.isModified('is_current')) {
         // Unmark other sessions as current
         await this.constructor.updateMany(
@@ -77,7 +77,6 @@ academicSessionSchema.pre('save', async function (next) {
             { is_current: false }
         );
     }
-    next();
 });
 
 module.exports = mongoose.model('AcademicSession', academicSessionSchema);
