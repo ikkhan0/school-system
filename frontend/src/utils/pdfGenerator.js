@@ -69,6 +69,14 @@ export const generateFeeVoucherPDF = (student, feeData, schoolInfo = {}) => {
     doc.text('Please pay the fee before the due date to avoid late fee charges.', 20, finalY);
     doc.text('For any queries, contact the school office.', 20, finalY + 7);
 
+    // Printed By
+    if (feeData.printed_by) {
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+        doc.text(`Printed by: ${feeData.printed_by}`, 20, finalY + 20);
+        doc.text(`Date: ${new Date().toLocaleString()}`, 20, finalY + 27);
+    }
+
     // Footer
     doc.setFontSize(9);
     doc.text('This is a computer-generated document.', 105, 280, { align: 'center' });
