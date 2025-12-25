@@ -80,36 +80,87 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
     try {
         const { payments } = req.body;
         const results = [];
+        const errors = [];
 
         for (const p of payments) {
-            let fee = await Fee.findOne({ student_id: p.student_id, month: p.month, tenant_id: req.tenant_id });
-
-            if (!fee) {
-                fee = new Fee({
+            try {
+                // Find fee with session_id to prevent cross-session issues
+                const query = {
                     student_id: p.student_id,
-                    tenant_id: req.tenant_id,
                     month: p.month,
-                    tuition_fee: p.total_due,
-                    gross_amount: p.total_due,
-                    paid_amount: 0,
-                    balance: p.total_due,
-                    status: 'Pending'
+                    tenant_id: req.tenant_id
+                };
+
+                // Add session filter if available
+                if (req.session_id) {
+                    query.session_id = req.session_id;
+                }
+
+                let fee = await Fee.findOne(query);
+
+                if (!fee) {
+                    // Create new fee record
+                    fee = new Fee({
+                        student_id: p.student_id,
+                        tenant_id: req.tenant_id,
+                        session_id: req.session_id,
+                        month: p.month,
+                        tuition_fee: p.total_due || 0,
+                        gross_amount: p.total_due || 0,
+                        paid_amount: 0,
+                        balance: p.total_due || 0,
+                        status: 'Pending'
+                    });
+                }
+
+                // Check if already fully paid
+                if (fee.status === 'Paid' && fee.balance <= 0) {
+                    errors.push({
+                        student_id: p.student_id,
+                        month: p.month,
+                        error: 'Fee already paid for this month'
+                    });
+                    continue;
+                }
+
+                // Calculate new amounts
+                const amountPaying = Number(p.amount_paying) || 0;
+                const newPaid = fee.paid_amount + amountPaying;
+                const newBalance = fee.gross_amount - newPaid;
+
+                // Prevent overpayment
+                if (newBalance < 0) {
+                    errors.push({
+                        student_id: p.student_id,
+                        month: p.month,
+                        error: `Overpayment: Trying to pay ${amountPaying} but only ${fee.balance} is due`
+                    });
+                    continue;
+                }
+
+                fee.paid_amount = newPaid;
+                fee.balance = newBalance;
+                fee.status = newBalance <= 0 ? 'Paid' : (newPaid > 0 ? 'Partial' : 'Pending');
+                fee.payment_date = new Date();
+
+                await fee.save();
+                results.push(fee);
+            } catch (error) {
+                errors.push({
+                    student_id: p.student_id,
+                    month: p.month,
+                    error: error.message
                 });
             }
-
-            const newPaid = fee.paid_amount + Number(p.amount_paying);
-            const newBalance = fee.gross_amount - newPaid;
-
-            fee.paid_amount = newPaid;
-            fee.balance = newBalance;
-            fee.status = newBalance <= 0 ? 'Paid' : 'Partial';
-            fee.payment_date = new Date();
-
-            await fee.save();
-            results.push(fee);
         }
 
-        res.json({ message: "Fees Collected Successfully", data: results });
+        res.json({
+            message: "Fee collection completed",
+            success: results.length,
+            failed: errors.length,
+            data: results,
+            errors: errors.length > 0 ? errors : undefined
+        });
 
     } catch (error) {
         res.status(500).json({ message: error.message });

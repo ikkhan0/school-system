@@ -130,24 +130,34 @@ router.get('/attendance-summary', protect, async (req, res) => {
 router.get('/fee-defaulters', protect, async (req, res) => {
     try {
         const { days = 30, class_id } = req.query;
+        const sessionId = req.session_id;
 
         let studentQuery = { tenant_id: req.tenant_id, is_active: true };
         if (class_id) studentQuery.class_id = class_id;
+        if (sessionId) studentQuery.current_session_id = sessionId;
 
         const students = await Student.find(studentQuery).populate('family_id');
 
         const defaulters = [];
 
         for (const student of students) {
-            const fees = await Fee.find({
+            // Query fees with session filter
+            const feeQuery = {
                 student_id: student._id,
                 tenant_id: req.tenant_id,
-                status: { $in: ['Pending', 'Partial'] }
-            }).sort({ month: -1 });
+                status: { $in: ['Pending', 'Partial'] },
+                balance: { $gt: 0 } // Only fees with actual balance
+            };
+            if (sessionId) {
+                feeQuery.session_id = sessionId;
+            }
+
+            const fees = await Fee.find(feeQuery).sort({ month: -1 });
 
             if (fees.length > 0) {
-                const totalDue = fees.reduce((sum, fee) => sum + fee.balance, 0);
+                const totalDue = fees.reduce((sum, fee) => sum + (fee.balance || 0), 0);
 
+                // Only add if there's actually money due
                 if (totalDue > 0) {
                     defaulters.push({
                         student_id: student._id,
@@ -156,7 +166,7 @@ router.get('/fee-defaulters', protect, async (req, res) => {
                         class_id: student.class_id,
                         section_id: student.section_id,
                         father_mobile: student.family_id?.father_mobile || student.father_mobile,
-                        total_due: totalDue,
+                        total_due: Math.round(totalDue),
                         pending_months: fees.length,
                         oldest_due: fees[fees.length - 1].month
                     });

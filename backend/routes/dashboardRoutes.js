@@ -11,30 +11,53 @@ router.get('/stats', async (req, res) => {
     try {
         // Filter by tenant_id for multi-tenant isolation
         const tenantId = req.tenant_id;
+        const sessionId = req.session_id;
 
-        const totalStudents = await Student.countDocuments({ tenant_id: tenantId, is_active: true });
+        // Build student query with session filter
+        const studentQuery = { tenant_id: tenantId, is_active: true };
+        if (sessionId) {
+            studentQuery.current_session_id = sessionId;
+        }
+
+        const totalStudents = await Student.countDocuments(studentQuery);
         const totalStaff = await Staff.countDocuments({ tenant_id: tenantId });
 
-        // Today's attendance
+        // Today's attendance with session filter
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const todayAttendance = await DailyLog.find({
+        const attendanceQuery = {
             tenant_id: tenantId,
             date: { $gte: today }
-        });
+        };
+        if (sessionId) {
+            attendanceQuery.session_id = sessionId;
+        }
+
+        const todayAttendance = await DailyLog.find(attendanceQuery);
 
         const todayPresent = todayAttendance.filter(a => a.status === 'Present').length;
         const todayAbsent = todayAttendance.filter(a => a.status === 'Absent').length;
 
-        // Fee defaulters - Only for active students
-        const defaulters = await Fee.find({
+        // Fee defaulters - Only unpaid/partial fees for active students in current session
+        const feeQuery = {
             tenant_id: tenantId,
-            status: { $ne: 'Paid' }
-        }).populate('student_id');
+            status: { $in: ['Pending', 'Partial'] },
+            balance: { $gt: 0 }
+        };
+        if (sessionId) {
+            feeQuery.session_id = sessionId;
+        }
+
+        const defaulters = await Fee.find(feeQuery).populate('student_id');
 
         // Filter to only include active students
-        const activeDefaulters = defaulters.filter(fee => fee.student_id && fee.student_id.is_active);
-        const totalFeeOutstanding = activeDefaulters.reduce((sum, f) => sum + f.balance, 0);
+        const activeDefaulters = defaulters.filter(fee =>
+            fee.student_id &&
+            fee.student_id.is_active &&
+            (!sessionId || fee.student_id.current_session_id?.toString() === sessionId.toString())
+        );
+
+        const totalFeeOutstanding = activeDefaulters.reduce((sum, f) => sum + (f.balance || 0), 0);
 
         res.json({
             totalStudents,
@@ -42,7 +65,7 @@ router.get('/stats', async (req, res) => {
             todayPresent,
             todayAbsent,
             feeDefaulters: activeDefaulters.length,
-            totalFeeOutstanding
+            totalFeeOutstanding: Math.round(totalFeeOutstanding)
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
