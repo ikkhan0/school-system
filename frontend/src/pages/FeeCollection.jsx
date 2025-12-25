@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { Search, Printer, DollarSign, MessageCircle, FileText, Users, Download } from 'lucide-react';
+import { Search, Printer, DollarSign, MessageCircle, FileText, Users, Download, Save } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import API_URL from '../config';
 
@@ -463,7 +463,7 @@ const FeeCollection = () => {
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-bold text-lg">Student List ({bulkStudents.length})</h3>
                                 <button onClick={submitBulkPayments} className="bg-green-600 text-white px-6 py-2 rounded font-bold flex items-center gap-2 hover:bg-green-700">
-                                    <SaveIcon /> Submit Payments
+                                    <Save size={18} /> Submit Payments
                                 </button>
                             </div>
                             <table className="w-full text-left">
