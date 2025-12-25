@@ -23,6 +23,44 @@ const studentSchema = mongoose.Schema({
     monthly_fee: { type: Number, default: 5000 },
     is_active: { type: Boolean, default: true },
 
+    // Academic Session Management
+    current_session_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'AcademicSession',
+        index: true
+        // Current academic year this student is enrolled in
+    },
+
+    // Session History - Track student across academic years
+    session_history: [{
+        session_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'AcademicSession',
+            required: true
+        },
+        class_id: { type: String, required: true },
+        section_id: { type: String, required: true },
+        roll_no: { type: String, required: true },
+
+        // Result tracking
+        final_result_status: {
+            type: String,
+            enum: ['Promoted', 'Failed', 'Detained', 'Left', 'In Progress'],
+            default: 'In Progress'
+        },
+
+        // Fee carry-forward (fiscal closing)
+        opening_balance: { type: Number, default: 0 },
+        closing_balance: { type: Number, default: 0 },
+
+        // Timestamps
+        enrolled_date: { type: Date, default: Date.now },
+        promoted_date: Date,
+
+        // Notes
+        remarks: String
+    }],
+
     // Contact Information
     student_mobile: { type: String },
     father_mobile: { type: String },

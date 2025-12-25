@@ -4,12 +4,35 @@ const feeSchema = mongoose.Schema({
     tenant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tenant', required: false, index: true },
     school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: false },
     student_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
-    month: { type: String, required: true }, // e.g., "Jan-2025"
+
+    // Academic Session Reference
+    session_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'AcademicSession',
+        index: true
+        // Links fee to specific academic year
+    },
+
+    month: { type: String, required: true }, // e.g., "Jan-2025" or "Opening Balance"
 
     tuition_fee: { type: Number, required: true },
     concession: { type: Number, default: 0 }, // Legacy field, kept for backward compatibility
     other_charges: { type: Number, default: 0 },
     arrears: { type: Number, default: 0 },
+
+    // Opening Balance from Previous Session (Fiscal Carry-Forward)
+    opening_balance: {
+        type: Number,
+        default: 0
+        // Balance carried forward from previous academic year
+    },
+
+    // Flag to identify opening balance entry
+    is_opening_entry: {
+        type: Boolean,
+        default: false
+        // True for the initial carry-forward entry in a new session
+    },
 
     // Discount Breakdown
     discount_applied: {
@@ -48,6 +71,8 @@ const feeSchema = mongoose.Schema({
     payment_date: { type: Date }
 }, { timestamps: true });
 
-feeSchema.index({ student_id: 1, month: 1 }, { unique: true });
+// Compound indexes for better query performance
+feeSchema.index({ tenant_id: 1, session_id: 1, student_id: 1 });
+feeSchema.index({ student_id: 1, session_id: 1, month: 1 }, { unique: true });
 
 module.exports = mongoose.model('Fee', feeSchema);

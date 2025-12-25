@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
     origin: '*', // Allow all origins (adjust for production if needed)
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-session-id'],
     credentials: true
 }));
 app.use(express.json());
@@ -110,6 +110,11 @@ app.use('/api/discounts', protect, ensureTenant, require('./routes/discountRoute
 app.use('/api/families', protect, ensureTenant, require('./routes/familyRoutes'));
 app.use('/api/users', protect, ensureTenant, require('./routes/userRoutes'));
 app.use('/api/expenses', protect, ensureTenant, require('./routes/expenseRoutes'));
+
+// Session Management Routes (with session context middleware)
+const sessionContext = require('./middleware/sessionContext');
+app.use('/api/sessions', protect, ensureTenant, sessionContext, require('./routes/sessionRoutes'));
+app.use('/api/promotions', protect, ensureTenant, sessionContext, require('./routes/promotionRoutes'));
 
 // Test Routes (for debugging)
 app.use('/api/test', require('./routes/testRoutes'));

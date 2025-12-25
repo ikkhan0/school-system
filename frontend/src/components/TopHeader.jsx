@@ -2,6 +2,7 @@ import { useContext, useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import { Search, Bell, Menu, LogOut, User, Settings as SettingsIcon } from 'lucide-react';
+import SessionSwitcher from './SessionSwitcher';
 
 const TopHeader = ({ onMenuClick }) => {
     const { user, logout } = useContext(AuthContext);
@@ -68,6 +69,9 @@ const TopHeader = ({ onMenuClick }) => {
                         {user?.role?.replace('_', ' ').toUpperCase() || 'ADMIN'}
                     </p>
                 </div>
+
+                {/* Session Switcher */}
+                <SessionSwitcher />
 
                 {/* Notifications */}
                 <div className="relative" ref={notificationsRef}>
