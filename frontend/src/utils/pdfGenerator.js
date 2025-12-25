@@ -43,9 +43,9 @@ export const generateFeeVoucherPDF = (student, feeData, schoolInfo = {}) => {
     // Fee Details Table
     const tableData = [
         ['Description', 'Amount (Rs.)'],
-        ['Monthly Fee', feeData.gross_amount || feeData.monthly_fee || 0],
+        [feeData.title || 'Monthly Fee', feeData.gross_amount || feeData.monthly_fee || 0],
         ['Discount', `- ${feeData.discount_amount || 0}`],
-        ['Previous Balance', feeData.previous_balance || 0],
+        ['Previous Balance', feeData.previous_balance || feeData.arrears || 0],
         ['Total Payable', feeData.total_amount || feeData.gross_amount || 0]
     ];
 

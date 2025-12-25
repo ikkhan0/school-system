@@ -557,7 +557,7 @@ const StudentProfile = () => {
                                 <thead>
                                     <tr className="bg-blue-600 text-white">
                                         <th className="border border-blue-700 p-3 text-left">Month</th>
-                                        <th className="border border-blue-700 p-3 text-right">Tuition Fee</th>
+                                        <th className="border border-blue-700 p-3 text-right">Fee Amount</th>
                                         <th className="border border-blue-700 p-3 text-right">Concession</th>
                                         <th className="border border-blue-700 p-3 text-right">Gross Amount</th>
                                         <th className="border border-blue-700 p-3 text-right">Paid</th>
@@ -569,7 +569,10 @@ const StudentProfile = () => {
                                 <tbody>
                                     {fees.length > 0 ? fees.map((fee, idx) => (
                                         <tr key={idx} className="hover:bg-gray-50">
-                                            <td className="border p-3 font-semibold">{fee.month}</td>
+                                            <td className="border p-3 font-semibold">
+                                                {fee.month}
+                                                {fee.title && <div className="text-xs text-gray-500 font-normal">{fee.title}</div>}
+                                            </td>
                                             <td className="border p-3 text-right">Rs. {fee.tuition_fee}</td>
                                             <td className="border p-3 text-right text-green-600">Rs. {fee.concession}</td>
                                             <td className="border p-3 text-right font-bold">Rs. {fee.gross_amount}</td>
