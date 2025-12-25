@@ -9,6 +9,11 @@ const Classes = () => {
     const [newClassName, setNewClassName] = useState('');
     const [loading, setLoading] = useState(true);
 
+    // Edit mode states
+    const [editingClassId, setEditingClassId] = useState(null);
+    const [editClassName, setEditClassName] = useState('');
+    const [editSections, setEditSections] = useState('');
+
     useEffect(() => {
         fetchClasses();
     }, []);
@@ -39,10 +44,59 @@ const Classes = () => {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             setNewClassName('');
+            document.getElementById('newSections').value = '';
             fetchClasses(); // Refresh list
         } catch (error) {
             console.error('Error adding class:', error);
             alert('Failed to add class');
+        }
+    };
+
+    const handleEditClick = (cls) => {
+        setEditingClassId(cls._id);
+        setEditClassName(cls.name);
+        setEditSections(cls.sections.join(', '));
+    };
+
+    const handleCancelEdit = () => {
+        setEditingClassId(null);
+        setEditClassName('');
+        setEditSections('');
+    };
+
+    const handleSaveEdit = async (classId) => {
+        const sections = editSections.split(',').map(s => s.trim()).filter(s => s);
+
+        try {
+            await axios.put(`${API_URL}/api/classes/${classId}`, {
+                name: editClassName,
+                sections: sections
+            }, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            setEditingClassId(null);
+            setEditClassName('');
+            setEditSections('');
+            fetchClasses(); // Refresh list
+        } catch (error) {
+            console.error('Error updating class:', error);
+            alert('Failed to update class');
+        }
+    };
+
+    const handleDelete = async (classId, className) => {
+        if (!window.confirm(`Are you sure you want to delete "${className}"? This action cannot be undone.`)) {
+            return;
+        }
+
+        try {
+            await axios.delete(`${API_URL}/api/classes/${classId}`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            fetchClasses(); // Refresh list
+        } catch (error) {
+            console.error('Error deleting class:', error);
+            alert('Failed to delete class');
         }
     };
 
@@ -90,17 +144,67 @@ const Classes = () => {
                         <tbody>
                             {classes.map((cls) => (
                                 <tr key={cls._id} className="hover:bg-gray-50">
-                                    <td className="p-4 border-b font-medium">{cls.name}</td>
-                                    <td className="p-4 border-b">
-                                        {cls.sections.map(sec => (
-                                            <span key={sec} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
-                                                {sec}
-                                            </span>
-                                        ))}
+                                    <td className="p-4 border-b font-medium">
+                                        {editingClassId === cls._id ? (
+                                            <input
+                                                type="text"
+                                                value={editClassName}
+                                                onChange={(e) => setEditClassName(e.target.value)}
+                                                className="w-full p-2 border border-gray-300 rounded"
+                                            />
+                                        ) : (
+                                            cls.name
+                                        )}
                                     </td>
                                     <td className="p-4 border-b">
-                                        <button className="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
-                                        <button className="text-red-600 hover:text-red-800">Delete</button>
+                                        {editingClassId === cls._id ? (
+                                            <input
+                                                type="text"
+                                                value={editSections}
+                                                onChange={(e) => setEditSections(e.target.value)}
+                                                placeholder="A, B, C"
+                                                className="w-full p-2 border border-gray-300 rounded"
+                                            />
+                                        ) : (
+                                            cls.sections.map(sec => (
+                                                <span key={sec} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
+                                                    {sec}
+                                                </span>
+                                            ))
+                                        )}
+                                    </td>
+                                    <td className="p-4 border-b">
+                                        {editingClassId === cls._id ? (
+                                            <>
+                                                <button
+                                                    onClick={() => handleSaveEdit(cls._id)}
+                                                    className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 mr-2"
+                                                >
+                                                    Save
+                                                </button>
+                                                <button
+                                                    onClick={handleCancelEdit}
+                                                    className="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-600"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    onClick={() => handleEditClick(cls)}
+                                                    className="text-blue-600 hover:text-blue-800 mr-2"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(cls._id, cls.name)}
+                                                    className="text-red-600 hover:text-red-800"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

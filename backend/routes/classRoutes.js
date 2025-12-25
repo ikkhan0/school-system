@@ -37,6 +37,56 @@ router.post('/', protect, async (req, res) => {
     }
 });
 
+// @route   PUT /api/classes/:id
+// @desc    Update class name and/or sections
+// @access  Private
+router.put('/:id', protect, async (req, res) => {
+    const { name, sections } = req.body;
+
+    try {
+        const classData = await Class.findOne({
+            _id: req.params.id,
+            tenant_id: req.tenant_id
+        });
+
+        if (!classData) {
+            return res.status(404).json({ message: 'Class not found' });
+        }
+
+        // Update fields if provided
+        if (name) classData.name = name;
+        if (sections) classData.sections = sections;
+
+        const updatedClass = await classData.save();
+        res.json(updatedClass);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   DELETE /api/classes/:id
+// @desc    Delete a class
+// @access  Private
+router.delete('/:id', protect, async (req, res) => {
+    try {
+        const classData = await Class.findOne({
+            _id: req.params.id,
+            tenant_id: req.tenant_id
+        });
+
+        if (!classData) {
+            return res.status(404).json({ message: 'Class not found' });
+        }
+
+        await Class.deleteOne({ _id: req.params.id });
+        res.json({ message: 'Class deleted successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 // @route   PUT /api/classes/:id/subjects
 // @desc    Assign subjects to a class
 // @access  Private

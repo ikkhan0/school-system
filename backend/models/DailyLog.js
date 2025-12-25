@@ -1,8 +1,15 @@
 const mongoose = require('mongoose');
 
 const dailyLogSchema = mongoose.Schema({
+    // Multi-tenant support
+    tenant_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tenant',
+        required: false, // Optional for backward compatibility
+        index: true // Index for faster queries
+    },
     student_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
-    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: false },
+    school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: false }, // Legacy, kept for backward compatibility
     date: { type: Date, required: true },
     status: { type: String, enum: ['Present', 'Absent', 'Leave', 'Late'], default: 'Present' },
 

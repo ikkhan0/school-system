@@ -10,6 +10,7 @@ const BulkFeeSlips = () => {
     const [month, setMonth] = useState('Dec-2025');
     const [classes, setClasses] = useState([]);
     const [schoolInfo, setSchoolInfo] = useState(null);
+    const [printFormat, setPrintFormat] = useState('a4'); // 'a4' or 'receipt'
 
     useEffect(() => {
         if (!user) return;
@@ -57,22 +58,51 @@ const BulkFeeSlips = () => {
 
     return (
         <div className="max-w-7xl mx-auto p-4">
-            <div className="no-print bg-white p-4 shadow rounded mb-4 flex gap-4 items-center">
-                <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)} className="border p-2 rounded">
-                    {classes.map(c => (
-                        <option key={c._id} value={c.name}>{c.name}</option>
-                    ))}
-                </select>
-                <input type="text" value={month} onChange={(e) => setMonth(e.target.value)} className="border p-2 rounded" />
-                <button onClick={fetchSlips} className="bg-blue-600 text-white px-4 py-2 rounded">Generate Slips</button>
-                <button onClick={() => window.print()} className="bg-gray-800 text-white px-4 py-2 rounded flex items-center gap-2">
-                    <Printer size={18} /> Print
-                </button>
+            <div className="no-print bg-white p-4 shadow rounded mb-4">
+                <div className="flex gap-4 items-center mb-4">
+                    <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)} className="border p-2 rounded">
+                        {classes.map(c => (
+                            <option key={c._id} value={c.name}>{c.name}</option>
+                        ))}
+                    </select>
+                    <input type="text" value={month} onChange={(e) => setMonth(e.target.value)} className="border p-2 rounded" />
+                    <button onClick={fetchSlips} className="bg-blue-600 text-white px-4 py-2 rounded">Generate Slips</button>
+                    <button onClick={() => window.print()} className="bg-gray-800 text-white px-4 py-2 rounded flex items-center gap-2">
+                        <Printer size={18} /> Print
+                    </button>
+                </div>
+
+                {/* Print Format Selector */}
+                <div className="flex gap-6 items-center border-t pt-4">
+                    <span className="font-semibold text-gray-700">Print Format:</span>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="radio"
+                            name="printFormat"
+                            value="a4"
+                            checked={printFormat === 'a4'}
+                            onChange={(e) => setPrintFormat(e.target.value)}
+                            className="w-4 h-4"
+                        />
+                        <span>A4 Grid (4 per page)</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="radio"
+                            name="printFormat"
+                            value="receipt"
+                            checked={printFormat === 'receipt'}
+                            onChange={(e) => setPrintFormat(e.target.value)}
+                            className="w-4 h-4"
+                        />
+                        <span>Receipt Printer (1 per page)</span>
+                    </label>
+                </div>
             </div>
 
             {/* A4 Page Container Logic: We need to chunk slips into groups of 4 for better page break control if needed, 
                 or rely on CSS Grid. CSS Grid with strict dimensions is usually best for "Labels" style printing. */}
-            <div className="print-area">
+            <div className={`print-area print-format-${printFormat}`}>
                 {slips.map((slip, idx) => (
                     <div key={idx} className="fee-slip-card relative border-2 border-black p-4">
                         {/* Cut Line Indicators */}
@@ -125,39 +155,103 @@ const BulkFeeSlips = () => {
                                 <span>Office Sig</span>
                             </div>
                         </div>
+
+                        {/* Cut line for receipt format */}
+                        {printFormat === 'receipt' && (
+                            <div className="receipt-cut-line mt-4 pt-4 border-t-2 border-dashed border-gray-400 text-center text-xs text-gray-500">
+                                ✂ Cut Here ✂
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
 
             <style>
                 {`
+                    /* A4 Format Styles */
                     @media print {
-                        @page { size: A4; margin: 5mm; }
                         .no-print { display: none; }
                         body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; }
                         
-                        .print-area { 
+                        /* A4 Grid Layout */
+                        .print-format-a4 {
+                            @page { size: A4; margin: 5mm; }
+                        }
+                        
+                        .print-format-a4 .print-area { 
                             display: grid; 
                             grid-template-columns: 1fr 1fr; 
                             grid-template-rows: repeat(2, 1fr);
                             width: 100%;
-                            height: 100%; /* Fill the page */
+                            height: 100%;
                             gap: 10mm;
                         }
 
-                        .fee-slip-card {
-                            height: 135mm; /* ~Half A4 height minus gap */
+                        .print-format-a4 .fee-slip-card {
+                            height: 135mm;
                             box-sizing: border-box;
                             page-break-inside: avoid;
                             background: white;
                         }
+                        
+                        .print-format-a4 .receipt-cut-line {
+                            display: none;
+                        }
+                        
+                        /* Receipt Printer Layout */
+                        .print-format-receipt {
+                            @page { size: 80mm auto; margin: 2mm; }
+                        }
+                        
+                        .print-format-receipt .print-area {
+                            display: block;
+                            width: 76mm;
+                            margin: 0 auto;
+                        }
+                        
+                        .print-format-receipt .fee-slip-card {
+                            width: 76mm;
+                            height: auto;
+                            min-height: 120mm;
+                            page-break-after: always;
+                            box-sizing: border-box;
+                            background: white;
+                            margin-bottom: 5mm;
+                        }
+                        
+                        .print-format-receipt .fee-slip-card h2 {
+                            font-size: 16px;
+                        }
+                        
+                        .print-format-receipt .fee-slip-card p,
+                        .print-format-receipt .fee-slip-card span {
+                            font-size: 11px;
+                        }
+                        
+                        .print-format-receipt .receipt-cut-line {
+                            display: block;
+                            margin-top: 8px;
+                            padding-top: 8px;
+                            border-top: 2px dashed #000;
+                        }
                     }
+                    
                     /* Screen Simulation */
                     @media screen {
-                        .print-area {
+                        .print-format-a4 .print-area {
                             display: grid;
                             grid-template-columns: 1fr 1fr;
                             gap: 20px;
+                        }
+                        
+                        .print-format-receipt .print-area {
+                            display: block;
+                            max-width: 80mm;
+                            margin: 0 auto;
+                        }
+                        
+                        .print-format-receipt .fee-slip-card {
+                            margin-bottom: 20px;
                         }
                     }
                 `}
