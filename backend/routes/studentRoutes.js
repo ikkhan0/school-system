@@ -610,6 +610,27 @@ router.post('/:id/subjects/enroll', protect, async (req, res) => {
     }
 });
 
+// @desc    Get Single Student
+// @route   GET /api/students/:id
+router.get('/:id', protect, checkPermission('students.view'), async (req, res) => {
+    try {
+        const student = await Student.findOne({
+            _id: req.params.id,
+            tenant_id: req.tenant_id
+        })
+            .populate('family_id')
+            .populate('enrolled_subjects.subject_id')
+            .populate('siblings', 'full_name roll_no photo class_id section_id');
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+        res.json(student);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // @desc    Update Student (including subjects)
 // @route   PUT /api/students/:id
 router.put('/:id', protect, checkPermission('students.edit'), upload.single('image'), async (req, res) => {
