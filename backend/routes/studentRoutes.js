@@ -348,7 +348,7 @@ router.get('/list', protect, async (req, res) => {
     try {
         const { class_id, section_id } = req.query;
 
-        let query = { tenant_id: req.tenant_id }; // Removed is_active filter to show all students
+        let query = { tenant_id: req.tenant_id, is_active: true }; // Only show active students
 
         // Add filters if provided
         if (class_id) query.class_id = class_id;

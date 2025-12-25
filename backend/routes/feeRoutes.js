@@ -17,6 +17,7 @@ router.get('/family-view', protect, checkPermission('fees.view'), async (req, re
         // 1. Find the student (Scoped to School)
         const student = await Student.findOne({
             tenant_id: req.tenant_id,
+            is_active: true,
             $or: [
                 { roll_no: search },
                 { full_name: { $regex: search, $options: 'i' } }
@@ -31,7 +32,7 @@ router.get('/family-view', protect, checkPermission('fees.view'), async (req, re
 
         if (student.family_id) {
             family = await Family.findById(student.family_id);
-            siblings = await Student.find({ family_id: student.family_id, tenant_id: req.tenant_id });
+            siblings = await Student.find({ family_id: student.family_id, tenant_id: req.tenant_id, is_active: true });
         } else {
             siblings = [student];
         }
@@ -201,9 +202,9 @@ router.get('/voucher/:student_id/:month', protect, checkPermission('fees.view'),
     try {
         const { student_id, month } = req.params;
 
-        const student = await Student.findById(student_id).populate('family_id');
+        const student = await Student.findOne({ _id: student_id, is_active: true }).populate('family_id');
         if (!student) {
-            return res.status(404).json({ message: 'Student not found' });
+            return res.status(404).json({ message: 'Student not found or inactive' });
         }
 
         let fee = await Fee.findOne({
