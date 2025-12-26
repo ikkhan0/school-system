@@ -96,16 +96,16 @@ const seedTemplates = async () => {
         console.log('Connected to DB. Checking for existing system templates...');
 
         for (const tmpl of sampleTemplates) {
-            // Check if system template exists (school_id is null/undefined)
+            // Check if system template exists (tenant_id is null/undefined)
             const exists = await WhatsappTemplate.findOne({
                 type: tmpl.type,
-                school_id: null
+                tenant_id: null
             });
 
             if (!exists) {
                 await WhatsappTemplate.create({
                     ...tmpl,
-                    school_id: null // System default
+                    tenant_id: null // System default
                 });
                 console.log(`Created template: ${tmpl.name}`);
             } else {

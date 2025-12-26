@@ -10,8 +10,8 @@ router.get('/', protect, async (req, res) => {
     try {
         const templates = await WhatsappTemplate.find({
             $or: [
-                { school_id: req.tenant_id },
-                { school_id: null } // Include system defaults if any
+                { tenant_id: req.tenant_id },
+                { tenant_id: null } // Include system defaults if any
             ]
         }).sort({ type: 1, name: 1 });
         res.json(templates);
@@ -27,7 +27,7 @@ router.get('/active/:type', protect, async (req, res) => {
         const { type } = req.params;
         // Find specific school template first
         let template = await WhatsappTemplate.findOne({
-            school_id: req.tenant_id,
+            tenant_id: req.tenant_id,
             type: type,
             isActive: true
         });
@@ -35,7 +35,7 @@ router.get('/active/:type', protect, async (req, res) => {
         // If not found, find system default
         if (!template) {
             template = await WhatsappTemplate.findOne({
-                school_id: null,
+                tenant_id: null,
                 type: type,
                 isActive: true
             });
@@ -63,7 +63,7 @@ router.post('/', protect, checkPermission('settings.edit'), async (req, res) => 
         // but if manual, they can pick. The "active" flag might mean "Default".
 
         const newTemplate = new WhatsappTemplate({
-            school_id: req.tenant_id,
+            tenant_id: req.tenant_id,
             name,
             type,
             content,
@@ -83,7 +83,7 @@ router.post('/', protect, checkPermission('settings.edit'), async (req, res) => 
 router.put('/:id', protect, checkPermission('settings.edit'), async (req, res) => {
     try {
         const { name, type, content, variables, isActive } = req.body;
-        const template = await WhatsappTemplate.findOne({ _id: req.params.id, school_id: req.tenant_id });
+        const template = await WhatsappTemplate.findOne({ _id: req.params.id, tenant_id: req.tenant_id });
 
         if (!template) {
             return res.status(404).json({ message: 'Template not found' });
@@ -106,7 +106,7 @@ router.put('/:id', protect, checkPermission('settings.edit'), async (req, res) =
 // @route   DELETE /api/whatsapp-templates/:id
 router.delete('/:id', protect, checkPermission('settings.edit'), async (req, res) => {
     try {
-        const template = await WhatsappTemplate.findOne({ _id: req.params.id, school_id: req.tenant_id });
+        const template = await WhatsappTemplate.findOne({ _id: req.params.id, tenant_id: req.tenant_id });
         if (!template) {
             return res.status(404).json({ message: 'Template not found' });
         }

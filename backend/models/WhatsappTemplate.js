@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const whatsappTemplateSchema = new mongoose.Schema({
-    school_id: {
+    tenant_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'School',
-        required: false // Can be null for system defaults if we go that route, but for now user implies school customization
+        required: false // Can be null for system defaults
     },
     name: {
         type: String,
@@ -31,8 +31,6 @@ const whatsappTemplateSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Compound index to ensure unique names per school or type per school if desired? 
-// For now, let's just index school_id
-whatsappTemplateSchema.index({ school_id: 1, type: 1 });
+whatsappTemplateSchema.index({ tenant_id: 1, type: 1 });
 
 module.exports = mongoose.model('WhatsappTemplate', whatsappTemplateSchema);
