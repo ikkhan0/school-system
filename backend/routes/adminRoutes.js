@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/auth');
+const { protectAdmin } = require('../middleware/protectAdmin');
 const Student = require('../models/Student');
 const AcademicSession = require('../models/AcademicSession');
 
@@ -9,12 +9,8 @@ const AcademicSession = require('../models/AcademicSession');
  * @route   POST /api/admin/fix-imported-students
  * @access  Private (Super Admin only)
  */
-router.post('/fix-imported-students', protect, async (req, res) => {
+router.post('/fix-imported-students', protectAdmin, async (req, res) => {
     try {
-        // Only allow Super Admin to run this
-        if (req.user.role !== 'Super Admin') {
-            return res.status(403).json({ message: 'Only Super Admin can run migrations' });
-        }
 
         const results = {
             schoolsProcessed: 0,
