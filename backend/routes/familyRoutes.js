@@ -221,7 +221,7 @@ router.post('/:id/whatsapp-message', protect, async (req, res) => {
         let message = "";
         try {
             const template = await WhatsappTemplate.findOne({
-                school_id: req.tenant_id,
+                tenant_id: req.tenant_id,
                 type: 'family_fee',
                 isActive: true
             });

@@ -28,13 +28,13 @@ const WhatsappTemplates = () => {
     ];
 
     const availableVariables = {
-        fee_ledger: ['{student_name}', '{roll_no}', '{class_section}', '{total_due}', '{history_summary}', '{school_name}'],
+        fee_ledger: ['{student_name}', '{roll_no}', '{class_section}', '{total_due}', '{history_summary}', '{school_name}', '{father_name}'],
         family_fee: ['{father_name}', '{total_due}', '{children_list}', '{month}', '{school_name}'],
-        attendance_absent: ['{student_name}', '{date}', '{school_name}'],
-        attendance_late: ['{student_name}', '{date}', '{time_in}', '{school_name}'],
-        violation: ['{student_name}', '{violation_type}', '{date}', '{remarks}', '{school_name}'],
-        general: ['{student_name}', '{school_name}', '{message_body}'],
-        fee_reminder: ['{student_name}', '{month}', '{total_due}', '{due_date}', '{school_name}']
+        attendance_absent: ['{student_name}', '{date}', '{school_name}', '{father_name}'],
+        attendance_late: ['{student_name}', '{date}', '{time_in}', '{school_name}', '{father_name}'],
+        violation: ['{student_name}', '{violation_type}', '{date}', '{remarks}', '{school_name}', '{father_name}'],
+        general: ['{student_name}', '{school_name}', '{message_body}', '{father_name}'],
+        fee_reminder: ['{student_name}', '{month}', '{total_due}', '{due_date}', '{school_name}', '{father_name}']
     };
 
     useEffect(() => {
