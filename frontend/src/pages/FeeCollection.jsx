@@ -9,6 +9,11 @@ import { formatDate, toInputDate } from '../utils/dateFormatter';
 const FeeCollection = () => {
     const { user } = useContext(AuthContext);
     const { dateFormat } = useContext(SettingsContext);
+
+    // Debug: Log the current date format
+    console.log('FeeCollection - dateFormat from context:', dateFormat);
+    console.log('FeeCollection - Full context:', useContext(SettingsContext));
+
     const [activeTab, setActiveTab] = useState('ledger'); // 'ledger', 'family', 'bulk'
     const [searchTerm, setSearchTerm] = useState('');
     const [studentLedger, setStudentLedger] = useState(null); // { student: {}, history: [] }
