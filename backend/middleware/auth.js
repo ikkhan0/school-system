@@ -19,8 +19,9 @@ const protect = async (req, res, next) => {
                 return res.status(401).json({ message: 'User not found' });
             }
 
-            // Check if tenant separation logic is needed immediately or later
-            // For now, simple auth
+            // Set tenant_id and school_id from token or user object for multi-tenant support
+            req.tenant_id = decoded.tenant_id || req.user.tenant_id || req.user.school_id;
+            req.school_id = decoded.school_id || req.user.school_id;
 
             next();
         } catch (error) {
