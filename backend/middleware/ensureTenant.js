@@ -3,10 +3,12 @@
 
 const ensureTenant = async (req, res, next) => {
     try {
-        // Check for super_admin but DO NOT SKIP logic completely
-        // If super_admin, they might need a tenant context. 
-        // For now, if role is super_admin and no tenant_id found, we default to user._id to prevent crashes
+        // If tenant_id is already set by auth middleware, skip
+        if (req.tenant_id) {
+            return next();
+        }
 
+        // Fallback logic if not set by auth middleware
         let tenantId = req.user?.tenant_id || req.user?.school_id || req.user?._id;
 
         // If explicitly super_admin, we can proceed, but models requiring tenant_id will need SOMETHING.
@@ -23,13 +25,12 @@ const ensureTenant = async (req, res, next) => {
 
         req.tenant_id = tenantId;
 
-        // Debug
-        // console.log(`Tenant Context: ${req.user?.username} (${req.user?.role}) -> ${req.tenant_id}`);
-
         next();
     } catch (error) {
         console.error('❌ Tenant isolation error:', error);
-        req.tenant_id = req.user?._id;
+        if (!req.tenant_id) {
+            req.tenant_id = req.user?._id;
+        }
         next();
     }
 };

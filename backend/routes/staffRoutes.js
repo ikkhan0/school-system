@@ -289,11 +289,26 @@ router.post('/attendance/mark', protect, async (req, res) => {
         const fs = require('fs');
         const path = require('path');
         const logPath = path.join(__dirname, '../debug_log.txt');
-        if (typeof error === 'object' && error !== null) {
-            fs.appendFileSync(logPath, `[${new Date().toISOString()}] ERROR: ${error.message}\n${error.stack}\n`);
+
+        const errorDetails = {
+            message: error.message,
+            stack: error.stack,
+            user: req.user?.username,
+            tenant_id: req.tenant_id,
+            recordCount: req.body?.attendanceRecords?.length
+        };
+
+        try {
+            fs.appendFileSync(logPath, `[${new Date().toISOString()}] ATTENDANCE ERROR:\n${JSON.stringify(errorDetails, null, 2)}\n`);
+        } catch (e) {
+            console.log('Failed to write log:', e);
         }
-        console.error('Attendance Save Error:', error);
-        res.status(500).json({ message: error.message || 'Server Error' });
+
+        console.error('Attendance Save Error:', errorDetails);
+        res.status(500).json({
+            message: error.message || 'Server Error',
+            details: process.env.NODE_ENV !== 'production' ? error.stack : undefined
+        });
     }
 });
 
