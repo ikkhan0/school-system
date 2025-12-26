@@ -459,6 +459,46 @@ router.get('/voucher/:student_id/:month', protect, checkPermission('fees.view'),
     }
 });
 
+// @desc    Bulk Update Fee Details (e.g. Due Date)
+// @route   PUT /api/fees/bulk-update
+router.put('/bulk-update-batch', protect, checkPermission('fees.edit'), async (req, res) => {
+    try {
+        const { class_id, section_id, month, due_date } = req.body;
+
+        if (!month || !due_date) return res.status(400).json({ message: "Month and Due Date required" });
+
+        const variations = getMonthVariations(month);
+
+        // Find fees to update
+        // We need to join with Student to filter by class/section, or use populate
+        // But Fee doesn't store class directly usually, only student_id ref.
+        // Wait, Fee doesn't have class_id. We need to find students first.
+
+        let studentIds = [];
+        if (class_id) {
+            const query = { isActive: true, tenant_id: req.tenant_id, class_id };
+            if (section_id) query.section_id = section_id;
+            const students = await Student.find(query).select('_id');
+            studentIds = students.map(s => s._id);
+        }
+
+        const feeQuery = {
+            tenant_id: req.tenant_id,
+            month: { $in: variations }
+        };
+
+        if (studentIds.length > 0) {
+            feeQuery.student_id = { $in: studentIds };
+        }
+
+        const result = await Fee.updateMany(feeQuery, { $set: { due_date: new Date(due_date) } });
+
+        res.json({ message: `Updated ${result.modifiedCount} fees with new due date.` });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // @desc    Update fee discount
 // @route   PUT /api/fees/:id/discount
 router.put('/:id/discount', protect, checkPermission('fees.edit'), async (req, res) => {

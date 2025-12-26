@@ -9,12 +9,13 @@ const Staff = require('../models/Staff');
 // Student Reports
 router.get('/students', async (req, res) => {
     try {
-        const { type, class_id, section_id, status } = req.query;
+        const { type, class_id, section_id, status, session_id } = req.query;
         let query = {};
 
         if (class_id) query.class_id = class_id;
         if (section_id) query.section_id = section_id;
         if (status) query.status = status;
+        if (session_id) query.current_session_id = session_id;
 
         if (type === 'list') {
             const students = await Student.find(query).select('roll_no full_name father_name father_mobile class_id section_id admission_date status');
@@ -27,6 +28,42 @@ router.get('/students', async (req, res) => {
                 'Admission Date': s.admission_date ? new Date(s.admission_date).toLocaleDateString() : '-',
                 'Status': s.status
             }));
+            res.json(formatted);
+        } else if (type === 'custom') {
+            const requestedFields = req.query.fields ? req.query.fields.split(',') : [];
+            const students = await Student.find(query);
+
+            // Map of field keys to readable names and value accessors
+            const fieldMap = {
+                'roll_no': { label: 'Roll No', getValue: s => s.roll_no },
+                'full_name': { label: 'Name', getValue: s => s.full_name },
+                'father_name': { label: 'Father Name', getValue: s => s.father_name },
+                'gender': { label: 'Gender', getValue: s => s.gender },
+                'dob': { label: 'Date of Birth', getValue: s => s.dob ? new Date(s.dob).toLocaleDateString() : '-' },
+                'class_id': { label: 'Class', getValue: s => unescape(s.class_id) }, // unescape if needed, or just raw
+                'section_id': { label: 'Section', getValue: s => s.section_id },
+                'father_mobile': { label: 'Father Mobile', getValue: s => s.father_mobile },
+                'student_mobile': { label: 'Student Mobile', getValue: s => s.student_mobile },
+                'address': { label: 'Address', getValue: s => s.address || s.current_address },
+                'city': { label: 'City', getValue: s => s.city },
+                'admission_date': { label: 'Admission Date', getValue: s => s.admission_date ? new Date(s.admission_date).toLocaleDateString() : '-' },
+                'blood_group': { label: 'Blood Group', getValue: s => s.blood_group },
+                'religion': { label: 'Religion', getValue: s => s.religion },
+                'cnic': { label: 'B-Form/CNIC', getValue: s => s.student_cnic || s.cnic },
+                'father_cnic': { label: 'Father CNIC', getValue: s => s.father_cnic },
+                'monthly_fee': { label: 'Monthly Fee', getValue: s => s.monthly_fee },
+                'status': { label: 'Status', getValue: s => s.status || (s.is_active ? 'Active' : 'Inactive') }
+            };
+
+            const formatted = students.map(s => {
+                const row = {};
+                requestedFields.forEach(field => {
+                    if (fieldMap[field]) {
+                        row[fieldMap[field].label] = fieldMap[field].getValue(s) || '-';
+                    }
+                });
+                return row;
+            });
             res.json(formatted);
         } else if (type === 'classwise') {
             const students = await Student.aggregate([
