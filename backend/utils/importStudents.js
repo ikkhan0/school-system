@@ -77,7 +77,7 @@ const validateStudentData = (students, existingRollNumbers = [], availableClasse
 
             // Check for duplicates in database
             if (existingRollNumbers.includes(rollNo)) {
-                errors.push('Roll number already exists in database');
+                errors.push('Roll number already exists in database (may have been imported previously)');
             }
         }
 

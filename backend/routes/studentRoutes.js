@@ -157,6 +157,7 @@ router.post('/import/confirm', protect, async (req, res) => {
                     mother_name: mother_name || family.mother_name,
                     family_id: family._id,
                     tenant_id: req.tenant_id,
+                    current_session_id: req.session_id, // Set current session for imported students
                     monthly_fee: studentData.monthly_fee || 5000,
                     category: studentData.category || 'Regular',
                     nationality: studentData.nationality || 'Pakistani',
