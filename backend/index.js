@@ -122,6 +122,9 @@ app.use('/api/promotions', protect, ensureTenant, sessionContext, require('./rou
 // Health Check Routes (No auth required)
 app.use('/api/health', require('./routes/healthRoutes'));
 
+// Admin Routes (For Super Admin only - migrations, etc.)
+app.use('/api/admin', require('./routes/adminRoutes'));
+
 // Test Routes (for debugging)
 app.use('/api/test', require('./routes/testRoutes'));
 

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Student = require('../models/Student');
-const Session = require('../models/Session');
+const AcademicSession = require('../models/AcademicSession');
 
 /**
  * Migration Script: Fix Imported Students Missing Session IDs
@@ -22,7 +22,7 @@ async function migrateImportedStudents() {
 
         for (const tenant_id of tenants) {
             // Find the active session for this school
-            const activeSession = await Session.findOne({
+            const activeSession = await AcademicSession.findOne({
                 tenant_id,
                 is_active: true
             });
