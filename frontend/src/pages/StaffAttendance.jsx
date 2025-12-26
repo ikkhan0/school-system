@@ -71,14 +71,25 @@ const StaffAttendance = () => {
     };
 
     const handleStatusChange = (staffId, status) => {
-        setAttendance(prev => ({
-            ...prev,
-            [staffId]: {
+        setAttendance(prev => {
+            const updated = {
                 ...prev[staffId],
-                status,
-                leave_type: status === 'Leave' ? prev[staffId]?.leave_type || 'Casual' : ''
+                status
+            };
+
+            // Only include leave_type if status is Leave
+            if (status === 'Leave') {
+                updated.leave_type = prev[staffId]?.leave_type || 'Casual';
+            } else {
+                // Remove leave_type field completely
+                delete updated.leave_type;
             }
-        }));
+
+            return {
+                ...prev,
+                [staffId]: updated
+            };
+        });
     };
 
     const handleMarkAll = (status) => {

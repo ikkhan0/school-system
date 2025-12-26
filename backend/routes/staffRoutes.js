@@ -277,29 +277,43 @@ router.post('/attendance/mark', protect, async (req, res) => {
 
             if (existing) {
                 // Update existing record
-                Object.assign(existing, {
+                const updateData = {
                     status: record.status,
-                    check_in_time: record.check_in_time,
-                    check_out_time: record.check_out_time,
-                    leave_type: record.leave_type,
-                    notes: record.notes,
+                    check_in_time: record.check_in_time || undefined,
+                    check_out_time: record.check_out_time || undefined,
+                    notes: record.notes || undefined,
                     marked_by: req.user?._id
-                });
+                };
+
+                // Only include leave_type if status is Leave and it has a valid value
+                if (record.status === 'Leave' && record.leave_type) {
+                    updateData.leave_type = record.leave_type;
+                } else {
+                    updateData.leave_type = undefined;
+                }
+
+                Object.assign(existing, updateData);
                 await existing.save();
                 results.push(existing);
             } else {
                 // Create new record
-                const attendance = await StaffAttendance.create({
+                const attendanceData = {
                     tenant_id: tenantId,
                     staff_id: record.staff_id,
                     date: attendanceDate,
                     status: record.status,
-                    check_in_time: record.check_in_time,
-                    check_out_time: record.check_out_time,
-                    leave_type: record.leave_type,
-                    notes: record.notes,
+                    check_in_time: record.check_in_time || undefined,
+                    check_out_time: record.check_out_time || undefined,
+                    notes: record.notes || undefined,
                     marked_by: req.user?._id
-                });
+                };
+
+                // Only include leave_type if status is Leave and it has a valid value
+                if (record.status === 'Leave' && record.leave_type) {
+                    attendanceData.leave_type = record.leave_type;
+                }
+
+                const attendance = await StaffAttendance.create(attendanceData);
                 results.push(attendance);
             }
         }
