@@ -146,6 +146,7 @@ const DailyEvaluation = () => {
 
                 msg = tmpl.content
                     .replace(/{student_name}/g, student.name)
+                    .replace(/{father_name}/g, student.father_name || 'Parent') // Added replacement
                     .replace(/{date}/g, date)
                     .replace(/{school_name}/g, schoolInfo?.name || 'School')
                     .replace(/{violation_type}/g, violationsText)
