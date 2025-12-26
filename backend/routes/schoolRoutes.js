@@ -47,6 +47,13 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
         if (req.body.phone !== undefined) updateData.phone = req.body.phone;
         if (req.body.email !== undefined) updateData.email = req.body.email;
 
+        // Handle settings fields
+        if (req.body.date_format || req.body.time_format) {
+            updateData.settings = {};
+            if (req.body.date_format) updateData.settings.date_format = req.body.date_format;
+            if (req.body.time_format) updateData.settings.time_format = req.body.time_format;
+        }
+
         // Upload to Cloudinary if file present
         if (req.file) {
             try {

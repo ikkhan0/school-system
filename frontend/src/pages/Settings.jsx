@@ -2,17 +2,21 @@ import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import API_URL from '../config';
 import AuthContext from '../context/AuthContext';
+import SettingsContext from '../context/SettingsContext';
 import { Save, Building, Phone, Mail, Image as ImageIcon } from 'lucide-react';
 
 const Settings = () => {
     const { user } = useContext(AuthContext);
+    const { refreshSettings } = useContext(SettingsContext);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         address: '',
         phone: '',
         email: '',
-        logo: null // File object
+        logo: null, // File object
+        date_format: 'DD/MM/YYYY',
+        time_format: '12-hour'
     });
     const [preview, setPreview] = useState(null);
 
@@ -28,7 +32,7 @@ const Settings = () => {
             });
             console.log('School data received:', res.data);
 
-            const { name, address, phone, email, logo } = res.data;
+            const { name, address, phone, email, logo, settings } = res.data;
             console.log('Extracted fields:', { name, address, phone, email, hasLogo: !!logo });
 
             setFormData(prev => ({
@@ -36,7 +40,9 @@ const Settings = () => {
                 name: name || '',
                 address: address || '',
                 phone: phone || '',
-                email: email || ''
+                email: email || '',
+                date_format: settings?.date_format || 'DD/MM/YYYY',
+                time_format: settings?.time_format || '12-hour'
             }));
 
             // Logo is now base64, display directly
@@ -80,6 +86,8 @@ const Settings = () => {
             data.append('address', formData.address);
             data.append('phone', formData.phone);
             data.append('email', formData.email || '');
+            data.append('date_format', formData.date_format);
+            data.append('time_format', formData.time_format);
 
             if (formData.logo instanceof File) {
                 console.log('Appending logo file:', formData.logo.name);
@@ -100,6 +108,7 @@ const Settings = () => {
             });
 
             console.log('Response:', res.data);
+            refreshSettings(); // Refresh the global settings context
             alert('School Settings Updated Successfully!');
             window.location.reload();
         } catch (error) {
@@ -195,6 +204,44 @@ const Settings = () => {
                                 className="mt-1 block w-full border border-gray-300 rounded p-2 pl-8"
                             />
                             <Mail className="absolute left-2 top-3.5 text-gray-400" size={16} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Regional Preferences */}
+                <div className="border-t pt-6 mt-6">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Regional Preferences</h2>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Date Format</label>
+                            <select
+                                name="date_format"
+                                value={formData.date_format}
+                                onChange={handleChange}
+                                className="mt-1 block w-full border border-gray-300 rounded p-2"
+                            >
+                                <option value="DD/MM/YYYY">DD/MM/YYYY (26/12/2025)</option>
+                                <option value="MM/DD/YYYY">MM/DD/YYYY (12/26/2025)</option>
+                                <option value="YYYY-MM-DD">YYYY-MM-DD (2025-12-26)</option>
+                                <option value="DD-MM-YYYY">DD-MM-YYYY (26-12-2025)</option>
+                                <option value="MM-DD-YYYY">MM-DD-YYYY (12-26-2025)</option>
+                            </select>
+                            <p className="text-xs text-gray-500 mt-1">This format will be used throughout the application</p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Time Format</label>
+                            <select
+                                name="time_format"
+                                value={formData.time_format}
+                                onChange={handleChange}
+                                className="mt-1 block w-full border border-gray-300 rounded p-2"
+                            >
+                                <option value="12-hour">12-hour (02:30 PM)</option>
+                                <option value="24-hour">24-hour (14:30)</option>
+                            </select>
+                            <p className="text-xs text-gray-500 mt-1">Choose your preferred time display</p>
                         </div>
                     </div>
                 </div>
