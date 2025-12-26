@@ -346,9 +346,19 @@ router.get('/', protect, checkPermission('students.view'), async (req, res) => {
 
 router.get('/list', protect, async (req, res) => {
     try {
-        const { class_id, section_id } = req.query;
+        const { class_id, section_id, status } = req.query;
 
-        let query = { tenant_id: req.tenant_id, is_active: true }; // Only show active students
+        let query = { tenant_id: req.tenant_id };
+
+        // Status handling
+        if (status === 'all') {
+            // No filter on is_active
+        } else if (status === 'inactive') {
+            query.is_active = false;
+        } else {
+            // Default to active only (backward compatibility)
+            query.is_active = true;
+        }
 
         // Add session filter if available
         if (req.session_id) {
