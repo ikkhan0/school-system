@@ -10,7 +10,7 @@ const studentSchema = mongoose.Schema({
     },
     school_id: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: false }, // Legacy, kept for backward compatibility
     family_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Family' },
-    roll_no: { type: String, required: true, unique: true },
+    roll_no: { type: String, required: true }, // Removed unique: true, handled by compound index
     full_name: { type: String, required: true },
     father_name: { type: String }, // Denormalized for easier access
     dob: { type: Date },
@@ -170,5 +170,8 @@ const studentSchema = mongoose.Schema({
         }
     }]
 }, { timestamps: true });
+
+// Compound index for unique roll numbers per tenant (school)
+studentSchema.index({ tenant_id: 1, roll_no: 1 }, { unique: true });
 
 module.exports = mongoose.model('Student', studentSchema);
