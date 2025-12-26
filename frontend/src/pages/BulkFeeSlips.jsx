@@ -11,6 +11,7 @@ const BulkFeeSlips = () => {
     const [classes, setClasses] = useState([]);
     const [schoolInfo, setSchoolInfo] = useState(null);
     const [printFormat, setPrintFormat] = useState('a4'); // 'a4' or 'receipt'
+    const [dueDate, setDueDate] = useState('');
 
     useEffect(() => {
         if (!user) return;
@@ -56,6 +57,29 @@ const BulkFeeSlips = () => {
         }
     };
 
+    const updateDueDates = async () => {
+        if (!dueDate) return alert("Please select a due date first.");
+        if (!confirm("Update due date for all students in this list?")) return;
+
+        try {
+            const res = await fetch(`${API_URL}/api/fees/bulk-update-batch`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.token}` },
+                body: JSON.stringify({
+                    class_id: selectedClass,
+                    month,
+                    due_date: dueDate
+                })
+            });
+            const result = await res.json();
+            alert(result.message);
+            fetchSlips(); // Refresh to see changes
+        } catch (error) {
+            console.error(error);
+            alert("Error updating due dates");
+        }
+    };
+
     return (
         <div className="max-w-7xl mx-auto p-4">
             <div className="no-print bg-white p-4 shadow rounded mb-4">
@@ -67,7 +91,16 @@ const BulkFeeSlips = () => {
                     </select>
                     <input type="text" value={month} onChange={(e) => setMonth(e.target.value)} className="border p-2 rounded" />
                     <button onClick={fetchSlips} className="bg-blue-600 text-white px-4 py-2 rounded">Generate Slips</button>
-                    <button onClick={() => window.print()} className="bg-gray-800 text-white px-4 py-2 rounded flex items-center gap-2">
+
+                    <div className="flex items-center gap-2 border-l pl-4 ml-2">
+                        <label className="text-sm font-bold">Due Date:</label>
+                        <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="border p-2 rounded" />
+                        <button onClick={updateDueDates} className="bg-purple-600 text-white px-3 py-2 rounded text-sm hover:bg-purple-700" title="Save to Database">
+                            Save Date
+                        </button>
+                    </div>
+
+                    <button onClick={() => window.print()} className="bg-gray-800 text-white px-4 py-2 rounded flex items-center gap-2 ml-auto">
                         <Printer size={18} /> Print
                     </button>
                 </div>
@@ -160,7 +193,7 @@ const BulkFeeSlips = () => {
 
                             <div className="mt-4 text-xs flex justify-between items-end">
                                 <div>
-                                    <p className="font-bold text-red-600">Due Date: 10-12-2025</p>
+                                    <p className="font-bold text-red-600">Due Date: {slip.fee.due_date ? new Date(slip.fee.due_date).toLocaleDateString() : (dueDate ? new Date(dueDate).toLocaleDateString() : 'N/A')}</p>
                                     <p className="text-[10px] mt-1">* Late fee of Rs. 100 will be charged after due date.</p>
                                 </div>
                                 <div className="text-center w-24">

@@ -5,12 +5,26 @@ const checkPermission = require('../middleware/checkPermission');
 const Student = require('../models/Student');
 const Fee = require('../models/Fee');
 
+// Helper: Normalize month format (e.g. "Dec 2025" -> "Dec-2025")
+const normalizeMonth = (m) => {
+    if (!m) return m;
+    return m.replace(/\s+/g, '-');
+};
+
+// Helper: Get variations to check existing records
+const getMonthVariations = (m) => {
+    if (!m) return [];
+    const normalized = normalizeMonth(m);
+    const spaced = m.replace(/-/g, ' ');
+    return [...new Set([m, normalized, spaced])];
+};
+
 // @desc    Generate Fees for a Class/Month
 // @route   POST /api/fees/generate
 // @access  Private (fees.create permission)
 router.post('/generate', protect, checkPermission('fees.create'), async (req, res) => {
     try {
-        const { class_id, section_id, month } = req.body;
+        const { class_id, section_id, month, due_date } = req.body;
 
         if (!class_id || !month) {
             return res.status(400).json({ message: 'class_id and month are required' });
@@ -47,9 +61,10 @@ router.post('/generate', protect, checkPermission('fees.create'), async (req, re
         for (const student of students) {
             try {
                 // Check if fee already exists for this student/month
+                const variations = getMonthVariations(month);
                 const existingFee = await Fee.findOne({
                     student_id: student._id,
-                    month,
+                    month: { $in: variations },
                     tenant_id: req.tenant_id
                 });
 
@@ -105,7 +120,8 @@ router.post('/generate', protect, checkPermission('fees.create'), async (req, re
                     final_amount: grossAmount,
                     paid_amount: 0,
                     balance: grossAmount,
-                    status: 'Pending'
+                    status: 'Pending',
+                    due_date: due_date ? new Date(due_date) : undefined
                 });
 
                 await newFee.save();
@@ -139,7 +155,7 @@ router.post('/generate', protect, checkPermission('fees.create'), async (req, re
 // @access  Private (Admin only)
 router.post('/auto-generate', protect, checkPermission('fees.create'), async (req, res) => {
     try {
-        const { month } = req.body;
+        const { month, due_date } = req.body;
 
         if (!month) {
             return res.status(400).json({ message: 'month is required (e.g., Jan-2025)' });
@@ -166,9 +182,10 @@ router.post('/auto-generate', protect, checkPermission('fees.create'), async (re
         for (const student of students) {
             try {
                 // Check if fee already exists
+                const variations = getMonthVariations(month);
                 const existingFee = await Fee.findOne({
                     student_id: student._id,
-                    month,
+                    month: { $in: variations },
                     tenant_id: req.tenant_id
                 });
 
@@ -205,7 +222,8 @@ router.post('/auto-generate', protect, checkPermission('fees.create'), async (re
                     gross_amount: grossAmount,
                     paid_amount: 0,
                     balance: grossAmount,
-                    status: 'Pending'
+                    status: 'Pending',
+                    due_date: due_date ? new Date(due_date) : undefined
                 });
 
                 await newFee.save();

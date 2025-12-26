@@ -70,7 +70,8 @@ const feeSchema = mongoose.Schema({
     balance: { type: Number, default: 0 },
 
     status: { type: String, enum: ['Pending', 'Paid', 'Partial'], default: 'Pending' },
-    payment_date: { type: Date }
+    payment_date: { type: Date },
+    due_date: { type: Date } // Date by which fee should be paid
 }, { timestamps: true });
 
 // Compound indexes for better query performance

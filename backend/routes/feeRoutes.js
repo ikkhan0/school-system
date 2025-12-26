@@ -4,6 +4,20 @@ const Fee = require('../models/Fee');
 const Student = require('../models/Student');
 const Family = require('../models/Family');
 
+// Helper: Normalize month format (e.g. "Dec 2025" -> "Dec-2025")
+const normalizeMonth = (m) => {
+    if (!m) return m;
+    return m.replace(/\s+/g, '-');
+};
+
+// Helper: Get variations to check existing records
+const getMonthVariations = (m) => {
+    if (!m) return [];
+    const normalized = normalizeMonth(m);
+    const spaced = m.replace(/-/g, ' ');
+    return [...new Set([m, normalized, spaced])];
+};
+
 const { protect } = require('../middleware/auth');
 const checkPermission = require('../middleware/checkPermission');
 
@@ -85,9 +99,10 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
         for (const p of payments) {
             try {
                 // Find fee with session_id to prevent cross-session issues
+                const variations = getMonthVariations(p.month);
                 const query = {
                     student_id: p.student_id,
-                    month: p.month,
+                    month: { $in: variations },
                     tenant_id: req.tenant_id
                 };
 
@@ -104,7 +119,7 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
                         student_id: p.student_id,
                         tenant_id: req.tenant_id,
                         session_id: req.session_id,
-                        month: p.month,
+                        month: normalizeMonth(p.month), // Force standard format
                         tuition_fee: p.total_due || 0,
                         gross_amount: p.total_due || 0,
                         paid_amount: 0,
@@ -129,7 +144,7 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
                     student_id: p.student_id,
                     tenant_id: req.tenant_id,
                     status: { $in: ['Pending', 'Partial'] },
-                    month: { $ne: p.month }, // Exclude current month
+                    month: { $nin: variations }, // Exclude current month variations
                     balance: { $gt: 0 }
                 };
                 if (req.session_id) {
@@ -221,7 +236,28 @@ router.get('/ledger/:student_id', protect, checkPermission('fees.view'), async (
             tenant_id: req.tenant_id
         }).sort({ payment_date: -1, month: -1, _id: -1 });
 
-        res.json(fees);
+        // Deduplicate: If matching months exist, prefer Paid > Partial > Pending
+        const grouped = {};
+        fees.forEach(f => {
+            const norm = normalizeMonth(f.month);
+            if (!grouped[norm]) {
+                grouped[norm] = f;
+            } else {
+                // Determine if we should replace the existing one
+                const current = grouped[norm];
+                const priority = { 'Paid': 3, 'Partial': 2, 'Pending': 1 };
+                if ((priority[f.status] || 0) > (priority[current.status] || 0)) {
+                    grouped[norm] = f;
+                }
+            }
+        });
+
+        const uniqueFees = Object.values(grouped).sort((a, b) => {
+            // Sort by month (roughly) or date
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        res.json(uniqueFees);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -271,10 +307,11 @@ router.get('/bulk-slips', protect, checkPermission('fees.view'), async (req, res
         const students = await Student.find(query).populate('family_id');
 
         const slips = await Promise.all(students.map(async (student) => {
-            // Get current month fee
+            // Get current month fee (check variations)
+            const variations = getMonthVariations(month);
             let currentFee = await Fee.findOne({
                 student_id: student._id,
-                month,
+                month: { $in: variations },
                 tenant_id: req.tenant_id
             });
 
@@ -283,7 +320,7 @@ router.get('/bulk-slips', protect, checkPermission('fees.view'), async (req, res
                 student_id: student._id,
                 tenant_id: req.tenant_id,
                 status: { $in: ['Pending', 'Partial'] },
-                month: { $ne: month }, // Exclude current month
+                month: { $nin: variations }, // Exclude current month
                 balance: { $gt: 0 }
             };
             if (req.session_id) {
@@ -465,7 +502,7 @@ router.put('/:id/discount', protect, checkPermission('fees.edit'), async (req, r
 // @route   PUT /api/fees/:id
 router.put('/:id', protect, checkPermission('fees.edit'), async (req, res) => {
     try {
-        const { paid_amount, status, payment_date, tuition_fee, other_charges, concession } = req.body;
+        const { paid_amount, status, payment_date, due_date, tuition_fee, other_charges, concession } = req.body;
 
         const fee = await Fee.findOne({
             _id: req.params.id,
@@ -480,6 +517,7 @@ router.put('/:id', protect, checkPermission('fees.edit'), async (req, res) => {
         if (paid_amount !== undefined) fee.paid_amount = Number(paid_amount);
         if (status) fee.status = status;
         if (payment_date) fee.payment_date = new Date(payment_date);
+        if (due_date) fee.due_date = new Date(due_date);
 
         // Allow updating fee structure too if needed
         if (tuition_fee !== undefined) fee.tuition_fee = Number(tuition_fee);
@@ -528,6 +566,46 @@ router.delete('/:id', protect, checkPermission('fees.delete'), async (req, res) 
 
         await fee.deleteOne();
         res.json({ message: 'Fee record deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Bulk Update Fee Details (e.g. Due Date)
+// @route   PUT /api/fees/bulk-update
+router.put('/bulk-update-batch', protect, checkPermission('fees.edit'), async (req, res) => {
+    try {
+        const { class_id, section_id, month, due_date } = req.body;
+
+        if (!month || !due_date) return res.status(400).json({ message: "Month and Due Date required" });
+
+        const variations = getMonthVariations(month);
+
+        // Find fees to update
+        // We need to join with Student to filter by class/section, or use populate
+        // But Fee doesn't store class directly usually, only student_id ref.
+        // Wait, Fee doesn't have class_id. We need to find students first.
+
+        let studentIds = [];
+        if (class_id) {
+            const query = { isActive: true, tenant_id: req.tenant_id, class_id };
+            if (section_id) query.section_id = section_id;
+            const students = await Student.find(query).select('_id');
+            studentIds = students.map(s => s._id);
+        }
+
+        const feeQuery = {
+            tenant_id: req.tenant_id,
+            month: { $in: variations }
+        };
+
+        if (studentIds.length > 0) {
+            feeQuery.student_id = { $in: studentIds };
+        }
+
+        const result = await Fee.updateMany(feeQuery, { $set: { due_date: new Date(due_date) } });
+
+        res.json({ message: `Updated ${result.modifiedCount} fees with new due date.` });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

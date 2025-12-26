@@ -15,6 +15,7 @@ const FeeCollection = () => {
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedSection, setSelectedSection] = useState('A'); // Default A
     const [selectedMonth, setSelectedMonth] = useState('Dec-2025');
+    const [dueDate, setDueDate] = useState('');
     const [bulkStudents, setBulkStudents] = useState([]);
     const [bulkPayments, setBulkPayments] = useState({}); // { student_id: amount }
 
@@ -142,7 +143,9 @@ const FeeCollection = () => {
                 },
                 body: JSON.stringify({
                     paid_amount: selectedFee.paid_amount,
+                    paid_amount: selectedFee.paid_amount,
                     payment_date: selectedFee.payment_date,
+                    due_date: selectedFee.due_date,
                     status: selectedFee.status
                 })
             });
@@ -211,7 +214,8 @@ const FeeCollection = () => {
                 body: JSON.stringify({
                     class_id: selectedClass,
                     section_id: selectedSection,
-                    month: selectedMonth
+                    month: selectedMonth,
+                    due_date: dueDate
                 })
             });
             const result = await res.json();
@@ -487,6 +491,10 @@ const FeeCollection = () => {
                                 <input type="text" value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base" />
                             </div>
                             <div>
+                                <label className="block text-xs sm:text-sm font-bold mb-1">Due Date</label>
+                                <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base" />
+                            </div>
+                            <div>
                                 <label className="block text-xs sm:text-sm font-bold mb-1">Payment Date</label>
                                 <input type="date" value={bulkPaymentDate} onChange={e => setBulkPaymentDate(e.target.value)} className="w-full border p-2 rounded text-sm sm:text-base" />
                             </div>
@@ -575,6 +583,15 @@ const FeeCollection = () => {
                                         type="date"
                                         value={selectedFee.payment_date ? new Date(selectedFee.payment_date).toISOString().split('T')[0] : ''}
                                         onChange={e => setSelectedFee({ ...selectedFee, payment_date: e.target.value })}
+                                        className="w-full border p-2 rounded"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold mb-1">Due Date</label>
+                                    <input
+                                        type="date"
+                                        value={selectedFee.due_date ? new Date(selectedFee.due_date).toISOString().split('T')[0] : ''}
+                                        onChange={e => setSelectedFee({ ...selectedFee, due_date: e.target.value })}
                                         className="w-full border p-2 rounded"
                                     />
                                 </div>
