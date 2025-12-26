@@ -83,20 +83,49 @@ router.post('/', protect, checkPermission('settings.edit'), async (req, res) => 
 router.put('/:id', protect, checkPermission('settings.edit'), async (req, res) => {
     try {
         const { name, type, content, variables, isActive } = req.body;
-        const template = await WhatsappTemplate.findOne({ _id: req.params.id, tenant_id: req.tenant_id });
+
+        // 1. Try to find a specific school template
+        let template = await WhatsappTemplate.findOne({
+            _id: req.params.id,
+            tenant_id: req.tenant_id
+        });
+
+        if (template) {
+            // Update existing school template
+            if (name) template.name = name;
+            if (type) template.type = type;
+            if (content) template.content = content;
+            if (variables) template.variables = variables;
+            if (isActive !== undefined) template.isActive = isActive;
+
+            await template.save();
+            return res.json(template);
+        }
+
+        // 2. If not found, check if it's a SYSTEM DEFAULT template
+        // We only allow "editing" a system template by CLONING it into a school template
+        template = await WhatsappTemplate.findOne({
+            _id: req.params.id,
+            tenant_id: null
+        });
 
         if (!template) {
             return res.status(404).json({ message: 'Template not found' });
         }
 
-        if (name) template.name = name;
-        if (type) template.type = type;
-        if (content) template.content = content;
-        if (variables) template.variables = variables;
-        if (isActive !== undefined) template.isActive = isActive;
+        // Creating a new template for this school based on the system default
+        const newTemplate = new WhatsappTemplate({
+            tenant_id: req.tenant_id,
+            name: name || template.name,
+            type: template.type, // Type should usually stay same for overrides
+            content: content || template.content,
+            variables: variables || template.variables,
+            isActive: isActive !== undefined ? isActive : true
+        });
 
-        await template.save();
-        res.json(template);
+        await newTemplate.save();
+        res.status(201).json(newTemplate);
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
