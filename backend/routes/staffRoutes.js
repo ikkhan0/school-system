@@ -238,12 +238,16 @@ router.post('/attendance/mark', protect, async (req, res) => {
         const results = [];
 
         for (const record of attendanceRecords) {
+            if (!record.staff_id || !record.date || !record.status) {
+                continue; // Skip invalid records
+            }
+
             // Normalize date to ensure consistency (strip time)
             const attendanceDate = new Date(record.date);
             attendanceDate.setHours(0, 0, 0, 0);
 
             // Ensure tenant_id is not undefined
-            const tenantId = req.tenant_id || req.user._id;
+            const tenantId = req.tenant_id || (req.user && req.user.tenant_id) || req.user._id;
 
             const existing = await StaffAttendance.findOne({
                 tenant_id: tenantId,

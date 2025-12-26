@@ -15,6 +15,10 @@ const protect = async (req, res, next) => {
             // Get user from the token
             req.user = await User.findById(decoded.id).select('-password');
 
+            if (!req.user) {
+                return res.status(401).json({ message: 'User not found' });
+            }
+
             // Check if tenant separation logic is needed immediately or later
             // For now, simple auth
 
