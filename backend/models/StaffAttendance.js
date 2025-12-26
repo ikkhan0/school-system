@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const staffAttendanceSchema = new mongoose.Schema({
-    school_id: {
+    tenant_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'School',
-        required: false
+        ref: 'School', // or Tenant if there is a Tenant model, but usually it references School/Tenant
+        required: true
     },
     staff_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -36,8 +36,8 @@ const staffAttendanceSchema = new mongoose.Schema({
 });
 
 // Indexes
-staffAttendanceSchema.index({ school_id: 1, date: -1 });
+staffAttendanceSchema.index({ tenant_id: 1, date: -1 });
 staffAttendanceSchema.index({ staff_id: 1, date: -1 });
-staffAttendanceSchema.index({ school_id: 1, staff_id: 1, date: 1 }, { unique: true });
+staffAttendanceSchema.index({ tenant_id: 1, staff_id: 1, date: 1 }, { unique: true });
 
 module.exports = mongoose.model('StaffAttendance', staffAttendanceSchema);

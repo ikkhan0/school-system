@@ -220,10 +220,14 @@ router.post('/attendance/mark', protect, async (req, res) => {
         const results = [];
 
         for (const record of attendanceRecords) {
+            // Normalize date to ensure consistency (strip time)
+            const attendanceDate = new Date(record.date);
+            attendanceDate.setHours(0, 0, 0, 0);
+
             const existing = await StaffAttendance.findOne({
                 tenant_id: req.tenant_id,
                 staff_id: record.staff_id,
-                date: new Date(record.date)
+                date: attendanceDate
             });
 
             if (existing) {
@@ -243,7 +247,7 @@ router.post('/attendance/mark', protect, async (req, res) => {
                 const attendance = await StaffAttendance.create({
                     tenant_id: req.tenant_id,
                     staff_id: record.staff_id,
-                    date: new Date(record.date),
+                    date: attendanceDate,
                     status: record.status,
                     check_in_time: record.check_in_time,
                     check_out_time: record.check_out_time,
