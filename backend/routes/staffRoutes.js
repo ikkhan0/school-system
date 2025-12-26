@@ -214,56 +214,77 @@ router.get('/:id/profile', protect, async (req, res) => {
 // @desc    Mark staff attendance
 // @route   POST /api/staff/attendance/mark
 router.post('/attendance/mark', protect, async (req, res) => {
-    try {
-        const { attendanceRecords } = req.body; // Array of {staff_id, date, status, ...}
+    const fs = require('fs');
+    const path = require('path');
+    const logPath = path.join(__dirname, '../debug_log.txt');
 
-        const results = [];
+    const log = (msg) => {
+        fs.appendFileSync(logPath, `[${new Date().toISOString()}] ${msg}\n`);
+    };
 
-        for (const record of attendanceRecords) {
-            // Normalize date to ensure consistency (strip time)
-            const attendanceDate = new Date(record.date);
-            attendanceDate.setHours(0, 0, 0, 0);
+    log(`Attendance Request: user=${req.user?.username}, role=${req.user?.role}, tenant_id=${req.tenant_id}`);
+    log(`Records: ${attendanceRecords?.length}`);
 
-            const existing = await StaffAttendance.findOne({
-                tenant_id: req.tenant_id,
-                staff_id: record.staff_id,
-                date: attendanceDate
-            });
-
-            if (existing) {
-                // Update existing record
-                Object.assign(existing, {
-                    status: record.status,
-                    check_in_time: record.check_in_time,
-                    check_out_time: record.check_out_time,
-                    leave_type: record.leave_type,
-                    notes: record.notes,
-                    marked_by: req.user._id
-                });
-                await existing.save();
-                results.push(existing);
-            } else {
-                // Create new record
-                const attendance = await StaffAttendance.create({
-                    tenant_id: req.tenant_id,
-                    staff_id: record.staff_id,
-                    date: attendanceDate,
-                    status: record.status,
-                    check_in_time: record.check_in_time,
-                    check_out_time: record.check_out_time,
-                    leave_type: record.leave_type,
-                    notes: record.notes,
-                    marked_by: req.user._id
-                });
-                results.push(attendance);
-            }
-        }
-
-        res.status(201).json(results);
-    } catch (error) {
-        console.error('Error marking attendance:', error);
-        res.status(400).json({ message: error.message });
+    if (!attendanceRecords || !Array.isArray(attendanceRecords)) {
+        throw new Error('Invalid attendanceRecords format');
     }
+
+    const results = [];
+
+    for (const record of attendanceRecords) {
+        // Normalize date to ensure consistency (strip time)
+        const attendanceDate = new Date(record.date);
+        attendanceDate.setHours(0, 0, 0, 0);
+
+        // Ensure tenant_id is not undefined
+        const tenantId = req.tenant_id || req.user._id;
+
+        const existing = await StaffAttendance.findOne({
+            tenant_id: tenantId,
+            staff_id: record.staff_id,
+            date: attendanceDate
+        });
+
+        if (existing) {
+            // Update existing record
+            Object.assign(existing, {
+                status: record.status,
+                check_in_time: record.check_in_time,
+                check_out_time: record.check_out_time,
+                leave_type: record.leave_type,
+                notes: record.notes,
+                marked_by: req.user._id
+            });
+            await existing.save();
+            results.push(existing);
+        } else {
+            // Create new record
+            const attendance = await StaffAttendance.create({
+                tenant_id: tenantId,
+                staff_id: record.staff_id,
+                date: attendanceDate,
+                status: record.status,
+                check_in_time: record.check_in_time,
+                check_out_time: record.check_out_time,
+                leave_type: record.leave_type,
+                notes: record.notes,
+                marked_by: req.user._id
+            });
+            results.push(attendance);
+        }
+    }
+
+    res.status(201).json(results);
+} catch (error) {
+    const fs = require('fs');
+    const path = require('path');
+    const logPath = path.join(__dirname, '../debug_log.txt');
+    if (typeof error === 'object' && error !== null) {
+        fs.appendFileSync(logPath, `[${new Date().toISOString()}] ERROR: ${error.message}\n${error.stack}\n`);
+    }
+    console.error('Attendance Save Error:', error);
+    res.status(500).json({ message: error.message || 'Server Error' });
+}
 });
 
 // @desc    Get daily attendance

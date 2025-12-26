@@ -3,28 +3,32 @@
 
 const ensureTenant = async (req, res, next) => {
     try {
-        // Skip for super admin
-        if (req.user && req.user.role === 'super_admin') {
-            return next();
-        }
+        // Check for super_admin but DO NOT SKIP logic completely
+        // If super_admin, they might need a tenant context. 
+        // For now, if role is super_admin and no tenant_id found, we default to user._id to prevent crashes
 
-        // Get tenant_id from user (with fallback to school_id for backward compatibility)
         let tenantId = req.user?.tenant_id || req.user?.school_id || req.user?._id;
+
+        // If explicitly super_admin, we can proceed, but models requiring tenant_id will need SOMETHING.
+        if (req.user && req.user.role === 'super_admin') {
+            // If super admin hasn't selected a tenant (via header/body - which we aren't handling yet),
+            // use their own ID as a placeholder "System Tenant"
+            if (!tenantId) tenantId = req.user._id;
+        }
 
         if (!tenantId) {
             console.warn('⚠️ No tenant_id found for user:', req.user?.username);
-            // For backward compatibility, use user's ID as tenant_id
             tenantId = req.user?._id;
         }
 
-        // Attach tenant_id to request for easy access
         req.tenant_id = tenantId;
 
-        // Continue without tenant verification to avoid errors
+        // Debug
+        // console.log(`Tenant Context: ${req.user?.username} (${req.user?.role}) -> ${req.tenant_id}`);
+
         next();
     } catch (error) {
         console.error('❌ Tenant isolation error:', error);
-        // Don't fail the request - just log and continue
         req.tenant_id = req.user?._id;
         next();
     }
