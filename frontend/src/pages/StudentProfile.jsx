@@ -6,7 +6,6 @@ import AuthContext from '../context/AuthContext';
 import SettingsContext from '../context/SettingsContext';
 import { formatDate } from '../utils/dateFormatter';
 import { ArrowLeft, Phone, MessageCircle, Printer, Edit, User, Calendar, DollarSign, BookOpen, Award, X, Save, Download, FileText } from 'lucide-react';
-import API_URL from '../config';
 import { generateFeeVoucherPDF, generateResultCardPDF, downloadPDF, sharePDFViaWhatsApp } from '../utils/pdfGenerator';
 
 const StudentProfile = () => {
@@ -14,6 +13,9 @@ const StudentProfile = () => {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
     const { dateFormat } = useContext(SettingsContext);
+
+    // Debug: Log the date format being used
+    console.log('StudentProfile - Current dateFormat:', dateFormat);
     const [student, setStudent] = useState(null);
     const [attendance, setAttendance] = useState(null);
     const [fees, setFees] = useState([]);
