@@ -4,6 +4,7 @@ const Family = require('../models/Family');
 const Student = require('../models/Student');
 const Fee = require('../models/Fee');
 const School = require('../models/School');
+const WhatsappTemplate = require('../models/WhatsappTemplate');
 const { protect } = require('../middleware/auth');
 const {
     generateFamilyFeeMessage,
@@ -217,7 +218,36 @@ router.post('/:id/whatsapp-message', protect, async (req, res) => {
 
         const school = await School.findById(req.tenant_id);
 
-        const message = generateFamilyFeeMessage(family, studentsWithFees, school);
+        let message = "";
+        try {
+            const template = await WhatsappTemplate.findOne({
+                school_id: req.tenant_id,
+                type: 'family_fee',
+                isActive: true
+            });
+
+            if (template) {
+                let childrenList = "";
+                let totalDue = 0;
+                studentsWithFees.forEach(item => {
+                    totalDue += item.fee.balance || 0;
+                    childrenList += `* ${item.student.full_name} (${item.student.class_id}): Due ${item.fee.balance}\n`;
+                });
+
+                message = template.content
+                    .replace(/{father_name}/g, family.father_name || 'Parent')
+                    .replace(/{children_list}/g, childrenList)
+                    .replace(/{total_due}/g, totalDue)
+                    .replace(/{month}/g, currentMonth)
+                    .replace(/{school_name}/g, school.name || 'School');
+            }
+        } catch (e) {
+            console.error("Template error", e);
+        }
+
+        if (!message) {
+            message = generateFamilyFeeMessage(family, studentsWithFees, school);
+        }
         const whatsappNumber = family.whatsapp_number || family.father_mobile;
         const whatsappLink = generateWhatsAppLink(whatsappNumber, message);
 

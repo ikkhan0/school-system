@@ -113,6 +113,7 @@ app.use('/api/discounts', protect, ensureTenant, require('./routes/discountRoute
 app.use('/api/families', protect, ensureTenant, sessionContext, require('./routes/familyRoutes'));
 app.use('/api/users', protect, ensureTenant, require('./routes/userRoutes'));
 app.use('/api/expenses', protect, ensureTenant, require('./routes/expenseRoutes'));
+app.use('/api/whatsapp-templates', protect, ensureTenant, require('./routes/whatsappTemplateRoutes'));
 
 // Session Management Routes
 app.use('/api/sessions', protect, ensureTenant, sessionContext, require('./routes/sessionRoutes'));

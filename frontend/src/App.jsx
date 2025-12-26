@@ -47,6 +47,7 @@ import Expenses from './pages/Expenses';
 import SessionManagement from './pages/SessionManagement';
 import StudentPromotion from './pages/StudentPromotion';
 import Funds from './pages/Funds';
+import WhatsappTemplates from './pages/WhatsappTemplates';
 
 import './App.css';
 
@@ -100,6 +101,7 @@ function App() {
                 <Route path="/sessions" element={<ProtectedRoute><SessionManagement /></ProtectedRoute>} />
                 <Route path="/student-promotion" element={<ProtectedRoute><StudentPromotion /></ProtectedRoute>} />
                 <Route path="/funds" element={<ProtectedRoute><Funds /></ProtectedRoute>} />
+                <Route path="/whatsapp-templates" element={<ProtectedRoute><WhatsappTemplates /></ProtectedRoute>} />
               </Routes>
             </Layout>
           </SessionProvider>

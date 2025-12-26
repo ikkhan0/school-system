@@ -117,8 +117,49 @@ const DailyEvaluation = () => {
         return `Dear Parent,\n\nDaily Report for ${student.name} (${date}):\nStatus: ${student.status}${violationsText}${remarks}\n\n- ${schoolInfo?.name || 'School'}`;
     };
 
-    const handleSendReport = (student) => {
-        const msg = generateReportMessage(student);
+    const handleSendReport = async (student) => {
+        let msg = "";
+        let type = 'general';
+
+        // Determine type based on priority
+        if (student.status === 'Absent') type = 'attendance_absent';
+        else if (student.status === 'Late') type = 'attendance_late';
+        else if (getViolationCount(student) > 0) type = 'violation';
+
+        try {
+            const res = await fetch(`${API_URL}/api/whatsapp-templates/active/${type}`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+
+            if (res.ok) {
+                const tmpl = await res.json();
+
+                const violations = [];
+                if (student.uniform_violation) violations.push("Improper Uniform");
+                if (student.shoes_violation) violations.push("No/Dirty Shoes");
+                if (student.hygiene_violation) violations.push("Poor Hygiene");
+                if (student.late_violation) violations.push("Late Arrival");
+                if (student.homework_violation) violations.push("Incomplete Homework");
+                if (student.books_violation) violations.push("Missing Books");
+
+                const violationsText = violations.length > 0 ? violations.join(', ') : "None";
+
+                msg = tmpl.content
+                    .replace(/{student_name}/g, student.name)
+                    .replace(/{date}/g, date)
+                    .replace(/{school_name}/g, schoolInfo?.name || 'School')
+                    .replace(/{violation_type}/g, violationsText)
+                    .replace(/{remarks}/g, student.teacher_remarks || '')
+                    .replace(/{status}/g, student.status); // Add status var if needed
+            }
+        } catch (e) {
+            console.error("Template fetch failed, using default");
+        }
+
+        if (!msg) {
+            msg = generateReportMessage(student);
+        }
+
         sendWhatsApp(student.father_mobile, msg);
     };
 

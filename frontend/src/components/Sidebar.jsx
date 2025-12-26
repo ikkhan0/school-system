@@ -4,7 +4,7 @@ import AuthContext from '../context/AuthContext';
 import {
     Home, Users, UserCheck, DollarSign, BookOpen, FileText,
     BarChart, Shield, Settings, ChevronDown, ChevronRight,
-    Calendar, GraduationCap, Menu, X
+    Calendar, GraduationCap, Menu, X, MessageCircle
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -115,6 +115,15 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             icon: Shield,
             path: '/users',
             type: 'link'
+        },
+        {
+            title: 'Communication',
+            icon: MessageCircle,
+            type: 'group',
+            paths: ['/whatsapp-templates'],
+            items: [
+                { title: 'WhatsApp Templates', path: '/whatsapp-templates' }
+            ]
         },
         {
             title: 'Settings',

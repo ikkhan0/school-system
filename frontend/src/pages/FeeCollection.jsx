@@ -234,16 +234,44 @@ const FeeCollection = () => {
         }
     };
 
-    const sendWhatsAppLedger = () => {
+    const sendWhatsAppLedger = async () => {
         if (!studentLedger) return;
         const s = studentLedger.student;
         const totalDue = studentLedger.history.reduce((sum, f) => sum + (f.status !== 'Paid' ? f.balance : 0), 0);
 
-        let msg = `*Fee Ledger for ${s.full_name}*\nRoll No: ${s.roll_no}\n\n`;
-        studentLedger.history.forEach(f => {
-            msg += `${f.month}: Due ${f.gross_amount} | Paid ${f.paid_amount} | Bal ${f.balance} (${f.status})\n`;
-        });
-        msg += `\n*Total Pending Due: ${totalDue}*\nPlease clear dues immediately.\n- ${schoolInfo?.name || 'School'}`;
+        let msg = "";
+        try {
+            // Fetch template
+            const tmplRes = await fetch(`${API_URL}/api/whatsapp-templates/active/fee_ledger`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+
+            if (tmplRes.ok) {
+                const tmpl = await tmplRes.json();
+                let historySummary = "";
+                studentLedger.history.forEach(f => {
+                    historySummary += `${f.month}: Due ${f.gross_amount} | Paid ${f.paid_amount} | Bal ${f.balance} (${f.status})\n`;
+                });
+
+                msg = tmpl.content
+                    .replace(/{student_name}/g, s.full_name)
+                    .replace(/{roll_no}/g, s.roll_no)
+                    .replace(/{class_section}/g, `${s.class_id} ${s.section_id || ''}`)
+                    .replace(/{total_due}/g, totalDue)
+                    .replace(/{history_summary}/g, historySummary)
+                    .replace(/{school_name}/g, schoolInfo?.name || 'School');
+            }
+        } catch (e) {
+            console.error("Failed to load template, using default.");
+        }
+
+        if (!msg) {
+            msg = `*Fee Ledger for ${s.full_name}*\nRoll No: ${s.roll_no}\n\n`;
+            studentLedger.history.forEach(f => {
+                msg += `${f.month}: Due ${f.gross_amount} | Paid ${f.paid_amount} | Bal ${f.balance} (${f.status})\n`;
+            });
+            msg += `\n*Total Pending Due: ${totalDue}*\nPlease clear dues immediately.\n- ${schoolInfo?.name || 'School'}`;
+        }
 
         const mobile = s.family_id?.father_mobile || s.father_mobile;
 
