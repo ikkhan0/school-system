@@ -49,6 +49,47 @@ const uploadCSV = multer({
 
 // ==================== IMPORT ROUTES ====================
 
+// @desc    Fix imported students for current school (add session_id)
+// @route   POST /api/students/import/fix
+router.post('/import/fix', protect, async (req, res) => {
+    try {
+        const AcademicSession = require('../models/AcademicSession');
+
+        // Find active session for this school
+        const activeSession = await AcademicSession.findOne({
+            tenant_id: req.tenant_id,
+            is_active: true
+        });
+
+        if (!activeSession) {
+            return res.status(404).json({ message: 'No active session found for your school' });
+        }
+
+        // Update students without session_id for this school only
+        const result = await Student.updateMany(
+            {
+                tenant_id: req.tenant_id,
+                current_session_id: null,
+                is_active: true
+            },
+            {
+                current_session_id: activeSession._id
+            }
+        );
+
+        res.json({
+            success: true,
+            message: 'Students fixed successfully',
+            studentsUpdated: result.modifiedCount,
+            sessionName: activeSession.name
+        });
+
+    } catch (error) {
+        console.error('Error fixing imported students:', error);
+        res.status(500).json({ message: 'Failed to fix students', error: error.message });
+    }
+});
+
 // @desc    Download Sample CSV Template
 // @route   GET /api/students/import/sample
 router.get('/import/sample', protect, async (req, res) => {
