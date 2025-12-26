@@ -230,9 +230,22 @@ router.post('/attendance/mark', protect, async (req, res) => {
 
         log(`Attendance Request: user=${req.user?.username}, role=${req.user?.role}, tenant_id=${req.tenant_id}`);
 
+        // Validate user and tenant context early
+        if (!req.user) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        const effectiveTenantId = req.tenant_id || req.user.tenant_id || req.user.school_id;
+        if (!effectiveTenantId) {
+            return res.status(400).json({ message: 'No tenant context found. Please contact administrator.' });
+        }
+
         if (!attendanceRecords || !Array.isArray(attendanceRecords)) {
-            // throw new Error('Invalid attendanceRecords format');
             return res.status(400).json({ message: 'Invalid attendance records format' });
+        }
+
+        if (attendanceRecords.length === 0) {
+            return res.status(400).json({ message: 'No attendance records provided' });
         }
 
         const results = [];
@@ -246,8 +259,13 @@ router.post('/attendance/mark', protect, async (req, res) => {
             const attendanceDate = new Date(record.date);
             attendanceDate.setHours(0, 0, 0, 0);
 
-            // Ensure tenant_id is not undefined
-            const tenantId = req.tenant_id || (req.user && req.user.tenant_id) || req.user._id;
+            // Ensure tenant_id is always defined - use the same one for all records
+            const tenantId = req.tenant_id || (req.user && (req.user.tenant_id || req.user.school_id || req.user._id));
+
+            if (!tenantId) {
+                log(`ERROR: No tenant_id available for record: ${record.staff_id}`);
+                continue; // Skip this record if we can't determine tenant
+            }
 
             const existing = await StaffAttendance.findOne({
                 tenant_id: tenantId,
@@ -263,7 +281,7 @@ router.post('/attendance/mark', protect, async (req, res) => {
                     check_out_time: record.check_out_time,
                     leave_type: record.leave_type,
                     notes: record.notes,
-                    marked_by: req.user._id
+                    marked_by: req.user?._id
                 });
                 await existing.save();
                 results.push(existing);
@@ -278,7 +296,7 @@ router.post('/attendance/mark', protect, async (req, res) => {
                     check_out_time: record.check_out_time,
                     leave_type: record.leave_type,
                     notes: record.notes,
-                    marked_by: req.user._id
+                    marked_by: req.user?._id
                 });
                 results.push(attendance);
             }
