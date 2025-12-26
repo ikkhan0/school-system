@@ -97,15 +97,18 @@ const StaffAttendance = () => {
         try {
             const attendanceRecords = Object.values(attendance);
 
-            await axios.post(`${API_URL}/api/staff/attendance/mark`,
+            const response = await axios.post(`${API_URL}/api/staff/attendance/mark`,
                 { attendanceRecords },
                 { headers: { Authorization: `Bearer ${user.token}` } }
             );
 
             alert('Attendance saved successfully!');
+            // Refresh the attendance data
+            fetchAttendance();
         } catch (error) {
             console.error('Error saving attendance:', error);
-            alert('Failed to save attendance');
+            const errorMessage = error.response?.data?.message || error.message || 'Unknown error occurred';
+            alert(`Failed to save attendance: ${errorMessage}`);
         } finally {
             setLoading(false);
         }

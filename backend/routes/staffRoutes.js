@@ -267,6 +267,8 @@ router.post('/attendance/mark', protect, async (req, res) => {
                 continue; // Skip this record if we can't determine tenant
             }
 
+            log(`Processing record: staff=${record.staff_id}, date=${attendanceDate.toISOString()}, tenant=${tenantId}`);
+
             const existing = await StaffAttendance.findOne({
                 tenant_id: tenantId,
                 staff_id: record.staff_id,
