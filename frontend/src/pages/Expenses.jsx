@@ -1,10 +1,14 @@
 import { useState, useEffect, useContext } from 'react';
 import { Edit, Trash2, Upload, FileText } from 'lucide-react';
+import axios from 'axios';
 import AuthContext from '../context/AuthContext';
+import SettingsContext from '../context/SettingsContext';
+import { formatDate, toInputDate } from '../utils/dateFormatter';
 import API_URL from '../config';
 
 const Expenses = () => {
     const { user } = useContext(AuthContext);
+    const { dateFormat } = useContext(SettingsContext);
     const [expenses, setExpenses] = useState([]);
     const [expenseHeads, setExpenseHeads] = useState([]);
     const [formData, setFormData] = useState({
@@ -335,7 +339,7 @@ const Expenses = () => {
                                                 </td>
                                                 <td className="p-3 text-sm">{expense.invoice_number || '-'}</td>
                                                 <td className="p-3 text-sm">
-                                                    {new Date(expense.date).toLocaleDateString()}
+                                                    {formatDate(expense.date, dateFormat)}
                                                 </td>
                                                 <td className="p-3 text-sm">
                                                     <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">

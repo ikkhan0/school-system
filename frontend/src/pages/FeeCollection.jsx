@@ -1,10 +1,14 @@
 import { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import { Search, Printer, DollarSign, MessageCircle, FileText, Users, Download, Save, Edit, Trash, X } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
+import SettingsContext from '../context/SettingsContext';
 import API_URL from '../config';
+import { formatDate, toInputDate } from '../utils/dateFormatter';
 
 const FeeCollection = () => {
     const { user } = useContext(AuthContext);
+    const { dateFormat } = useContext(SettingsContext);
     const [activeTab, setActiveTab] = useState('ledger'); // 'ledger', 'family', 'bulk'
     const [searchTerm, setSearchTerm] = useState('');
     const [studentLedger, setStudentLedger] = useState(null); // { student: {}, history: [] }
@@ -358,7 +362,7 @@ const FeeCollection = () => {
                     <strong>Family Head:</strong> ${familyData.family.father_name}<br>
                     <strong>Mobile:</strong> ${familyData.family.father_mobile}<br>
                     <strong>Month:</strong> ${familyData.month}<br>
-                    <strong>Date:</strong> ${new Date().toLocaleDateString()}
+                    <strong>Date:</strong> ${formatDate(new Date(), dateFormat)}
                 </div>
                 <h3>Children Fee Details:</h3>
                 ${familyData.students_with_fees.map(item => `
@@ -464,7 +468,7 @@ const FeeCollection = () => {
                                                             </span>
                                                         </td>
                                                         <td className="p-2 sm:p-3 text-right text-xs text-gray-500">
-                                                            {rec.payment_date ? new Date(rec.payment_date).toLocaleDateString() : '-'}
+                                                            {rec.payment_date ? formatDate(rec.payment_date, dateFormat) : '-'}
                                                         </td>
                                                         <td className="p-2 sm:p-3 text-center flex justify-center gap-2">
                                                             <button

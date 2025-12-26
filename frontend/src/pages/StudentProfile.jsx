@@ -1,7 +1,10 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_URL from '../config';
 import AuthContext from '../context/AuthContext';
+import SettingsContext from '../context/SettingsContext';
+import { formatDate } from '../utils/dateFormatter';
 import { ArrowLeft, Phone, MessageCircle, Printer, Edit, User, Calendar, DollarSign, BookOpen, Award, X, Save, Download, FileText } from 'lucide-react';
 import API_URL from '../config';
 import { generateFeeVoucherPDF, generateResultCardPDF, downloadPDF, sharePDFViaWhatsApp } from '../utils/pdfGenerator';
@@ -10,6 +13,7 @@ const StudentProfile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
+    const { dateFormat } = useContext(SettingsContext);
     const [student, setStudent] = useState(null);
     const [attendance, setAttendance] = useState(null);
     const [fees, setFees] = useState([]);
@@ -239,7 +243,7 @@ const StudentProfile = () => {
             discount_amount: discountAmount,
             total_amount: totalAmount > 0 ? totalAmount : 0,
             status: 'Unpaid',
-            due_date: dueDate.toLocaleDateString(),
+            due_date: formatDate(dueDate, dateFormat),
             printed_by: user?.full_name || user?.username || 'System'
         };
     };
@@ -462,7 +466,7 @@ const StudentProfile = () => {
                                 <InfoRow label="Roll Number" value={student.roll_no} />
                                 <InfoRow label="Class" value={`${student.class_id}-${student.section_id}`} />
                                 <InfoRow label="Gender" value={student.gender} />
-                                <InfoRow label="Date of Birth" value={student.dob ? new Date(student.dob).toLocaleDateString() : null} />
+                                <InfoRow label="Date of Birth" value={student.dob ? formatDate(student.dob, dateFormat) : null} />
                                 <InfoRow label="Blood Group" value={student.blood_group} />
                                 <InfoRow label="Religion" value={student.religion} />
                                 <InfoRow label="Nationality" value={student.nationality || 'Pakistani'} />
@@ -491,7 +495,7 @@ const StudentProfile = () => {
                                 Academic Information
                             </h3>
                             <div className="space-y-3">
-                                <InfoRow label="Admission Date" value={student.admission_date ? new Date(student.admission_date).toLocaleDateString() : null} />
+                                <InfoRow label="Admission Date" value={student.admission_date ? formatDate(student.admission_date, dateFormat) : null} />
                                 <InfoRow label="Admission Number" value={student.admission_number} />
                                 <InfoRow label="Previous School" value={student.previous_school} />
                                 <InfoRow label="Monthly Fee" value={`Rs. ${student.monthly_fee || 5000}`} />
@@ -659,7 +663,7 @@ const StudentProfile = () => {
                                         <div>
                                             <h4 className="font-bold text-2xl text-blue-700">{result.exam_id?.name || 'Exam'}</h4>
                                             <p className="text-sm text-gray-600 mt-1">
-                                                Date: {result.exam_id?.date ? new Date(result.exam_id.date).toLocaleDateString() : 'N/A'}
+                                                Date: {result.exam_id?.date ? formatDate(result.exam_id.date, dateFormat) : 'N/A'}
                                             </p>
                                         </div>
                                         <div className="text-right bg-blue-600 text-white px-6 py-3 rounded-lg">
@@ -721,7 +725,7 @@ const StudentProfile = () => {
                                             <p className="text-sm opacity-90">Code: {es.subject_id?.code || 'N/A'}</p>
                                             <p className="text-sm opacity-90">Total Marks: {es.subject_id?.total_marks || 100}</p>
                                             <p className="text-xs mt-3 opacity-75">
-                                                Enrolled: {new Date(es.enrollment_date).toLocaleDateString()}
+                                                Enrolled: {formatDate(es.enrollment_date, dateFormat)}
                                             </p>
                                         </div>
                                     ))}

@@ -1,13 +1,17 @@
 import { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import { FileSpreadsheet, FileText, Download, Filter, Users, DollarSign, Calendar, TrendingUp, UserCheck } from 'lucide-react';
 import AuthContext from '../../context/AuthContext';
+import SettingsContext from '../../context/SettingsContext';
 import API_URL from '../../config';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { formatDate } from '../../utils/dateFormatter';
 
 const AdvancedReports = () => {
     const { user } = useContext(AuthContext);
+    const { dateFormat } = useContext(SettingsContext);
     const [activeTab, setActiveTab] = useState('students');
     const [reportType, setReportType] = useState('list');
     const [filters, setFilters] = useState({
@@ -155,7 +159,7 @@ const AdvancedReports = () => {
             doc.setFontSize(18);
             doc.text(`${activeTab.toUpperCase()} Report - ${reportType}`, 14, 20);
             doc.setFontSize(11);
-            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 28);
+            doc.text(`Generated: ${formatDate(new Date(), dateFormat)}`, 14, 28);
 
             // Get column headers from first data item
             const headers = Object.keys(data[0]);

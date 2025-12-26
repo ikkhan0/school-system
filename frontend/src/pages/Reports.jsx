@@ -1,12 +1,16 @@
 import { useState, useEffect, useContext } from 'react';
 import { FileText, AlertTriangle, DollarSign, MessageCircle, Calendar, TrendingUp, User, Download, Printer, Filter } from 'lucide-react';
+import axios from 'axios';
 import AuthContext from '../context/AuthContext';
+import SettingsContext from '../context/SettingsContext';
+import { formatDate } from '../utils/dateFormatter';
 import API_URL from '../config';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyState from '../components/EmptyState';
 
 const Reports = () => {
     const { user } = useContext(AuthContext);
+    const { dateFormat } = useContext(SettingsContext);
     const [activeTab, setActiveTab] = useState('defaulters');
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -40,8 +44,8 @@ const Reports = () => {
 
     const fetchClasses = async () => {
         try {
-            const res = await fetch(`${API_URL}/api/classes`, {
-                headers: { Authorization: `Bearer ${user.token}` }
+            const res = await fetch(`${API_URL} /api/classes`, {
+                headers: { Authorization: `Bearer ${user.token} ` }
             });
             const result = await res.json();
             setClasses(result);
@@ -52,8 +56,8 @@ const Reports = () => {
 
     const fetchExams = async () => {
         try {
-            const res = await fetch(`${API_URL}/api/exams`, {
-                headers: { Authorization: `Bearer ${user.token}` }
+            const res = await fetch(`${API_URL} /api/exams`, {
+                headers: { Authorization: `Bearer ${user.token} ` }
             });
             const result = await res.json();
             setExams(result);
@@ -100,9 +104,9 @@ const Reports = () => {
                     endpoint = '/api/reports/defaulters';
             }
 
-            const url = `${API_URL}${endpoint}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+            const url = `${API_URL}${endpoint}${queryParams.toString() ? '?' + queryParams.toString() : ''} `;
             const res = await fetch(url, {
-                headers: { Authorization: `Bearer ${user.token}` }
+                headers: { Authorization: `Bearer ${user.token} ` }
             });
             const result = await res.json();
             setData(result);
@@ -115,8 +119,8 @@ const Reports = () => {
 
     const fetchConsecutiveAbsences = async () => {
         try {
-            const res = await fetch(`${API_URL}/api/reports/consecutive-absences`, {
-                headers: { Authorization: `Bearer ${user.token}` }
+            const res = await fetch(`${API_URL} /api/reports / consecutive - absences`, {
+                headers: { Authorization: `Bearer ${user.token} ` }
             });
             const result = await res.json();
             setConsecutiveAbsences(result.students || []);
@@ -427,7 +431,7 @@ const AttendanceReport = ({ data, sendWhatsApp, consecutiveAbsences = [] }) => {
             <div className="p-4 bg-blue-50 border-b">
                 <p className="text-sm text-gray-600">Total Students: <span className="font-bold">{data.total_students}</span></p>
                 <p className="text-xs text-gray-500">
-                    Period: {new Date(data.start_date).toLocaleDateString()} - {new Date(data.end_date).toLocaleDateString()}
+                    Period: {formatDate(data.start_date, dateFormat)} - {formatDate(data.end_date, dateFormat)}
                 </p>
                 {consecutiveAbsences.length > 0 && (
                     <p className="text-sm text-red-600 font-semibold mt-2">
@@ -581,7 +585,7 @@ const CollectionReport = ({ data }) => {
     return (
         <div>
             <div className="p-4 bg-purple-50 border-b">
-                <p className="text-sm text-gray-600 mb-2">Date: {new Date(data.date).toLocaleDateString()}</p>
+                <p className="text-sm text-gray-600 mb-2">Date: {formatDate(data.date, dateFormat)}</p>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <p className="text-sm text-gray-600">Total Collection</p>

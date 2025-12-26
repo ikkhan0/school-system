@@ -2,12 +2,15 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
+import SettingsContext from '../context/SettingsContext';
+import { formatDate } from '../utils/dateFormatter';
 import { Search, Phone, MessageCircle, User, Edit, Plus, UserCheck, Calendar } from 'lucide-react';
 import API_URL from '../config';
 
 const Staff = () => {
-    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
+    const { user } = useContext(AuthContext);
+    const { dateFormat } = useContext(SettingsContext);
     const [staff, setStaff] = useState([]);
     const [filteredStaff, setFilteredStaff] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -168,7 +171,7 @@ const Staff = () => {
                                     <span className="font-semibold">Salary:</span> Rs. {member.basic_salary?.toLocaleString() || 'N/A'}
                                 </p>
                                 <p className="text-gray-700">
-                                    <span className="font-semibold">Joined:</span> {member.joining_date ? new Date(member.joining_date).toLocaleDateString() : 'N/A'}
+                                    <span className="font-semibold">Joined:</span> {member.joining_date ? formatDate(member.joining_date, dateFormat) : 'N/A'}
                                 </p>
                             </div>
 

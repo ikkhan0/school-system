@@ -2,12 +2,15 @@ import { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
+import SettingsContext from '../context/SettingsContext';
+import { formatDate } from '../utils/dateFormatter';
 import { Printer, Edit, Save, X } from 'lucide-react';
 import API_URL from '../config';
 
 const FeeVoucher = () => {
     const { student_id, month } = useParams();
     const { user } = useContext(AuthContext);
+    const { dateFormat } = useContext(SettingsContext);
     const [voucherData, setVoucherData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showDiscountModal, setShowDiscountModal] = useState(false);
@@ -120,7 +123,7 @@ const FeeVoucher = () => {
                     <div className="text-right">
                         <p className="text-sm"><span className="font-bold">Class:</span> {student.class_id}-{student.section_id}</p>
                         <p className="text-sm"><span className="font-bold">Mobile:</span> {student.family_id?.father_mobile || student.father_mobile}</p>
-                        <p className="text-sm"><span className="font-bold">Issue Date:</span> {new Date().toLocaleDateString()}</p>
+                        <p className="text-sm"><span className="font-bold">Issue Date:</span> {formatDate(new Date(), dateFormat)}</p>
                     </div>
                 </div>
 
@@ -233,7 +236,7 @@ const FeeVoucher = () => {
                 {/* Footer */}
                 <div className="grid grid-cols-2 gap-4 border-t-2 border-black pt-4">
                     <div>
-                        <p className="text-sm font-bold">Due Date: {new Date(new Date().setDate(new Date().getDate() + 10)).toLocaleDateString()}</p>
+                        <p className="text-sm font-bold">Due Date: {formatDate(new Date(new Date().setDate(new Date().getDate() + 10)), dateFormat)}</p>
                         <p className="text-xs text-gray-600 mt-2">This is a computer-generated voucher</p>
                     </div>
                     <div className="text-right">

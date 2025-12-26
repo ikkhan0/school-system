@@ -1,14 +1,17 @@
 import { useState, useEffect, useContext } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import AuthContext from '../context/AuthContext';
-import { ArrowLeft, User, Phone, Mail, Calendar, DollarSign, BookOpen, Edit } from 'lucide-react';
 import API_URL from '../config';
+import AuthContext from '../context/AuthContext';
+import SettingsContext from '../context/SettingsContext';
+import { formatDate } from '../utils/dateFormatter';
+import { ArrowLeft, User, Phone, Mail, Calendar, DollarSign, BookOpen, Edit } from 'lucide-react';
 
 const StaffProfile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
+    const { dateFormat } = useContext(SettingsContext);
     const [staff, setStaff] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('personal');
@@ -113,8 +116,8 @@ const StaffProfile = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 px-4 py-3 border-b-2 transition ${activeTab === tab.id
-                                        ? 'border-blue-600 text-blue-600 font-semibold'
-                                        : 'border-transparent text-gray-600 hover:text-blue-600'
+                                    ? 'border-blue-600 text-blue-600 font-semibold'
+                                    : 'border-transparent text-gray-600 hover:text-blue-600'
                                     }`}
                             >
                                 <tab.icon size={18} />
@@ -139,7 +142,7 @@ const StaffProfile = () => {
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-600">Date of Birth</p>
-                                            <p className="font-semibold">{staff.dob ? new Date(staff.dob).toLocaleDateString() : 'N/A'}</p>
+                                            <p className="font-semibold">{staff.dob ? formatDate(staff.dob, dateFormat) : 'N/A'}</p>
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-600">Gender</p>
@@ -216,7 +219,7 @@ const StaffProfile = () => {
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-600">Joining Date</p>
-                                            <p className="font-semibold">{staff.joining_date ? new Date(staff.joining_date).toLocaleDateString() : 'N/A'}</p>
+                                            <p className="font-semibold">{staff.joining_date ? formatDate(staff.joining_date, dateFormat) : 'N/A'}</p>
                                         </div>
                                     </div>
                                 </div>

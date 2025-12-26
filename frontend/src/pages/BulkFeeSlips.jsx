@@ -1,10 +1,14 @@
 import { useState, useEffect, useContext } from 'react';
 import { Printer } from 'lucide-react';
+import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import API_URL from '../config';
+import SettingsContext from '../context/SettingsContext';
+import { formatDate } from '../utils/dateFormatter';
 
 const BulkFeeSlips = () => {
     const { user } = useContext(AuthContext);
+    const { dateFormat } = useContext(SettingsContext);
     const [slips, setSlips] = useState([]);
     const [selectedClass, setSelectedClass] = useState('1');
     const [month, setMonth] = useState('Dec-2025');
@@ -193,7 +197,7 @@ const BulkFeeSlips = () => {
 
                             <div className="mt-4 text-xs flex justify-between items-end">
                                 <div>
-                                    <p className="font-bold text-red-600">Due Date: {slip.fee.due_date ? new Date(slip.fee.due_date).toLocaleDateString() : (dueDate ? new Date(dueDate).toLocaleDateString() : 'N/A')}</p>
+                                    <p className="font-bold text-red-600">Due Date: {slip.fee.due_date ? formatDate(slip.fee.due_date, dateFormat) : (dueDate ? formatDate(dueDate, dateFormat) : 'N/A')}</p>
                                     <p className="text-[10px] mt-1">* Late fee of Rs. 100 will be charged after due date.</p>
                                 </div>
                                 <div className="text-center w-24">

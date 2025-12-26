@@ -1,12 +1,15 @@
 import { useState, useEffect, useContext } from 'react';
-import { Calendar, Plus, Lock, Unlock, Archive, Edit2, Check, X } from 'lucide-react';
-import AuthContext from '../context/AuthContext';
-import { SessionContext } from '../context/SessionContext';
-import API_URL from '../config';
 import axios from 'axios';
+import API_URL from '../config';
+import AuthContext from '../context/AuthContext';
+import SettingsContext from '../context/SettingsContext';
+import { formatDate } from '../utils/dateFormatter';
+import { SessionContext } from '../context/SessionContext';
+import { Calendar, Plus, Lock, Unlock, Archive, Edit2, Check, X } from 'lucide-react';
 
 const SessionManagement = () => {
     const { user } = useContext(AuthContext);
+    const { dateFormat } = useContext(SettingsContext);
     const { refreshSessions } = useContext(SessionContext);
     const [sessions, setSessions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -27,8 +30,8 @@ const SessionManagement = () => {
 
     const fetchSessions = async () => {
         try {
-            const response = await axios.get(`${API_URL}/api/sessions`, {
-                headers: { Authorization: `Bearer ${user.token}` }
+            const response = await axios.get(`${API_URL} /api/sessions`, {
+                headers: { Authorization: `Bearer ${user.token} ` }
             });
             setSessions(response.data);
         } catch (error) {
@@ -44,16 +47,16 @@ const SessionManagement = () => {
         try {
             if (editingSession) {
                 await axios.put(
-                    `${API_URL}/api/sessions/${editingSession._id}`,
+                    `${API_URL} /api/sessions / ${editingSession._id} `,
                     formData,
-                    { headers: { Authorization: `Bearer ${user.token}` } }
+                    { headers: { Authorization: `Bearer ${user.token} ` } }
                 );
                 alert('Session updated successfully!');
             } else {
                 await axios.post(
-                    `${API_URL}/api/sessions`,
+                    `${API_URL} /api/sessions`,
                     formData,
-                    { headers: { Authorization: `Bearer ${user.token}` } }
+                    { headers: { Authorization: `Bearer ${user.token} ` } }
                 );
                 alert('Session created successfully!');
             }
@@ -84,9 +87,9 @@ const SessionManagement = () => {
     const toggleLock = async (sessionId, currentLockStatus) => {
         try {
             await axios.put(
-                `${API_URL}/api/sessions/${sessionId}`,
+                `${API_URL} /api/sessions / ${sessionId} `,
                 { is_locked: !currentLockStatus },
-                { headers: { Authorization: `Bearer ${user.token}` } }
+                { headers: { Authorization: `Bearer ${user.token} ` } }
             );
             fetchSessions();
         } catch (error) {
@@ -101,7 +104,7 @@ const SessionManagement = () => {
 
         try {
             await axios.put(
-                `${API_URL}/api/sessions/${sessionId}/archive`,
+                `${API_URL} /api/sessions / ${sessionId}/archive`,
                 {},
                 { headers: { Authorization: `Bearer ${user.token}` } }
             );
@@ -271,10 +274,10 @@ const SessionManagement = () => {
 
                         <div className="space-y-2 text-sm text-gray-600 mb-4">
                             <p>
-                                <strong>Start:</strong> {new Date(session.start_date).toLocaleDateString()}
+                                <strong>Start:</strong> {formatDate(session.start_date, dateFormat)}
                             </p>
                             <p>
-                                <strong>End:</strong> {new Date(session.end_date).toLocaleDateString()}
+                                <strong>End:</strong> {formatDate(session.end_date, dateFormat)}
                             </p>
                             {session.notes && (
                                 <p className="text-xs italic">{session.notes}</p>

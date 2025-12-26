@@ -1,13 +1,16 @@
 import { useState, useEffect, useContext } from 'react';
 import { Download, FileSpreadsheet, FileText, SortAsc, SortDesc } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
+import SettingsContext from '../context/SettingsContext';
 import API_URL from '../config';
+import { formatDate } from '../utils/dateFormatter';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 const ClassResultSheet = () => {
     const { user } = useContext(AuthContext);
+    const { dateFormat } = useContext(SettingsContext);
     const [exams, setExams] = useState([]);
     const [classes, setClasses] = useState([]);
     const [selectedExam, setSelectedExam] = useState('');
@@ -22,8 +25,8 @@ const ClassResultSheet = () => {
         if (!user) return;
 
         // Fetch Exams
-        fetch(`${API_URL}/api/exams`, {
-            headers: { Authorization: `Bearer ${user.token}` }
+        fetch(`${API_URL} /api/exams`, {
+            headers: { Authorization: `Bearer ${user.token} ` }
         })
             .then(res => res.json())
             .then(data => {
@@ -32,8 +35,8 @@ const ClassResultSheet = () => {
             });
 
         // Fetch Classes
-        fetch(`${API_URL}/api/classes`, {
-            headers: { Authorization: `Bearer ${user.token}` }
+        fetch(`${API_URL} /api/classes`, {
+            headers: { Authorization: `Bearer ${user.token} ` }
         })
             .then(res => res.json())
             .then(data => {
@@ -61,8 +64,8 @@ const ClassResultSheet = () => {
 
         try {
             const res = await fetch(
-                `${API_URL}/api/exams/results?exam_id=${selectedExam}&class_id=${classData.name}&section_id=${selectedSection}`,
-                { headers: { Authorization: `Bearer ${user.token}` } }
+                `${API_URL} /api/exams / results ? exam_id = ${selectedExam}& class_id=${classData.name}& section_id=${selectedSection} `,
+                { headers: { Authorization: `Bearer ${user.token} ` } }
             );
             const data = await res.json();
 
@@ -181,7 +184,7 @@ const ClassResultSheet = () => {
         XLSX.utils.book_append_sheet(wb, ws, 'Results');
 
         // Save file
-        const fileName = `${examData?.title || 'Exam'}_${classData?.name || 'Class'}_${selectedSection}_Results.xlsx`;
+        const fileName = `${examData?.title || 'Exam'}_${classData?.name || 'Class'}_${selectedSection} _Results.xlsx`;
         XLSX.writeFile(wb, fileName);
     };
 
@@ -197,8 +200,8 @@ const ClassResultSheet = () => {
         doc.text(`${examData?.title || 'Exam'} - Result Sheet`, 14, 15);
 
         doc.setFontSize(12);
-        doc.text(`Class: ${classData?.name || ''}-${selectedSection}`, 14, 22);
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 28);
+        doc.text(`Class: ${classData?.name || ''} -${selectedSection} `, 14, 22);
+        doc.text(`Date: ${formatDate(new Date(), dateFormat)} `, 14, 28);
 
         // Prepare table data
         const headers = [
@@ -210,7 +213,7 @@ const ClassResultSheet = () => {
         // Add subject headers
         if (sortedResults.length > 0) {
             sortedResults[0].subjects.forEach(sub => {
-                headers.push(`${sub.subject_name}\n(${sub.total_marks})`);
+                headers.push(`${sub.subject_name} \n(${sub.total_marks})`);
             });
         }
 
@@ -260,7 +263,7 @@ const ClassResultSheet = () => {
         });
 
         // Save PDF
-        const fileName = `${examData?.title || 'Exam'}_${classData?.name || 'Class'}_${selectedSection}_Results.pdf`;
+        const fileName = `${examData?.title || 'Exam'}_${classData?.name || 'Class'}_${selectedSection} _Results.pdf`;
         doc.save(fileName);
     };
 
@@ -410,7 +413,7 @@ const ClassResultSheet = () => {
                             </thead>
                             <tbody>
                                 {getSortedResults().map((result, index) => (
-                                    <tr key={result._id} className={`border-t ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50`}>
+                                    <tr key={result._id} className={`border - t ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover: bg - blue - 50`}>
                                         <td className="p-3 font-bold text-blue-600">{result.position}</td>
                                         <td className="p-3">{result.student_id?.roll_no}</td>
                                         <td className="p-3 font-semibold">{result.student_id?.full_name}</td>
@@ -422,12 +425,12 @@ const ClassResultSheet = () => {
                                         <td className="p-3 text-center font-bold">{result.total_obtained}/{result.total_max}</td>
                                         <td className="p-3 text-center font-bold text-green-600">{result.percentage.toFixed(2)}%</td>
                                         <td className="p-3 text-center">
-                                            <span className={`px-2 py-1 rounded font-bold ${result.grade === 'A+' || result.grade === 'A' ? 'bg-green-100 text-green-800' :
-                                                result.grade === 'B' ? 'bg-blue-100 text-blue-800' :
-                                                    result.grade === 'C' ? 'bg-yellow-100 text-yellow-800' :
-                                                        result.grade === 'D' ? 'bg-orange-100 text-orange-800' :
-                                                            'bg-red-100 text-red-800'
-                                                }`}>
+                                            <span className={`px - 2 py - 1 rounded font - bold ${result.grade === 'A+' || result.grade === 'A' ? 'bg-green-100 text-green-800' :
+                                                    result.grade === 'B' ? 'bg-blue-100 text-blue-800' :
+                                                        result.grade === 'C' ? 'bg-yellow-100 text-yellow-800' :
+                                                            result.grade === 'D' ? 'bg-orange-100 text-orange-800' :
+                                                                'bg-red-100 text-red-800'
+                                                } `}>
                                                 {result.grade}
                                             </span>
                                         </td>

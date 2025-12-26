@@ -1,12 +1,16 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Calendar, CheckCircle, XCircle, Edit } from 'lucide-react';
-import AuthContext from '../context/AuthContext';
+import axios from 'axios';
 import API_URL from '../config';
+import AuthContext from '../context/AuthContext';
+import SettingsContext from '../context/SettingsContext';
+import { formatDate } from '../utils/dateFormatter';
+import { Plus, Trash2, Calendar, CheckCircle, XCircle, Edit } from 'lucide-react';
 
 const ExamManager = () => {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
+    const { dateFormat } = useContext(SettingsContext);
     const [exams, setExams] = useState([]);
     const [formData, setFormData] = useState({
         title: '',
@@ -195,7 +199,7 @@ const ExamManager = () => {
                                     <tr key={exam._id} className="border-b hover:bg-gray-50">
                                         <td className="p-2 font-medium">{exam.title}</td>
                                         <td className="p-2 text-sm text-gray-600">
-                                            {new Date(exam.start_date).toLocaleDateString()} - {new Date(exam.end_date).toLocaleDateString()}
+                                            {formatDate(exam.start_date, dateFormat)} - {formatDate(exam.end_date, dateFormat)}
                                         </td>
                                         <td className="p-2 text-center">
                                             {exam.is_active ?
