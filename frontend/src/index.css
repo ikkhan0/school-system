@@ -467,22 +467,152 @@ textarea {
 
 /* Custom Print Styles */
 @media print {
+  /* Remove browser headers and footers */
   @page {
-    margin: 5mm;
+    size: A4 portrait;
+    margin: 0;
   }
 
-  body {
+  /* Reset body for print */
+  html, body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  /* Hide everything except print area */
+  body * {
+    visibility: hidden;
+  }
+
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+
+  /* Position print area */
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  /* Hide non-printable elements */
+  .no-print,
+  .no-print *,
+  button,
+  .absolute.top-4.right-4,
+  header,
+  nav,
+  footer:not(.result-card footer) {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Result Card Sizing - Each card is exactly one A4 page */
+  .result-card {
+    width: 210mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+    margin: 0 !important;
+    padding: 10mm !important;
+    page-break-after: always !important;
+    page-break-before: avoid !important;
+    page-break-inside: avoid !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  /* Remove extra spacing between cards */
+  .result-card + .result-card {
+    margin-top: 0 !important;
+  }
+
+  /* Ensure borders print */
+  .result-card,
+  .result-card table,
+  .result-card th,
+  .result-card td,
+  .result-card .border,
+  .result-card .border-2,
+  .result-card .border-4,
+  .result-card .border-black {
+    border-color: #000 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  .no-print {
-    display: none !important;
+  /* Ensure background colors print */
+  .result-card .bg-gray-200,
+  .result-card .bg-gray-800,
+  .result-card .bg-black,
+  .result-card .bg-yellow-50,
+  .result-card .bg-blue-50,
+  .result-card .bg-purple-50,
+  .result-card .bg-green-50,
+  .result-card .bg-green-100,
+  .result-card .bg-red-50,
+  .result-card .bg-red-100 {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
 
-  .card {
-    box-shadow: none;
-    border: 1px solid var(--color-border);
+  /* Ensure text colors print */
+  .result-card {
+    color: #000 !important;
+  }
+
+  .result-card .text-white {
+    color: #fff !important;
+  }
+
+  .result-card .text-green-700,
+  .result-card .text-green-600 {
+    color: #15803d !important;
+  }
+
+  .result-card .text-red-700,
+  .result-card .text-red-600 {
+    color: #be123c !important;
+  }
+
+  .result-card .text-blue-700 {
+    color: #1d4ed8 !important;
+  }
+
+  .result-card .text-purple-700 {
+    color: #7e22ce !important;
+  }
+
+  /* Remove shadows for print */
+  .card,
+  .result-card {
+    box-shadow: none !important;
+  }
+
+  /* Optimize table for print */
+  .result-card table {
+    border-collapse: collapse !important;
+  }
+
+  .result-card table th,
+  .result-card table td {
+    padding: 8px !important;
+  }
+
+  /* Scale down if needed to fit */
+  .result-card img {
+    max-width: 100% !important;
+    height: auto !important;
   }
 }
 
