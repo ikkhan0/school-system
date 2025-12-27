@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Users, MessageSquare, DollarSign, AlertCircle,
-    Calendar, TrendingUp, BookOpen, UserCheck
+    Calendar, TrendingUp, BookOpen, UserCheck, Phone
 } from 'lucide-react';
 import {
     LineChart, Line, BarChart, Bar, PieChart, Pie, AreaChart, Area,
@@ -97,6 +97,12 @@ const Dashboard = () => {
             num = '92' + num.substring(1);
         }
         window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, '_blank');
+    };
+
+    const makeCall = (mobile) => {
+        if (!mobile) return alert("Mobile Number not found!");
+        let num = mobile.replace(/\D/g, '');
+        window.location.href = `tel:${num}`;
     };
 
     const statCards = [
@@ -439,17 +445,27 @@ const Dashboard = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <button
-                                        onClick={() => sendWhatsApp(
-                                            student.father_mobile,
-                                            `Dear ${student.father_name}, your child ${student.full_name} (${student.roll_no}) is absent today. Please ensure regular attendance. - School Admin`
-                                        )}
-                                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-xl transition flex items-center gap-2"
-                                        title="Send WhatsApp Message"
-                                    >
-                                        <MessageSquare size={20} />
-                                        <span className="hidden sm:inline text-sm lg:text-base">WhatsApp</span>
-                                    </button>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => makeCall(student.father_mobile)}
+                                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-xl transition flex items-center gap-2"
+                                            title="Call Parent"
+                                        >
+                                            <Phone size={20} />
+                                            <span className="hidden sm:inline text-sm lg:text-base">Call</span>
+                                        </button>
+                                        <button
+                                            onClick={() => sendWhatsApp(
+                                                student.father_mobile,
+                                                `Dear ${student.father_name}, your child ${student.full_name} (${student.roll_no}) is absent today. Please ensure regular attendance. - School Admin`
+                                            )}
+                                            className="bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-xl transition flex items-center gap-2"
+                                            title="Send WhatsApp Message"
+                                        >
+                                            <MessageSquare size={20} />
+                                            <span className="hidden sm:inline text-sm lg:text-base">WhatsApp</span>
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
