@@ -94,6 +94,9 @@ router.put('/:id/subjects', protect, async (req, res) => {
     try {
         const { subjects } = req.body; // Array of subject IDs
         const Student = require('../models/Student');
+        const Subject = require('../models/Subject');
+
+        console.log(`📚 Assigning ${subjects?.length || 0} subjects to class ${req.params.id}`);
 
         const classData = await Class.findOne({
             _id: req.params.id,
@@ -104,9 +107,28 @@ router.put('/:id/subjects', protect, async (req, res) => {
             return res.status(404).json({ message: 'Class not found' });
         }
 
+        // Validate that all subject IDs exist and belong to this tenant
+        if (subjects && subjects.length > 0) {
+            const validSubjects = await Subject.find({
+                _id: { $in: subjects },
+                tenant_id: req.tenant_id
+            });
+
+            if (validSubjects.length !== subjects.length) {
+                console.error('⚠️ Some subject IDs are invalid or do not belong to this school');
+                return res.status(400).json({
+                    message: 'Some subject IDs are invalid or do not belong to this school',
+                    valid: validSubjects.length,
+                    provided: subjects.length
+                });
+            }
+            console.log(`✅ All ${validSubjects.length} subjects validated for tenant`);
+        }
+
         // Update class subjects
         classData.subjects = subjects;
         await classData.save();
+        console.log(`✅ Class ${classData.name} subjects updated`);
 
         // Auto-assign subjects to all students in this class
         const students = await Student.find({
@@ -115,12 +137,14 @@ router.put('/:id/subjects', protect, async (req, res) => {
             is_active: true
         });
 
-        console.log(`Found ${students.length} students in class ${classData.name}`);
+        console.log(`📝 Found ${students.length} students in class ${classData.name} to update`);
 
         // Update each student's enrolled_subjects
+        let updatedCount = 0;
         for (const student of students) {
             // Get existing subject IDs
             const existingSubjectIds = student.enrolled_subjects.map(es => es.subject_id.toString());
+            const beforeCount = student.enrolled_subjects.length;
 
             // Add new subjects that aren't already enrolled
             for (const subjectId of subjects) {
@@ -139,16 +163,29 @@ router.put('/:id/subjects', protect, async (req, res) => {
             );
 
             await student.save();
+            const afterCount = student.enrolled_subjects.length;
+
+            if (beforeCount !== afterCount) {
+                updatedCount++;
+                console.log(`  ✓ ${student.full_name}: ${beforeCount} → ${afterCount} subjects`);
+            }
         }
+
+        console.log(`✅ Updated ${updatedCount} of ${students.length} students with new subjects`);
 
         const populated = await Class.findById(classData._id).populate('subjects');
         res.json({
             class: populated,
-            message: `Subjects assigned to class and ${students.length} students updated`
+            message: `Subjects assigned to class and ${students.length} students updated`,
+            details: {
+                totalStudents: students.length,
+                updatedStudents: updatedCount,
+                subjectsAssigned: subjects.length
+            }
         });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+        console.error('❌ Error assigning subjects to class:', err.message);
+        res.status(500).json({ message: 'Server Error', error: err.message });
     }
 });
 

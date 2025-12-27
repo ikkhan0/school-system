@@ -453,12 +453,14 @@ router.get('/:id/profile', protect, async (req, res) => {
         const student = await Student.findOne({
             _id: req.params.id,
             tenant_id: req.tenant_id
-        }).populate('siblings', 'full_name roll_no class_id section_id photo');
+        }).populate('siblings', 'full_name roll_no class_id section_id photo')
+            .populate('enrolled_subjects.subject_id');
 
         if (!student) {
             return res.status(404).json({ message: 'Student not found' });
         }
 
+        console.log(`📚 Student profile fetched: ${student.full_name}, Subjects: ${student.enrolled_subjects?.length || 0}`);
         res.json(student);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -728,11 +730,13 @@ router.put('/:id', protect, checkPermission('students.edit'), upload.single('ima
         // Update subjects if provided
         if (subjects) {
             const subjectIds = Array.isArray(subjects) ? subjects : JSON.parse(subjects);
+            console.log(`📚 Updating subjects for student ${student.full_name}: ${subjectIds.length} subjects`);
             student.enrolled_subjects = subjectIds.map(subject_id => ({
                 subject_id,
                 enrollment_date: new Date(),
                 is_active: true
             }));
+            console.log(`✅ Subjects updated successfully for ${student.full_name}`);
         }
 
         await student.save();
@@ -747,26 +751,7 @@ router.put('/:id', protect, checkPermission('students.edit'), upload.single('ima
     }
 });
 
-// @desc    Get Student Complete Profile
-// @route   GET /api/students/:id/profile
-router.get('/:id/profile', protect, async (req, res) => {
-    try {
-        const student = await Student.findOne({
-            _id: req.params.id,
-            tenant_id: req.tenant_id
-        })
-            .populate('family_id')
-            .populate('enrolled_subjects.subject_id');
-
-        if (!student) {
-            return res.status(404).json({ message: 'Student not found' });
-        }
-
-        res.json(student);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+// NOTE: Duplicate route removed - primary profile route above handles all requests
 
 // @desc    Get Student Attendance Summary
 // @route   GET /api/students/:id/attendance-summary

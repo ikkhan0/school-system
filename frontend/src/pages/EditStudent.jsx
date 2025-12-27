@@ -82,7 +82,9 @@ const EditStudent = () => {
                 medical_conditions: student.medical_conditions || '',
                 allergies: student.allergies || '',
                 image: null,
-                subjects: student.enrolled_subjects?.filter(es => es.is_active).map(es => es.subject_id._id) || []
+                subjects: student.enrolled_subjects
+                    ?.filter(es => es && es.subject_id && es.subject_id._id) // Filter out null/undefined
+                    ?.map(es => es.subject_id._id) || []
             });
             setLoading(false);
         } catch (error) {
