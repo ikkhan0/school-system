@@ -167,7 +167,7 @@ const ResultGeneration = () => {
 
                         {/* Result Card Title */}
                         <div className="text-center mb-2">
-                            <div className="inline-block border-2 border-black px-4 py-1 bg-black text-white">
+                            <div className="inline-block border-2 border-black px-4 py-1 bg-white">
                                 <h2 className="text-lg font-bold uppercase">Result Card</h2>
                             </div>
                         </div>
