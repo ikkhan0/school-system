@@ -453,8 +453,10 @@ router.get('/:id/profile', protect, async (req, res) => {
         const student = await Student.findOne({
             _id: req.params.id,
             tenant_id: req.tenant_id
-        }).populate('siblings', 'full_name roll_no class_id section_id photo')
-            .populate('enrolled_subjects.subject_id');
+        })
+            .populate('siblings', 'full_name roll_no class_id section_id photo')
+            .populate('enrolled_subjects.subject_id')
+            .populate('family_id');
 
         if (!student) {
             return res.status(404).json({ message: 'Student not found' });

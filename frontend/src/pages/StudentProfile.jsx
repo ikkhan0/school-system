@@ -42,7 +42,7 @@ const StudentProfile = () => {
             // Properly flatten student data for editing
             const flattenedData = {
                 ...studentRes.data,
-                // Preserve father_mobile from either family_id or direct field
+                // Preserve fields from direct student data first, then family_id as fallback
                 father_mobile: studentRes.data.father_mobile || studentRes.data.family_id?.father_mobile || '',
                 father_name: studentRes.data.father_name || studentRes.data.family_id?.father_name || '',
                 // Keep enrolled_subjects as is (don't modify)
@@ -121,7 +121,7 @@ const StudentProfile = () => {
     };
 
     const sendWhatsAppReport = (reportType) => {
-        const mobile = student.family_id?.father_mobile || student.father_mobile;
+        const mobile = student.father_mobile || student.family_id?.father_mobile;
         if (!mobile) return alert('No mobile number found');
 
         let num = mobile.replace(/\\D/g, '');
@@ -358,7 +358,7 @@ const StudentProfile = () => {
                             <p className="text-blue-100 text-sm md:text-base">Roll No: <span className="font-semibold">{student.roll_no}</span></p>
                             <p className="text-blue-100 text-sm md:text-base">Class: <span className="font-semibold">{student.class_id}-{student.section_id}</span></p>
                             <p className="text-blue-100 text-sm md:text-base">Father: <span className="font-semibold">{student.father_name || student.family_id?.father_name}</span></p>
-                            <p className="text-blue-100 text-sm md:text-base">Mobile: <span className="font-semibold">{student.family_id?.father_mobile || student.father_mobile}</span></p>
+                            <p className="text-blue-100 text-sm md:text-base">Mobile: <span className="font-semibold">{student.father_mobile || student.family_id?.father_mobile}</span></p>
                         </div>
                     </div>
 
@@ -479,11 +479,11 @@ const StudentProfile = () => {
                             </h3>
                             <div className="space-y-3">
                                 <InfoRow label="Father Name" value={student.father_name || student.family_id?.father_name} />
-                                <InfoRow label="Father Mobile" value={student.family_id?.father_mobile || student.father_mobile} />
-                                <InfoRow label="Mother Name" value={student.mother_name} />
-                                <InfoRow label="Mother Mobile" value={student.mother_mobile} />
-                                <InfoRow label="Emergency Contact" value={student.emergency_contact} />
-                                <InfoRow label="Address" value={student.address || student.current_address} />
+                                <InfoRow label="Father Mobile" value={student.father_mobile || student.family_id?.father_mobile} />
+                                <InfoRow label="Mother Name" value={student.mother_name || student.family_id?.mother_name} />
+                                <InfoRow label="Mother Mobile" value={student.mother_mobile || student.family_id?.mother_mobile} />
+                                <InfoRow label="Emergency Contact" value={student.emergency_contact || student.family_id?.emergency_contact} />
+                                <InfoRow label="Address" value={student.address || student.current_address || student.family_id?.address} />
                                 <InfoRow label="City" value={student.city} />
                             </div>
                         </div>
