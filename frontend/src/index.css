@@ -467,6 +467,7 @@ textarea {
 
 /* Custom Print Styles */
 @media print {
+
   /* Remove browser headers and footers */
   @page {
     size: A4 portrait;
@@ -474,7 +475,8 @@ textarea {
   }
 
   /* Reset body for print */
-  html, body {
+  html,
+  body {
     width: 210mm;
     height: 297mm;
     margin: 0 !important;
@@ -532,7 +534,7 @@ textarea {
   }
 
   /* Remove extra spacing between cards */
-  .result-card + .result-card {
+  .result-card+.result-card {
     margin-top: 0 !important;
   }
 
@@ -567,10 +569,6 @@ textarea {
   }
 
   /* Ensure text colors print */
-  .result-card {
-    color: #000 !important;
-  }
-
   .result-card .text-white {
     color: #fff !important;
   }
