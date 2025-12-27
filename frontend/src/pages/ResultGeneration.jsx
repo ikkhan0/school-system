@@ -299,25 +299,26 @@ const ResultGeneration = () => {
                         )}
 
                         {/* Footer */}
-                        <div className="border-t-4 border-black pt-2 mt-auto">
-                            <div className="flex justify-between items-center text-xs">
-                                <div>
-                                    <div className="mb-1">
-                                        <span className="font-bold">Class Teacher:</span>
-                                        <span className="ml-2 border-b border-dotted border-black inline-block w-36"></span>
+                        <div className="border-t-4 border-black pt-4 mt-auto">
+                            <div className="flex justify-between items-start text-xs mb-6">
+                                <div className="w-1/2">
+                                    <div className="mb-6">
+                                        <p className="font-bold mb-1">Class Teacher:</p>
+                                        <div className="border-b-2 border-black w-48 h-12"></div>
                                     </div>
                                     <div>
-                                        <span className="font-bold">Date:</span>
-                                        <span className="ml-2 border-b border-dotted border-black inline-block w-24"></span>
+                                        <p className="font-bold mb-1">Date:</p>
+                                        <div className="border-b-2 border-black w-32 h-8"></div>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <div className="mb-1">
-                                        <span className="font-bold">Principal:</span>
-                                        <span className="ml-2 border-b border-dotted border-black inline-block w-36"></span>
+                                <div className="w-1/2 text-right">
+                                    <div className="mb-6">
+                                        <p className="font-bold mb-1">Principal Signature:</p>
+                                        <div className="border-b-2 border-black w-48 h-12 ml-auto"></div>
                                     </div>
                                     <div>
-                                        <span className="font-bold">Stamp:</span>
+                                        <p className="font-bold mb-1">School Stamp:</p>
+                                        <div className="border-2 border-black w-24 h-24 ml-auto"></div>
                                     </div>
                                 </div>
                             </div>
