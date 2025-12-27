@@ -102,43 +102,39 @@ export const generateFeeVoucherPDF = (student, feeData, schoolInfo = {}) => {
     return doc;
 };
 
-/**
- * Generate Result Card PDF
- * @param {Object} student - Student details
- * @param {Object} examResult - Exam result data
- * @param {Object} schoolInfo - School information
- * @returns {jsPDF} PDF document
- */
 export const generateResultCardPDF = (student, examResult, schoolInfo = {}) => {
     const doc = new jsPDF();
 
-    // Header
-    doc.setFontSize(20);
+    // Header - School Name
+    doc.setFontSize(18);
     doc.setFont(undefined, 'bold');
-    doc.text(schoolInfo.name || 'School Management System', 105, 20, { align: 'center' });
+    doc.text(schoolInfo.name || 'School Management System', 105, 15, { align: 'center' });
 
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
-    doc.text(schoolInfo.address || '', 105, 28, { align: 'center' });
+    doc.text(schoolInfo.address || '', 105, 22, { align: 'center' });
 
-    // Title
-    doc.setFontSize(16);
+    // Title - Result Card
+    doc.setFontSize(14);
     doc.setFont(undefined, 'bold');
-    doc.text('RESULT CARD', 105, 45, { align: 'center' });
+    doc.text('RESULT CARD', 105, 35, { align: 'center' });
 
-    // Exam Information
-    doc.setFontSize(12);
-    doc.text(examResult.exam_title || 'Examination', 105, 55, { align: 'center' });
+    // Exam Name (if available)
+    if (examResult.exam_id?.name || examResult.exam_title) {
+        doc.setFontSize(11);
+        doc.setFont(undefined, 'bold');
+        doc.text(examResult.exam_id?.name || examResult.exam_title, 105, 43, { align: 'center' });
+    }
 
     // Student Information
-    doc.setFontSize(11);
+    doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
-    const studentInfoY = 70;
+    const studentInfoY = 55;
 
     doc.text(`Student Name: ${student.full_name || student.name}`, 20, studentInfoY);
-    doc.text(`Roll No: ${student.roll_no}`, 20, studentInfoY + 7);
-    doc.text(`Class: ${student.class_id}-${student.section_id}`, 20, studentInfoY + 14);
-    doc.text(`Father Name: ${student.father_name}`, 20, studentInfoY + 21);
+    doc.text(`Roll No: ${student.roll_no}`, 20, studentInfoY + 6);
+    doc.text(`Class: ${student.class_id}-${student.section_id}`, 20, studentInfoY + 12);
+    doc.text(`Father Name: ${student.father_name}`, 20, studentInfoY + 18);
 
     // Marks Table
     const marksData = examResult.subjects?.map(subject => [
@@ -151,7 +147,7 @@ export const generateResultCardPDF = (student, examResult, schoolInfo = {}) => {
     const tableHeaders = ['Subject', 'Total Marks', 'Obtained Marks', 'Grade'];
 
     doc.autoTable({
-        startY: studentInfoY + 30,
+        startY: studentInfoY + 28,
         head: [tableHeaders],
         body: marksData,
         foot: [[
@@ -161,20 +157,21 @@ export const generateResultCardPDF = (student, examResult, schoolInfo = {}) => {
             ''
         ]],
         theme: 'grid',
-        headStyles: { fillColor: [66, 139, 202], textColor: 255, fontStyle: 'bold' },
-        footStyles: { fillColor: [240, 240, 240], fontStyle: 'bold' },
-        styles: { fontSize: 11, cellPadding: 5 },
+        headStyles: { fillColor: [66, 139, 202], textColor: 255, fontStyle: 'bold', fontSize: 10 },
+        footStyles: { fillColor: [240, 240, 240], fontStyle: 'bold', fontSize: 10 },
+        styles: { fontSize: 10, cellPadding: 4 },
         columnStyles: {
             0: { cellWidth: 80 },
             1: { halign: 'center', cellWidth: 40 },
             2: { halign: 'center', cellWidth: 40 },
             3: { halign: 'center', cellWidth: 30 }
-        }
+        },
+        margin: { left: 20, right: 20 }
     });
 
     // Result Summary
-    const finalY = doc.lastAutoTable.finalY + 15;
-    doc.setFontSize(12);
+    const finalY = doc.lastAutoTable.finalY + 12;
+    doc.setFontSize(11);
     doc.setFont(undefined, 'bold');
 
     const percentage = examResult.percentage || 0;
@@ -182,34 +179,37 @@ export const generateResultCardPDF = (student, examResult, schoolInfo = {}) => {
     const status = percentage >= 33 ? 'PASS' : 'FAIL';
 
     doc.text(`Percentage: ${percentage.toFixed(2)}%`, 20, finalY);
-    doc.text(`Grade: ${grade}`, 20, finalY + 10);
+    doc.text(`Grade: ${grade}`, 20, finalY + 8);
 
     doc.setTextColor(status === 'PASS' ? 0 : 255, status === 'PASS' ? 128 : 0, 0);
-    doc.text(`Result: ${status}`, 20, finalY + 20);
+    doc.text(`Result: ${status}`, 20, finalY + 16);
     doc.setTextColor(0, 0, 0);
 
-    // Remarks
+    // Remarks (if any)
     if (examResult.remarks) {
-        doc.setFontSize(10);
+        doc.setFontSize(9);
         doc.setFont(undefined, 'italic');
-        doc.text(`Remarks: ${examResult.remarks}`, 20, finalY + 35);
+        doc.text(`Remarks: ${examResult.remarks}`, 20, finalY + 28);
     }
 
-    // Signature Section
-    doc.setFontSize(10);
+    // Signature Section - positioned to stay on same page
+    const signatureY = Math.max(finalY + 40, 235);
+    doc.setFontSize(9);
     doc.setFont(undefined, 'normal');
-    doc.text('_________________', 20, 260);
-    doc.text('Class Teacher', 20, 268);
 
-    doc.text('_________________', 90, 260);
-    doc.text('Principal', 90, 268);
+    doc.text('_________________', 20, signatureY);
+    doc.text('Class Teacher', 25, signatureY + 6);
 
-    doc.text('_________________', 160, 260);
-    doc.text('Parent Signature', 160, 268);
+    doc.text('_________________', 85, signatureY);
+    doc.text('Principal', 95, signatureY + 6);
+
+    doc.text('_________________', 150, signatureY);
+    doc.text('Parent Signature', 152, signatureY + 6);
 
     // Footer
-    doc.setFontSize(9);
-    doc.text('This is a computer-generated document.', 105, 280, { align: 'center' });
+    doc.setFontSize(8);
+    doc.setFont(undefined, 'italic');
+    doc.text('This is a computer-generated document.', 105, 285, { align: 'center' });
 
     return doc;
 };
