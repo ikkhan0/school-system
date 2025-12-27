@@ -130,7 +130,7 @@ const ResultGeneration = () => {
 
             <div className="print-area space-y-8">
                 {results.map((result) => (
-                    <div key={result._id} className="result-card bg-white border-4 border-black p-8 min-h-[297mm] w-[210mm] mx-auto break-after-page relative">
+                    <div key={result._id} className="result-card bg-white border-4 border-black p-4 min-h-[297mm] w-[210mm] mx-auto break-after-page relative">
 
                         {/* WhatsApp Button (No Print) */}
                         <div className="absolute top-4 right-4 no-print">
@@ -140,119 +140,119 @@ const ResultGeneration = () => {
                         </div>
 
                         {/* Header with Logo */}
-                        <div className="flex items-center justify-between mb-6 pb-4 border-b-4 border-black">
+                        <div className="flex items-center justify-between mb-3 pb-2 border-b-4 border-black">
                             {/* Left: Logo */}
                             {logoUrl && (
-                                <div className="w-20 h-20 flex items-center justify-center">
+                                <div className="w-16 h-16 flex items-center justify-center">
                                     <img src={logoUrl} alt="School Logo" className="max-w-full max-h-full object-contain" />
                                 </div>
                             )}
 
                             {/* Center: School Info */}
-                            <div className="flex-1 text-center px-4">
-                                <h1 className="text-3xl font-bold uppercase tracking-wider mb-1">{schoolInfo?.name || 'School Name'}</h1>
-                                <p className="text-sm text-gray-700">{schoolInfo?.address || 'School Address'}</p>
-                                {schoolInfo?.phone && <p className="text-sm text-gray-700">Phone: {schoolInfo.phone}</p>}
+                            <div className="flex-1 text-center px-2">
+                                <h1 className="text-2xl font-bold uppercase tracking-wide mb-0.5">{schoolInfo?.name || 'School Name'}</h1>
+                                <p className="text-xs text-gray-700">{schoolInfo?.address || 'School Address'}</p>
+                                {schoolInfo?.phone && <p className="text-xs text-gray-700">Phone: {schoolInfo.phone}</p>}
                             </div>
 
                             {/* Right: Student Photo */}
-                            <div className="w-24 h-28 border-2 border-black bg-gray-100 flex items-center justify-center overflow-hidden">
+                            <div className="w-20 h-24 border-2 border-black bg-gray-100 flex items-center justify-center overflow-hidden">
                                 {result.student_id.image ? (
                                     <img src={`${API_URL}${result.student_id.image}`} alt="Student" className="w-full h-full object-cover" />
                                 ) : (
-                                    <User className="text-gray-400" size={48} />
+                                    <User className="text-gray-400" size={40} />
                                 )}
                             </div>
                         </div>
 
                         {/* Result Card Title */}
-                        <div className="text-center mb-4">
-                            <div className="inline-block border-2 border-black px-6 py-2 bg-black text-white">
-                                <h2 className="text-xl font-bold uppercase">Result Card</h2>
+                        <div className="text-center mb-2">
+                            <div className="inline-block border-2 border-black px-4 py-1 bg-black text-white">
+                                <h2 className="text-lg font-bold uppercase">Result Card</h2>
                             </div>
                         </div>
 
                         {/* Student Information */}
-                        <div className="grid grid-cols-2 gap-x-8 gap-y-3 mb-6 text-sm">
-                            <div className="flex border-b-2 border-dotted border-gray-400 pb-1">
-                                <span className="font-bold w-32">Student Name:</span>
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mb-3 text-xs">
+                            <div className="flex border-b border-dotted border-gray-400 pb-0.5">
+                                <span className="font-bold w-28">Student Name:</span>
                                 <span className="flex-1 uppercase font-semibold">{result.student_id.full_name}</span>
                             </div>
-                            <div className="flex border-b-2 border-dotted border-gray-400 pb-1">
-                                <span className="font-bold w-32">Roll Number:</span>
+                            <div className="flex border-b border-dotted border-gray-400 pb-0.5">
+                                <span className="font-bold w-28">Roll Number:</span>
                                 <span className="flex-1 font-semibold">{result.student_id.roll_no}</span>
                             </div>
-                            <div className="flex border-b-2 border-dotted border-gray-400 pb-1">
-                                <span className="font-bold w-32">Father's Name:</span>
+                            <div className="flex border-b border-dotted border-gray-400 pb-0.5">
+                                <span className="font-bold w-28">Father's Name:</span>
                                 <span className="flex-1 uppercase font-semibold">{result.student_id.father_name}</span>
                             </div>
-                            <div className="flex border-b-2 border-dotted border-gray-400 pb-1">
-                                <span className="font-bold w-32">Class/Section:</span>
+                            <div className="flex border-b border-dotted border-gray-400 pb-0.5">
+                                <span className="font-bold w-28">Class/Section:</span>
                                 <span className="flex-1 font-semibold">{result.class_id} - {result.section_id}</span>
                             </div>
                         </div>
 
                         {/* Exam Title */}
-                        <div className="text-center font-bold bg-gray-800 text-white border-2 border-black mb-4 py-2 text-base uppercase">
+                        <div className="text-center font-bold bg-gray-800 text-white border-2 border-black mb-2 py-1 text-sm uppercase">
                             {result.exam_id.title}
                         </div>
 
                         {/* Marks Table */}
-                        <table className="w-full border-collapse border-2 border-black mb-6">
+                        <table className="w-full border-collapse border-2 border-black mb-3 text-xs">
                             <thead>
                                 <tr className="bg-gray-200">
-                                    <th className="border-2 border-black p-3 text-left font-bold">SUBJECT</th>
-                                    <th className="border-2 border-black p-3 text-center font-bold w-24">TOTAL</th>
-                                    <th className="border-2 border-black p-3 text-center font-bold w-24">PASSING</th>
-                                    <th className="border-2 border-black p-3 text-center font-bold w-24">OBTAINED</th>
-                                    <th className="border-2 border-black p-3 text-center font-bold w-28">STATUS</th>
+                                    <th className="border-2 border-black p-1.5 text-left font-bold">SUBJECT</th>
+                                    <th className="border-2 border-black p-1.5 text-center font-bold w-16">TOTAL</th>
+                                    <th className="border-2 border-black p-1.5 text-center font-bold w-16">PASSING</th>
+                                    <th className="border-2 border-black p-1.5 text-center font-bold w-20">OBTAINED</th>
+                                    <th className="border-2 border-black p-1.5 text-center font-bold w-20">STATUS</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {result.subjects.map((sub, idx) => (
                                     <tr key={idx} className="hover:bg-gray-50">
-                                        <td className="border-2 border-black p-3 font-semibold">{sub.subject_name}</td>
-                                        <td className="border-2 border-black p-3 text-center">{sub.total_marks}</td>
-                                        <td className="border-2 border-black p-3 text-center text-gray-600">33</td>
-                                        <td className="border-2 border-black p-3 text-center font-bold text-lg">{sub.obtained_marks}</td>
-                                        <td className={`border-2 border-black p-3 text-center font-bold ${sub.obtained_marks >= 33 ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-50'}`}>
+                                        <td className="border-2 border-black p-1.5 font-semibold">{sub.subject_name}</td>
+                                        <td className="border-2 border-black p-1.5 text-center">{sub.total_marks}</td>
+                                        <td className="border-2 border-black p-1.5 text-center text-gray-600">33</td>
+                                        <td className="border-2 border-black p-1.5 text-center font-bold text-sm">{sub.obtained_marks}</td>
+                                        <td className={`border-2 border-black p-1.5 text-center font-bold ${sub.obtained_marks >= 33 ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-50'}`}>
                                             {sub.obtained_marks >= 33 ? 'PASS' : 'FAIL'}
                                         </td>
                                     </tr>
                                 ))}
                                 {/* Total Row */}
-                                <tr className="font-bold bg-yellow-50 text-base">
-                                    <td className="border-2 border-black p-3 text-right">TOTAL MARKS</td>
-                                    <td className="border-2 border-black p-3 text-center">{result.total_max}</td>
-                                    <td className="border-2 border-black p-3 text-center">-</td>
-                                    <td className="border-2 border-black p-3 text-center text-lg">{result.total_obtained}</td>
-                                    <td className="border-2 border-black p-3 text-center">-</td>
+                                <tr className="font-bold bg-yellow-50 text-xs">
+                                    <td className="border-2 border-black p-1.5 text-right">TOTAL MARKS</td>
+                                    <td className="border-2 border-black p-1.5 text-center">{result.total_max}</td>
+                                    <td className="border-2 border-black p-1.5 text-center">-</td>
+                                    <td className="border-2 border-black p-1.5 text-center text-sm">{result.total_obtained}</td>
+                                    <td className="border-2 border-black p-1.5 text-center">-</td>
                                 </tr>
                             </tbody>
                         </table>
 
                         {/* Result Summary */}
-                        <div className="grid grid-cols-3 gap-4 mb-6">
-                            <div className="border-2 border-black p-4 text-center bg-blue-50">
-                                <div className="text-sm text-gray-600 mb-1">PERCENTAGE</div>
-                                <div className="text-3xl font-bold text-blue-700">{result.percentage.toFixed(2)}%</div>
+                        <div className="grid grid-cols-3 gap-2 mb-3">
+                            <div className="border-2 border-black p-2 text-center bg-blue-50">
+                                <div className="text-xs text-gray-600 mb-0.5">PERCENTAGE</div>
+                                <div className="text-2xl font-bold text-blue-700">{result.percentage.toFixed(2)}%</div>
                             </div>
-                            <div className="border-2 border-black p-4 text-center bg-purple-50">
-                                <div className="text-sm text-gray-600 mb-1">GRADE</div>
-                                <div className="text-3xl font-bold text-purple-700">{result.grade}</div>
+                            <div className="border-2 border-black p-2 text-center bg-purple-50">
+                                <div className="text-xs text-gray-600 mb-0.5">GRADE</div>
+                                <div className="text-2xl font-bold text-purple-700">{result.grade}</div>
                             </div>
-                            <div className={`border-2 border-black p-4 text-center ${result.percentage >= 33 ? 'bg-green-100' : 'bg-red-100'}`}>
-                                <div className="text-sm text-gray-600 mb-1">RESULT</div>
-                                <div className={`text-3xl font-bold ${result.percentage >= 33 ? 'text-green-700' : 'text-red-700'}`}>
+                            <div className={`border-2 border-black p-2 text-center ${result.percentage >= 33 ? 'bg-green-100' : 'bg-red-100'}`}>
+                                <div className="text-xs text-gray-600 mb-0.5">RESULT</div>
+                                <div className={`text-2xl font-bold ${result.percentage >= 33 ? 'text-green-700' : 'text-red-700'}`}>
                                     {result.percentage >= 33 ? 'PASS' : 'FAIL'}
                                 </div>
                             </div>
                         </div>
 
                         {/* Grading Criteria */}
-                        <div className="border-2 border-black p-3 mb-6 bg-gray-50">
-                            <h3 className="font-bold text-sm mb-2">GRADING CRITERIA:</h3>
-                            <div className="grid grid-cols-6 gap-2 text-xs">
+                        <div className="border-2 border-black p-1.5 mb-2 bg-gray-50">
+                            <h3 className="font-bold text-xs mb-1">GRADING CRITERIA:</h3>
+                            <div className="grid grid-cols-6 gap-1 text-[10px]">
                                 <div className="text-center"><span className="font-bold">A+:</span> 90-100%</div>
                                 <div className="text-center"><span className="font-bold">A:</span> 80-89%</div>
                                 <div className="text-center"><span className="font-bold">B:</span> 70-79%</div>
@@ -264,11 +264,11 @@ const ResultGeneration = () => {
 
                         {/* Additional Stats (Optional) */}
                         {(showAttendance || showFees || showBehavior) && result.stats && (
-                            <div className="grid grid-cols-3 gap-4 mb-6">
+                            <div className="grid grid-cols-3 gap-2 mb-2">
                                 {showAttendance && result.stats.attendance && (
-                                    <div className="border-2 border-black p-3">
-                                        <h4 className="font-bold text-sm mb-2 border-b pb-1">ATTENDANCE</h4>
-                                        <div className="text-xs space-y-1">
+                                    <div className="border-2 border-black p-1.5">
+                                        <h4 className="font-bold text-[10px] mb-1 border-b pb-0.5">ATTENDANCE</h4>
+                                        <div className="text-[9px] space-y-0.5">
                                             <div>Present: <span className="font-bold text-green-600">{result.stats.attendance.present}</span></div>
                                             <div>Absent: <span className="font-bold text-red-600">{result.stats.attendance.absent}</span></div>
                                             <div>Leave: <span className="font-bold text-yellow-600">{result.stats.attendance.leave}</span></div>
@@ -276,9 +276,9 @@ const ResultGeneration = () => {
                                     </div>
                                 )}
                                 {showFees && result.stats.fees && (
-                                    <div className="border-2 border-black p-3">
-                                        <h4 className="font-bold text-sm mb-2 border-b pb-1">FEE STATUS</h4>
-                                        <div className="text-xs">
+                                    <div className="border-2 border-black p-1.5">
+                                        <h4 className="font-bold text-[10px] mb-1 border-b pb-0.5">FEE STATUS</h4>
+                                        <div className="text-[9px]">
                                             <div>Balance: <span className={`font-bold ${result.stats.fees.balance > 0 ? 'text-red-600' : 'text-green-600'}`}>
                                                 Rs. {result.stats.fees.balance}
                                             </span></div>
@@ -286,9 +286,9 @@ const ResultGeneration = () => {
                                     </div>
                                 )}
                                 {showBehavior && result.stats.behavior && (
-                                    <div className="border-2 border-black p-3">
-                                        <h4 className="font-bold text-sm mb-2 border-b pb-1">BEHAVIOR</h4>
-                                        <div className="text-xs space-y-1">
+                                    <div className="border-2 border-black p-1.5">
+                                        <h4 className="font-bold text-[10px] mb-1 border-b pb-0.5">BEHAVIOR</h4>
+                                        <div className="text-[9px] space-y-0.5">
                                             {Object.entries(result.stats.behavior).map(([key, val]) => val > 0 && (
                                                 <div key={key}>{key}: <span className="font-bold text-red-600">{val}</span></div>
                                             ))}
@@ -299,22 +299,22 @@ const ResultGeneration = () => {
                         )}
 
                         {/* Footer */}
-                        <div className="border-t-4 border-black pt-4 mt-auto">
-                            <div className="flex justify-between items-center text-sm">
+                        <div className="border-t-4 border-black pt-2 mt-auto">
+                            <div className="flex justify-between items-center text-xs">
                                 <div>
-                                    <div className="mb-2">
+                                    <div className="mb-1">
                                         <span className="font-bold">Class Teacher:</span>
-                                        <span className="ml-2 border-b-2 border-dotted border-black inline-block w-48"></span>
+                                        <span className="ml-2 border-b border-dotted border-black inline-block w-36"></span>
                                     </div>
                                     <div>
                                         <span className="font-bold">Date:</span>
-                                        <span className="ml-2 border-b-2 border-dotted border-black inline-block w-32"></span>
+                                        <span className="ml-2 border-b border-dotted border-black inline-block w-24"></span>
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <div className="mb-2">
+                                    <div className="mb-1">
                                         <span className="font-bold">Principal:</span>
-                                        <span className="ml-2 border-b-2 border-dotted border-black inline-block w-48"></span>
+                                        <span className="ml-2 border-b border-dotted border-black inline-block w-36"></span>
                                     </div>
                                     <div>
                                         <span className="font-bold">Stamp:</span>
@@ -324,7 +324,7 @@ const ResultGeneration = () => {
                         </div>
 
                         {/* School Address at Bottom */}
-                        <div className="text-center text-xs text-gray-600 mt-4 pt-2 border-t">
+                        <div className="text-center text-[10px] text-gray-600 mt-2 pt-1 border-t">
                             <p className="font-semibold">{schoolInfo?.address || 'School Address'}</p>
                             {schoolInfo?.phone && <p>Contact: {schoolInfo.phone}</p>}
                         </div>
