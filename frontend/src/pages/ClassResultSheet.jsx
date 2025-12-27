@@ -25,8 +25,8 @@ const ClassResultSheet = () => {
         if (!user) return;
 
         // Fetch Exams
-        fetch(`${API_URL} /api/exams`, {
-            headers: { Authorization: `Bearer ${user.token} ` }
+        fetch(`${API_URL}/api/exams`, {
+            headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
             .then(data => {
@@ -35,8 +35,8 @@ const ClassResultSheet = () => {
             });
 
         // Fetch Classes
-        fetch(`${API_URL} /api/classes`, {
-            headers: { Authorization: `Bearer ${user.token} ` }
+        fetch(`${API_URL}/api/classes`, {
+            headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
             .then(data => {
@@ -64,8 +64,8 @@ const ClassResultSheet = () => {
 
         try {
             const res = await fetch(
-                `${API_URL} /api/exams / results ? exam_id = ${selectedExam}& class_id=${classData.name}& section_id=${selectedSection} `,
-                { headers: { Authorization: `Bearer ${user.token} ` } }
+                `${API_URL}/api/exams/results?exam_id=${selectedExam}&class_id=${classData.name}&section_id=${selectedSection}`,
+                { headers: { Authorization: `Bearer ${user.token}` } }
             );
             const data = await res.json();
 
@@ -188,32 +188,60 @@ const ClassResultSheet = () => {
         XLSX.writeFile(wb, fileName);
     };
 
-    const exportToPDF = () => {
+    const exportToPDF = async () => {
         const sortedResults = getSortedResults();
         const examData = exams.find(e => e._id === selectedExam);
         const classData = classes.find(c => c._id === selectedClass);
 
-        const doc = new jsPDF('l', 'mm', 'a4'); // Landscape orientation
+        // Fetch school info
+        let schoolInfo = {};
+        try {
+            const res = await fetch(`${API_URL}/api/school`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            schoolInfo = await res.json();
+        } catch (error) {
+            console.error('Could not fetch school info:', error);
+        }
+
+        const doc = new jsPDF('l', 'mm', 'a4'); // Landscape orientation (297mm x 210mm)
+
+        // School Header
+        doc.setFontSize(16);
+        doc.setFont(undefined, 'bold');
+        doc.text(schoolInfo.name || 'School Management System', 148.5, 12, { align: 'center' });
+
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+        if (schoolInfo.address) {
+            doc.text(schoolInfo.address, 148.5, 18, { align: 'center' });
+        }
+        if (schoolInfo.phone) {
+            doc.text(`Phone: ${schoolInfo.phone}`, 148.5, 23, { align: 'center' });
+        }
 
         // Title
-        doc.setFontSize(18);
-        doc.text(`${examData?.title || 'Exam'} - Result Sheet`, 14, 15);
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.text('CLASS RESULT SHEET', 148.5, 32, { align: 'center' });
 
-        doc.setFontSize(12);
-        doc.text(`Class: ${classData?.name || ''} -${selectedSection} `, 14, 22);
-        doc.text(`Date: ${formatDate(new Date(), dateFormat)} `, 14, 28);
+        // Exam and Class Info
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'bold');
+        doc.text(`${examData?.title || 'Examination'}`, 148.5, 39, { align: 'center' });
+
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+        doc.text(`Class: ${classData?.name || ''}-${selectedSection}`, 14, 46);
+        doc.text(`Date: ${formatDate(new Date(), dateFormat)}`, 240, 46);
 
         // Prepare table data
-        const headers = [
-            'Pos',
-            'Roll No',
-            'Student Name',
-        ];
+        const headers = ['Pos', 'Roll No', 'Student Name'];
 
         // Add subject headers
         if (sortedResults.length > 0) {
             sortedResults[0].subjects.forEach(sub => {
-                headers.push(`${sub.subject_name} \n(${sub.total_marks})`);
+                headers.push(`${sub.subject_name}\n(${sub.total_marks})`);
             });
         }
 
@@ -242,28 +270,46 @@ const ClassResultSheet = () => {
         doc.autoTable({
             head: [headers],
             body: tableData,
-            startY: 35,
+            startY: 50,
             theme: 'grid',
             headStyles: {
                 fillColor: [41, 128, 185],
                 textColor: 255,
                 fontStyle: 'bold',
-                halign: 'center'
+                halign: 'center',
+                fontSize: 8
             },
             bodyStyles: {
-                halign: 'center'
+                halign: 'center',
+                fontSize: 8
             },
             columnStyles: {
-                2: { halign: 'left', cellWidth: 40 } // Student name left-aligned
+                0: { cellWidth: 10 }, // Position
+                1: { cellWidth: 18 }, // Roll No
+                2: { halign: 'left', cellWidth: 45 } // Student name
             },
             styles: {
                 fontSize: 8,
-                cellPadding: 2
-            }
+                cellPadding: 2,
+                lineWidth: 0.1
+            },
+            margin: { left: 14, right: 14 }
         });
 
+        // Footer - Summary Statistics
+        const finalY = doc.lastAutoTable.finalY + 8;
+        if (finalY < 190) { // Only add if space available
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'normal');
+            const avgPercentage = (sortedResults.reduce((sum, r) => sum + r.percentage, 0) / sortedResults.length).toFixed(2);
+            const highestPercentage = Math.max(...sortedResults.map(r => r.percentage)).toFixed(2);
+            const lowestPercentage = Math.min(...sortedResults.map(r => r.percentage)).toFixed(2);
+
+            doc.text(`Total Students: ${sortedResults.length}  |  Average: ${avgPercentage}%  |  Highest: ${highestPercentage}%  |  Lowest: ${lowestPercentage}%`, 148.5, finalY, { align: 'center' });
+        }
+
         // Save PDF
-        const fileName = `${examData?.title || 'Exam'}_${classData?.name || 'Class'}_${selectedSection} _Results.pdf`;
+        const fileName = `${examData?.title || 'Exam'}_${classData?.name || 'Class'}_${selectedSection}_Results.pdf`;
         doc.save(fileName);
     };
 
@@ -426,10 +472,10 @@ const ClassResultSheet = () => {
                                         <td className="p-3 text-center font-bold text-green-600">{result.percentage.toFixed(2)}%</td>
                                         <td className="p-3 text-center">
                                             <span className={`px - 2 py - 1 rounded font - bold ${result.grade === 'A+' || result.grade === 'A' ? 'bg-green-100 text-green-800' :
-                                                    result.grade === 'B' ? 'bg-blue-100 text-blue-800' :
-                                                        result.grade === 'C' ? 'bg-yellow-100 text-yellow-800' :
-                                                            result.grade === 'D' ? 'bg-orange-100 text-orange-800' :
-                                                                'bg-red-100 text-red-800'
+                                                result.grade === 'B' ? 'bg-blue-100 text-blue-800' :
+                                                    result.grade === 'C' ? 'bg-yellow-100 text-yellow-800' :
+                                                        result.grade === 'D' ? 'bg-orange-100 text-orange-800' :
+                                                            'bg-red-100 text-red-800'
                                                 } `}>
                                                 {result.grade}
                                             </span>
