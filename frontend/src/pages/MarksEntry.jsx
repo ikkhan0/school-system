@@ -74,42 +74,32 @@ const MarksEntry = () => {
         }
     };
 
-    // Fetch students when class/section/subject changes
+    // Fetch students when class/section changes
     useEffect(() => {
-        if (!user || !selectedClass || !selectedSection || !selectedSubject) return;
+        if (!user || !selectedClass || !selectedSection) return;
 
         // Get class name from selected class ID
         const classData = classes.find(c => c._id === selectedClass);
         if (!classData) return;
 
-        // Find the selected subject's ID from classSubjects
-        const subjectData = classSubjects.find(s => s.name === selectedSubject);
-        if (!subjectData) {
-            console.warn('Subject not found in classSubjects');
-            setStudents([]);
-            return;
-        }
-
         setLoading(true);
 
-        console.log(`Fetching students enrolled in ${selectedSubject} (${subjectData._id}) for ${classData.name}-${selectedSection}`);
+        // TODO: Implement subject filtering once students have enrolled_subjects data
+        console.warn('⚠️ Showing all students - subject filtering not yet implemented. Students need enrolled_subjects data.');
 
-        // Use the new endpoint that filters by subject enrollment
-        fetch(`${API_URL}/api/students/list/by-subject?class_id=${classData.name}&section_id=${selectedSection}&subject_id=${subjectData._id}`, {
+        fetch(`${API_URL}/api/students/list?class_id=${classData.name}&section_id=${selectedSection}`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
             .then(data => {
-                console.log(`Found ${data.length} students enrolled in ${selectedSubject}`);
                 setStudents(data);
                 setLoading(false);
             })
             .catch(err => {
-                console.error('Error fetching students by subject:', err);
-                setStudents([]);
+                console.error(err);
                 setLoading(false);
             });
-    }, [selectedClass, selectedSection, selectedSubject, user, classes, classSubjects]);
+    }, [selectedClass, selectedSection, user, classes]);
 
     // Load existing marks when exam/class/section/subject changes
     useEffect(() => {
@@ -430,10 +420,10 @@ const MarksEntry = () => {
             )}
 
             {/* Empty State */}
-            {!loading && students.length === 0 && selectedSubject && (
+            {!loading && students.length === 0 && (
                 <div className="bg-white rounded shadow p-8 text-center text-gray-500">
-                    <p>No students found enrolled in <strong>{selectedSubject}</strong> for {classes.find(c => c._id === selectedClass)?.name} - {selectedSection}.</p>
-                    <p className="text-sm mt-2">Please ensure students are enrolled in this subject in Student Management.</p>
+                    <p>No students found for the selected class and section.</p>
+                    <p className="text-sm mt-2">Please select a different class or section.</p>
                 </div>
             )}
 
