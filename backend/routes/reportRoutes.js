@@ -14,11 +14,19 @@ router.get('/students', async (req, res) => {
 
         if (class_id) query.class_id = class_id;
         if (section_id) query.section_id = section_id;
-        if (status) query.status = status;
+
+        // Fix: Student model uses is_active (boolean), not status (string)
+        if (status === 'Active') {
+            query.is_active = true;
+        } else if (status === 'Inactive') {
+            query.is_active = false;
+        }
+        // If status is empty/null, show all students
+
         if (session_id) query.current_session_id = session_id;
 
         if (type === 'list') {
-            const students = await Student.find(query).select('roll_no full_name father_name father_mobile class_id section_id admission_date status');
+            const students = await Student.find(query).select('roll_no full_name father_name father_mobile class_id section_id admission_date is_active');
             const formatted = students.map(s => ({
                 'Roll No': s.roll_no,
                 'Name': s.full_name,
@@ -26,7 +34,7 @@ router.get('/students', async (req, res) => {
                 'Mobile': s.father_mobile,
                 'Class': `${s.class_id}-${s.section_id}`,
                 'Admission Date': s.admission_date ? new Date(s.admission_date).toLocaleDateString() : '-',
-                'Status': s.status
+                'Status': s.is_active ? 'Active' : 'Inactive'
             }));
             res.json(formatted);
         } else if (type === 'custom') {
@@ -72,8 +80,8 @@ router.get('/students', async (req, res) => {
                     $group: {
                         _id: { class: '$class_id', section: '$section_id' },
                         count: { $sum: 1 },
-                        active: { $sum: { $cond: [{ $eq: ['$status', 'Active'] }, 1, 0] } },
-                        inactive: { $sum: { $cond: [{ $eq: ['$status', 'Inactive'] }, 1, 0] } }
+                        active: { $sum: { $cond: ['$is_active', 1, 0] } },
+                        inactive: { $sum: { $cond: ['$is_active', 0, 1] } }
                     }
                 },
                 { $sort: { '_id.class': 1, '_id.section': 1 } }

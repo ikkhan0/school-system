@@ -93,7 +93,6 @@ const AdvancedReports = () => {
                 if (filters.class_id) params.append('class_id', filters.class_id);
                 if (filters.section_id) params.append('section_id', filters.section_id);
                 if (filters.status) params.append('status', filters.status);
-                if (filters.status) params.append('status', filters.status);
                 params.append('type', reportType);
                 if (reportType === 'custom') {
                     params.append('fields', selectedFields.join(','));
