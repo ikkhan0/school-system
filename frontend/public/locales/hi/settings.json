@@ -1,0 +1,61 @@
+{
+    "title": "Settings",
+    "schoolSettings": "School Settings",
+    "systemSettings": "System Settings",
+    "preferences": "Preferences",
+    "school": {
+        "title": "School Information",
+        "name": "School Name",
+        "email": "School Email",
+        "phone": "School Phone",
+        "address": "School Address",
+        "logo": "School Logo",
+        "uploadLogo": "Upload Logo",
+        "changeLogo": "Change Logo"
+    },
+    "academic": {
+        "title": "Academic Settings",
+        "currentSession": "Current Session",
+        "dateFormat": "Date Format",
+        "timeFormat": "Time Format",
+        "weekStart": "Week Starts On",
+        "gradeSystem": "Grading System"
+    },
+    "financial": {
+        "title": "Financial Settings",
+        "currency": "Currency",
+        "currencySymbol": "Currency Symbol",
+        "taxRate": "Tax Rate (%)",
+        "lateFeeAmount": "Late Fee Amount",
+        "bankDetails": "Bank Details"
+    },
+    "notification": {
+        "title": "Notification Settings",
+        "emailNotifications": "Email Notifications",
+        "smsNotifications": "SMS Notifications",
+        "whatsappNotifications": "WhatsApp Notifications",
+        "enableReminders": "Enable Reminders"
+    },
+    "appearance": {
+        "title": "Appearance",
+        "theme": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "auto": "Auto",
+        "language": "Language",
+        "dateFormat": "Date Format"
+    },
+    "backup": {
+        "title": "Backup & Restore",
+        "backupNow": "Backup Now",
+        "restoreBackup": "Restore Backup",
+        "autoBackup": "Automatic Backup",
+        "lastBackup": "Last Backup"
+    },
+    "messages": {
+        "saved": "Settings saved successfully",
+        "failed": "Failed to update settings",
+        "logoUploaded": "Logo uploaded successfully",
+        "backupCreated": "Backup created successfully"
+    }
+}

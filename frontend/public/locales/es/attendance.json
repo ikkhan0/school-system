@@ -1,0 +1,63 @@
+{
+    "title": "Attendance",
+    "management": "Attendance Management",
+    "marking": {
+        "title": "Mark Attendance",
+        "selectDate": "Select Date",
+        "selectClass": "Select Class",
+        "selectSection": "Select Section",
+        "markAll": "Mark All",
+        "markPresent": "Mark as Present",
+        "markAbsent": "Mark as Absent",
+        "markLeave": "Mark as Leave",
+        "markHoliday": "Mark as Holiday"
+    },
+    "status": {
+        "present": "Present",
+        "absent": "Absent",
+        "late": "Late",
+        "leave": "On Leave",
+        "holiday": "Holiday",
+        "halfDay": "Half Day"
+    },
+    "summary": {
+        "title": "Attendance Summary",
+        "totalStudents": "Total Students",
+        "presentStudents": "Present Students",
+        "absentStudents": "Absent Students",
+        "leaveStudents": "Students on Leave",
+        "attendancePercentage": "Attendance Percentage"
+    },
+    "leave": {
+        "title": "Leave Management",
+        "applyLeave": "Apply for Leave",
+        "leaveType": "Leave Type",
+        "sickLeave": "Sick Leave",
+        "casualLeave": "Casual Leave",
+        "medicalLeave": "Medical Leave",
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "reason": "Reason",
+        "status": "Status",
+        "approved": "Approved",
+        "pending": "Pending",
+        "rejected": "Rejected"
+    },
+    "reports": {
+        "title": "Attendance Reports",
+        "dailyReport": "Daily Report",
+        "monthlyReport": "Monthly Report",
+        "classwise": "Classwise Report",
+        "studentwise": "Studentwise Report",
+        "defaulters": "Attendance Shortage",
+        "lowAttendance": "Low Attendance Alert"
+    },
+    "messages": {
+        "attendanceMarked": "Attendance marked successfully",
+        "attendanceUpdated": "Attendance updated successfully",
+        "leaveApplied": "Leave application submitted",
+        "leaveApproved": "Leave approved",
+        "leaveRejected": "Leave rejected",
+        "noAttendanceData": "No attendance data found"
+    }
+}

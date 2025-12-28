@@ -1,0 +1,40 @@
+{
+    "title": "Dashboard",
+    "welcome": "Welcome back!",
+    "widgets": {
+        "totalStudents": "Total Students",
+        "totalStaff": "Total Staff",
+        "totalRevenue": "Total Revenue",
+        "pendingFees": "Pending Fees",
+        "presentToday": "Present Today",
+        "absentToday": "Absent Today",
+        "newAdmissions": "New Admissions",
+        "upcomingExams": "Upcoming Exams"
+    },
+    "charts": {
+        "monthlyRevenue": "Monthly Revenue",
+        "attendanceTrend": "Attendance Trend",
+        "feeCollection": "Fee Collection",
+        "studentEnrollment": "Student Enrollment"
+    },
+    "quickActions": {
+        "title": "Quick Actions",
+        "markAttendance": "Mark Attendance",
+        "collectFees": "Collect Fees",
+        "addStudent": "Add Student",
+        "viewReports": "View Reports"
+    },
+    "recentActivity": {
+        "title": "Recent Activity",
+        "newStudent": "New student admitted",
+        "feeReceived": "Fee received",
+        "examScheduled": "Exam scheduled",
+        "reportGenerated": "Report generated"
+    },
+    "absentStudents": {
+        "title": "Today's Absent Students",
+        "call": "Call",
+        "whatsapp": "WhatsApp",
+        "noAbsent": "No students absent today"
+    }
+}

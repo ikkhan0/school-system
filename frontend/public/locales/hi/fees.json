@@ -1,0 +1,74 @@
+{
+    "title": "Fees Management",
+    "collection": {
+        "title": "Fee Collection",
+        "collectFees": "Collect Fees",
+        "feeVoucher": "Fee Voucher",
+        "paymentHistory": "Payment History",
+        "pendingFees": "Pending Fees",
+        "searchStudent": "Search Student"
+    },
+    "payment": {
+        "studentName": "Student Name",
+        "class": "Class",
+        "section": "Section",
+        "month": "Month",
+        "totalAmount": "Total Amount",
+        "paidAmount": "Paid Amount",
+        "remainingAmount": "Remaining Amount",
+        "paymentDate": "Payment Date",
+        "paymentMode": "Payment Mode",
+        "receiptNumber": "Receipt Number",
+        "cash": "Cash",
+        "cheque": "Cheque",
+        "bankTransfer": "Bank Transfer",
+        "online": "Online Payment"
+    },
+    "structure": {
+        "title": "Fee Structure",
+        "monthlyFee": "Monthly Fee",
+        "admissionFee": "Admission Fee",
+        "examFee": "Exam Fee",
+        "transportFee": "Transport Fee",
+        "libraryFee": "Library Fee",
+        "sportsFee": "Sports Fee",
+        "otherFees": "Other Fees",
+        "totalFee": "Total Fee"
+    },
+    "discount": {
+        "title": "Discounts",
+        "discountPolicies": "Discount Policies",
+        "siblingDiscount": "Sibling Discount",
+        "scholarshipDiscount": "Scholarship Discount",
+        "earlyPayment": "Early Payment Discount",
+        "discountAmount": "Discount Amount",
+        "discountPercentage": "Discount Percentage",
+        "applyDiscount": "Apply Discount"
+    },
+    "voucher": {
+        "title": "Fee Voucher",
+        "generateVoucher": "Generate Voucher",
+        "printVoucher": "Print Voucher",
+        "sendViaWhatsApp": "Send via WhatsApp",
+        "dueDate": "Due Date",
+        "issueDate": "Issue Date",
+        "voucherNumber": "Voucher Number"
+    },
+    "reports": {
+        "title": "Fee Reports",
+        "dailyCollection": "Daily Collection",
+        "monthlyCollection": "Monthly Collection",
+        "defaultersList": "Defaulters List",
+        "paidStudents": "Paid Students",
+        "unpaidStudents": "Unpaid Students",
+        "collectionSummary": "Collection Summary"
+    },
+    "messages": {
+        "paymentSuccess": "Payment recorded successfully",
+        "voucherGenerated": "Voucher generated successfully",
+        "discountApplied": "Discount applied successfully",
+        "paymentFailed": "Payment failed",
+        "invalidAmount": "Invalid amount entered",
+        "noFeesFound": "No fees found for this student"
+    }
+}

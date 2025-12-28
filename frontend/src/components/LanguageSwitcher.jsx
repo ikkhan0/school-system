@@ -7,16 +7,15 @@ const LanguageSwitcher = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [currentLanguage, setCurrentLanguage] = useState(i18n.language || 'en');
 
-    // Only show languages with complete translation files
+    // All supported languages for marketplace version
     const languages = [
         { code: 'en', name: 'English', nativeName: 'English', dir: 'ltr' },
         { code: 'ur', name: 'Urdu', nativeName: 'اردو', dir: 'rtl' },
         { code: 'ar', name: 'Arabic', nativeName: 'العربية', dir: 'rtl' },
-        // TODO: Add more languages when translation files are ready
-        // { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', dir: 'ltr' },
-        // { code: 'bn', name: 'Bengali', nativeName: 'বাংলা', dir: 'ltr' },
-        // { code: 'es', name: 'Spanish', nativeName: 'Español', dir: 'ltr' },
-        // { code: 'fr', name: 'French', nativeName: 'Français', dir: 'ltr' },
+        { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', dir: 'ltr' },
+        { code: 'bn', name: 'Bengali', nativeName: 'বাংলা', dir: 'ltr' },
+        { code: 'es', name: 'Spanish', nativeName: 'Español', dir: 'ltr' },
+        { code: 'fr', name: 'French', nativeName: 'Français', dir: 'ltr' },
     ];
 
     const changeLanguage = (langCode) => {
