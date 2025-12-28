@@ -10,7 +10,7 @@ i18n
     .init({
         fallbackLng: 'en', // Default language
         debug: import.meta.env.DEV, // Enable debug in development
-        supportedLngs: ['en', 'ur', 'ar', 'hi', 'bn', 'es', 'fr'], // Supported languages
+        supportedLngs: ['en', 'ur', 'ar'], // Only languages with complete translation files
 
         interpolation: {
             escapeValue: false, // React already safes from xss
