@@ -16,6 +16,7 @@ const LanguageSwitcher = () => {
         { code: 'bn', name: 'Bengali', nativeName: 'বাংলা', dir: 'ltr' },
         { code: 'es', name: 'Spanish', nativeName: 'Español', dir: 'ltr' },
         { code: 'fr', name: 'French', nativeName: 'Français', dir: 'ltr' },
+        { code: 'tr', name: 'Turkish', nativeName: 'Türkçe', dir: 'ltr' },
     ];
 
     const changeLanguage = (langCode) => {
