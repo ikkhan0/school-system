@@ -1,14 +1,14 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
 import { Search, Phone, MessageCircle, User, Edit, Plus, Upload, Trash2 } from 'lucide-react';
 import API_URL from '../config';
 
 const Students = () => {
     const { user } = useContext(AuthContext);
-    const { t, language } = useLanguage();
+    const { t } = useTranslation(['students', 'common']);
     const navigate = useNavigate();
     const [students, setStudents] = useState([]);
     const [filteredStudents, setFilteredStudents] = useState([]);
@@ -123,21 +123,21 @@ const Students = () => {
             <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
-                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">{t('students')}</h1>
+                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">{t('students:title')}</h1>
                     <div className="flex gap-2 w-full sm:w-auto">
                         <button
                             onClick={() => navigate('/students/import')}
                             className="flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-md text-sm sm:text-base flex-1 sm:flex-initial justify-center"
                         >
                             <Upload size={18} className="sm:w-5 sm:h-5" />
-                            <span>Import</span>
+                            <span>{t('students:actions.importStudents')}</span>
                         </button>
                         <button
                             onClick={() => navigate('/students/add')}
                             className="flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md text-sm sm:text-base flex-1 sm:flex-initial justify-center"
                         >
                             <Plus size={18} className="sm:w-5 sm:h-5" />
-                            <span>Add New</span>
+                            <span>{t('common:addNew')}</span>
                         </button>
                     </div>
                 </div>
@@ -151,7 +151,7 @@ const Students = () => {
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
-                        Active Students
+                        {t('students:list.activeStudents')}
                     </button>
                     <button
                         onClick={() => setStatusFilter('deactivated')}
@@ -160,7 +160,7 @@ const Students = () => {
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
-                        Deactivated Students
+                        {t('students:list.inactiveStudents')}
                     </button>
                 </div>
 

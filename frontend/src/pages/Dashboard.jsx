@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     Users, MessageSquare, DollarSign, AlertCircle,
     Calendar, TrendingUp, BookOpen, UserCheck, Phone
@@ -14,6 +15,7 @@ import API_URL from '../config';
 const Dashboard = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
+    const { t } = useTranslation(['dashboard', 'common']);
     const [stats, setStats] = useState({
         totalStudents: 0,
         totalClasses: 0,
@@ -193,7 +195,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Loading dashboard...</p>
+                    <p className="mt-4 text-gray-600">{t('common:app.loading')}</p>
                 </div>
             </div>
         );
@@ -204,9 +206,9 @@ const Dashboard = () => {
             {/* Header */}
             <div className="px-2 sm:px-4 lg:px-6 pt-6 pb-4">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
-                    Welcome back, {user?.full_name || user?.username || 'School Administrator'}! 👋
+                    {t('dashboard:welcome')}, {user?.full_name || user?.username || 'School Administrator'}! 👋
                 </h1>
-                <p className="text-sm sm:text-base lg:text-lg text-gray-600">Here's what's happening with your school today.</p>
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600">{t('dashboard:title')}</p>
             </div>
 
             {/* Stat Cards Grid - Full Width */}
@@ -261,7 +263,7 @@ const Dashboard = () => {
                 <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
                     <h2 className="text-xl lg:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
                         <MessageSquare size={24} className="text-blue-600" />
-                        Quick Actions
+                        {t('dashboard:quickActions.title')}
                     </h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
                         {quickActions.map((action, index) => (
@@ -425,9 +427,9 @@ const Dashboard = () => {
             {absentStudents.length > 0 && (
                 <div className="px-2 sm:px-4 lg:px-6 mb-6 sm:mb-8">
                     <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8 mt-6 lg:mt-8">
-                        <h3 className="text-xl lg:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                        <h3 className="text-lg lg:text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
                             <AlertCircle className="text-red-600" size={24} />
-                            Today's Absent Students ({absentStudents.length})
+                            {t('dashboard:absentStudents.title')} ({absentStudents.length})
                         </h3>
                         <div className="space-y-3 max-h-96 overflow-y-auto">
                             {absentStudents.map((student, idx) => (

@@ -1,0 +1,63 @@
+{
+    "title": "حاضری",
+    "management": "حاضری کا انتظام",
+    "marking": {
+        "title": "حاضری لگائیں",
+        "selectDate": "تاریخ منتخب کریں",
+        "selectClass": "جماعت منتخب کریں",
+        "selectSection": "سیکشن منتخب کریں",
+        "markAll": "سب کو نشان زد کریں",
+        "markPresent": "حاضر نشان زد کریں",
+        "markAbsent": "غیر حاضر نشان زد کریں",
+        "markLeave": "چھٹی پر نشان زد کریں",
+        "markHoliday": "تعطیل پر نشان زد کریں"
+    },
+    "status": {
+        "present": "حاضر",
+        "absent": "غیر حاضر",
+        "late": "دیر سے",
+        "leave": "چھٹی پر",
+        "holiday": "تعطیل",
+        "halfDay": "نیم دن"
+    },
+    "summary": {
+        "title": "حاضری کا خلاصہ",
+        "totalStudents": "کل طلباء",
+        "presentStudents": "حاضر طلباء",
+        "absentStudents": "غیر حاضر طلباء",
+        "leaveStudents": "چھٹی پر طلباء",
+        "attendancePercentage": "حاضری کی شرح"
+    },
+    "leave": {
+        "title": "چھٹی کا انتظام",
+        "applyLeave": "چھٹی کے لیے درخواست دیں",
+        "leaveType": "چھٹی کی قسم",
+        "sickLeave": "بیماری کی چھٹی",
+        "casualLeave": "عام چھٹی",
+        "medicalLeave": "طبی چھٹی",
+        "fromDate": "شروع کی تاریخ",
+        "toDate": "اختتام کی تاریخ",
+        "reason": "وجہ",
+        "status": "حیثیت",
+        "approved": "منظور شدہ",
+        "pending": "زیر التواء",
+        "rejected": "مسترد"
+    },
+    "reports": {
+        "title": "حاضری کی رپورٹس",
+        "dailyReport": "روزانہ کی رپورٹ",
+        "monthlyReport": "ماہانہ رپورٹ",
+        "classwise": "جماعت کے لحاظ سے رپورٹ",
+        "studentwise": "طالب علم کے لحاظ سے رپورٹ",
+        "defaulters": "حاضری کی کمی",
+        "lowAttendance": "کم حاضری کی انتباہ"
+    },
+    "messages": {
+        "attendanceMarked": "حاضری کامیابی سے لگائی گئی",
+        "attendanceUpdated": "حاضری تازہ ہو گئی",
+        "leaveApplied": "چھٹی کی درخواست جمع ہو گئی",
+        "leaveApproved": "چھٹی منظور ہو گئی",
+        "leaveRejected": "چھٹی مسترد کر دی گئی",
+        "noAttendanceData": "کوئی حاضری کا ڈیٹا نہیں ملا"
+    }
+}

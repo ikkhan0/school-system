@@ -1,0 +1,40 @@
+{
+    "title": "ڈیش بورڈ",
+    "welcome": "خوش آمدید!",
+    "widgets": {
+        "totalStudents": "کل طلباء",
+        "totalStaff": "کل عملہ",
+        "totalRevenue": "کل آمدنی",
+        "pendingFees": "زیر التواء فیسیں",
+        "presentToday": "آج حاضر",
+        "absentToday": "آج غیر حاضر",
+        "newAdmissions": "نئے داخلے",
+        "upcomingExams": "آنے والے امتحانات"
+    },
+    "charts": {
+        "monthlyRevenue": "ماہانہ آمدنی",
+        "attendanceTrend": "حاضری کی رجحان",
+        "feeCollection": "فیس وصولی",
+        "studentEnrollment": "طلباء کا اندراج"
+    },
+    "quickActions": {
+        "title": "فوری اقدامات",
+        "markAttendance": "حاضری لگائیں",
+        "collectFees": "فیس وصول کریں",
+        "addStudent": "طالب علم شامل کریں",
+        "viewReports": "رپورٹس دیکھیں"
+    },
+    "recentActivity": {
+        "title": "حالیہ سرگرمی",
+        "newStudent": "نیا طالب علم داخل ہوا",
+        "feeReceived": "فیس موصول ہوئی",
+        "examScheduled": "امتحان طے ہوا",
+        "reportGenerated": "رپورٹ تیار ہوئی"
+    },
+    "absentStudents": {
+        "title": "آج کے غیر حاضر طلباء",
+        "call": "کال کریں",
+        "whatsapp": "واٹس ایپ",
+        "noAbsent": "آج کوئی طالب علم غیر حاضر نہیں"
+    }
+}

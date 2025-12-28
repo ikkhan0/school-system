@@ -1,10 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Save } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import API_URL from '../config';
 
 const MarksEntry = () => {
     const { user } = useContext(AuthContext);
+    const { t } = useTranslation(['exams', 'common']);
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedSection, setSelectedSection] = useState('');
     const [classes, setClasses] = useState([]);
@@ -280,7 +282,7 @@ const MarksEntry = () => {
 
     return (
         <div className="max-w-6xl mx-auto p-3 sm:p-4">
-            <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Marks Entry</h1>
+            <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">{t('exams:marks.title')}</h1>
 
             {/* Selection Controls */}
             <div className="bg-white p-4 sm:p-6 rounded shadow mb-4 sm:mb-6 space-y-4">
@@ -378,7 +380,7 @@ const MarksEntry = () => {
                         className="bg-blue-600 text-white px-4 py-2 sm:px-6 sm:py-2 rounded flex items-center gap-2 hover:bg-blue-700 disabled:bg-gray-400 text-sm sm:text-base w-full sm:w-auto justify-center"
                     >
                         <Save size={16} className="sm:w-[18px] sm:h-[18px]" />
-                        {saving ? 'Saving...' : 'Save Marks'}
+                        {saving ? t('common:app.loading') : t('common:save')}
                     </button>
                 </div>
             </div>

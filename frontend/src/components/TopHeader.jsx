@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import { Search, Bell, Menu, LogOut, User, Settings as SettingsIcon } from 'lucide-react';
 import SessionSwitcher from './SessionSwitcher';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const TopHeader = ({ onMenuClick }) => {
     const { user, logout } = useContext(AuthContext);
@@ -72,6 +73,9 @@ const TopHeader = ({ onMenuClick }) => {
 
                 {/* Session Switcher */}
                 <SessionSwitcher />
+
+                {/* Language Switcher */}
+                <LanguageSwitcher />
 
                 {/* Notifications */}
                 <div className="relative" ref={notificationsRef}>

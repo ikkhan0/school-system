@@ -1,0 +1,112 @@
+{
+    "title": "طلباء",
+    "management": "طلباء کا انتظام",
+    "admission": {
+        "title": "طالب علم کا داخلہ",
+        "newAdmission": "نیا داخلہ",
+        "admissionNumber": "داخلہ نمبر",
+        "admissionDate": "داخلہ کی تاریخ",
+        "formDetails": "داخلہ فارم کی تفصیلات"
+    },
+    "personalInfo": {
+        "title": "ذاتی معلومات",
+        "firstName": "پہلا نام",
+        "middleName": "درمیانی نام",
+        "lastName": "آخری نام",
+        "fullName": "پورا نام",
+        "dateOfBirth": "تاریخ پیدائش",
+        "gender": "جنس",
+        "male": "مرد",
+        "female": "عورت",
+        "other": "دیگر",
+        "bloodGroup": "بلڈ گروپ",
+        "religion": "مذہب",
+        "caste": "ذات",
+        "category": "زمرہ",
+        "nationalId": "قومی شناختی کارڈ / بی فارم",
+        "photo": "طالب علم کی تصویر"
+    },
+    "contact": {
+        "title": "رابطے کی معلومات",
+        "mobileNumber": "موبائل نمبر",
+        "email": "ای میل ایڈریس",
+        "currentAddress": "موجودہ پتہ",
+        "permanentAddress": "مستقل پتہ",
+        "city": "شہر",
+        "state": "صوبہ",
+        "postalCode": "ڈاک کوڈ"
+    },
+    "parentInfo": {
+        "title": "والدین/سرپرست کی معلومات",
+        "fatherName": "والد کا نام",
+        "fatherPhone": "والد کا فون",
+        "fatherOccupation": "والد کا پیشہ",
+        "fatherIncome": "والد کی ماہانہ آمدنی",
+        "motherName": "والدہ کا نام",
+        "motherPhone": "والدہ کا فون",
+        "motherOccupation": "والدہ کا پیشہ",
+        "guardianName": "سرپرست کا نام",
+        "guardianPhone": "سرپرست کا فون",
+        "guardianRelation": "سرپرست سے تعلق",
+        "guardianAddress": "سرپرست کا پتہ"
+    },
+    "academicInfo": {
+        "title": "تعلیمی معلومات",
+        "class": "جماعت",
+        "section": "سیکشن",
+        "rollNumber": "رول نمبر",
+        "session": "تعلیمی سیشن",
+        "subjects": "مضامین میں اندراج",
+        "previousSchool": "پچھلا اسکول",
+        "previousClass": "پچھلی جماعت",
+        "transferCertificate": "منتقلی سرٹیفکیٹ"
+    },
+    "documents": {
+        "title": "دستاویزات",
+        "birthCertificate": "پیدائشی سرٹیفکیٹ",
+        "transferCertificate": "منتقلی سرٹیفکیٹ",
+        "medicalRecords": "طبی ریکارڈ",
+        "photographs": "تصاویر",
+        "otherDocuments": "دیگر دستاویزات",
+        "uploadDocument": "دستاویز اپ لوڈ کریں"
+    },
+    "list": {
+        "title": "طلباء کی فہرست",
+        "totalStudents": "کل طلباء",
+        "activeStudents": "فعال طلباء",
+        "inactiveStudents": "غیر فعال طلباء",
+        "searchPlaceholder": "نام، رول نمبر، یا داخلہ نمبر سے تلاش کریں",
+        "filterByClass": "جماعت کے لحاظ سے فلٹر کریں",
+        "filterBySection": "سیکشن کے لحاظ سے فلٹر کریں",
+        "filterBySession": "سیشن کے لحاظ سے فلٹر کریں",
+        "exportList": "طلباء کی فہرست برآمد کریں"
+    },
+    "profile": {
+        "title": "طالب علم کی پروفائل",
+        "viewProfile": "پروفائل دیکھیں",
+        "editProfile": "پروفائل میں ترمیم کریں",
+        "studentDetails": "طالب علم کی تفصیلات",
+        "feeDetails": "فیس کی تفصیلات",
+        "attendanceRecord": "حاضری کا ریکارڈ",
+        "examResults": "امتحان کے نتائج",
+        "documents": "دستاویزات"
+    },
+    "actions": {
+        "addStudent": "طالب علم شامل کریں",
+        "editStudent": "طالب علم میں ترمیم کریں",
+        "deleteStudent": "طالب علم حذف کریں",
+        "activateStudent": "طالب علم کو فعال کریں",
+        "deactivateStudent": "طالب علم کو غیر فعال کریں",
+        "promoteStudent": "طالب علم کو ترقی دیں",
+        "importStudents": "طلباء درآمد کریں",
+        "exportStudents": "طلباء برآمد کریں"
+    },
+    "messages": {
+        "studentAdded": "طالب علم کامیابی سے شامل ہو گیا",
+        "studentUpdated": "طالب علم کی معلومات تازہ ہو گئیں",
+        "studentDeleted": "طالب علم حذف ہو گیا",
+        "confirmDelete": "کیا آپ واقعی اس طالب علم کو حذف کرنا چاہتے ہیں؟",
+        "noStudentsFound": "کوئی طالب علم نہیں ملا",
+        "loadingStudents": "طلباء لوڈ ہو رہے ہیں..."
+    }
+}

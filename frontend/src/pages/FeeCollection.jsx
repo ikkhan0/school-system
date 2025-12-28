@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { Search, Printer, DollarSign, MessageCircle, FileText, Users, Download, Save, Edit, Trash, X } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
@@ -9,6 +10,7 @@ import { formatDate, toInputDate } from '../utils/dateFormatter';
 const FeeCollection = () => {
     const { user } = useContext(AuthContext);
     const { dateFormat } = useContext(SettingsContext);
+    const { t } = useTranslation(['fees', 'common']);
 
     const [activeTab, setActiveTab] = useState('ledger'); // 'ledger', 'family', 'bulk'
     const [searchTerm, setSearchTerm] = useState('');
@@ -390,16 +392,16 @@ const FeeCollection = () => {
     return (
         <div className="max-w-7xl mx-auto p-3 sm:p-4">
             <h1 className="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-2">
-                <DollarSign size={20} className="sm:w-6 sm:h-6" /> Fee Management
+                <DollarSign size={20} className="sm:w-6 sm:h-6" /> {t('fees:collection.title')}
             </h1>
 
             {/* Tabs */}
             <div className="flex gap-2 sm:gap-4 mb-4 sm:mb-6 border-b overflow-x-auto">
                 <button onClick={() => setActiveTab('ledger')} className={`pb-2 px-3 sm:px-4 font-bold flex gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap ${activeTab === 'ledger' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}>
-                    <FileText size={16} className="sm:w-[18px] sm:h-[18px]" /> Student Ledger
+                    <FileText size={16} className="sm:w-[18px] sm:h-[18px]" /> {t('fees:collection.feeVoucher')}
                 </button>
                 <button onClick={() => { setActiveTab('bulk'); fetchBulkList(); }} className={`pb-2 px-3 sm:px-4 font-bold flex gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap ${activeTab === 'bulk' ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-500'}`}>
-                    <Users size={16} className="sm:w-[18px] sm:h-[18px]" /> Bulk Collection
+                    <Users size={16} className="sm:w-[18px] sm:h-[18px]" /> {t('fees:collection.collectFees')}
                 </button>
                 <button onClick={() => setActiveTab('family')} className={`pb-2 px-3 sm:px-4 font-bold flex gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap ${activeTab === 'family' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-gray-500'}`}>
                     <Users size={16} className="sm:w-[18px] sm:h-[18px]" /> Family View

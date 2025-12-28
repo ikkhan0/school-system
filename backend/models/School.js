@@ -19,6 +19,20 @@ const schoolSchema = mongoose.Schema({
             type: String,
             enum: ['12-hour', '24-hour'],
             default: '12-hour'
+        },
+        // Multi-language settings
+        default_language: {
+            type: String,
+            enum: ['en', 'ur', 'ar', 'hi', 'bn', 'es', 'fr'],
+            default: 'en'
+        },
+        available_languages: {
+            type: [String],
+            default: ['en', 'ur']
+        },
+        rtl_enabled: {
+            type: Boolean,
+            default: false
         }
     }
 }, { timestamps: true });

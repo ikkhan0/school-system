@@ -64,6 +64,12 @@ const userSchema = mongoose.Schema({
         },
         section: String
     }],
+    // Language preference
+    preferred_language: {
+        type: String,
+        enum: ['en', 'ur', 'ar', 'hi', 'bn', 'es', 'fr'],
+        default: 'en'
+    },
     last_login: {
         type: Date
     }

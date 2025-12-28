@@ -1,0 +1,70 @@
+{
+    "title": "امتحانات",
+    "management": "امتحان کا انتظام",
+    "exams": {
+        "title": "امتحانات",
+        "createExam": "امتحان بنائیں",
+        "editExam": "امتحان میں ترمیم کریں",
+        "deleteExam": "امتحان حذف کریں",
+        "examName": "امتحان کا نام",
+        "examType": "امتحان کی قسم",
+        "examDate": "امتحان کی تاریخ",
+        "totalMarks": "کل نمبر",
+        "passingMarks": "کامیابی کے نمبر"
+    },
+    "types": {
+        "monthly": "ماہانہ ٹیسٹ",
+        "midTerm": "مڈ ٹرم",
+        "final": "فائنل امتحان",
+        "quiz": "کوئز",
+        "practical": "عملی"
+    },
+    "marks": {
+        "title": "نمبروں کی اندراج",
+        "enterMarks": "نمبر درج کریں",
+        "obtainedMarks": "حاصل شدہ نمبر",
+        "maxMarks": "زیادہ سے زیادہ نمبر",
+        "percentage": "فیصد",
+        "grade": "گریڈ",
+        "remarks": "تبصرے"
+    },
+    "results": {
+        "title": "نتائج",
+        "generateResult": "نتیجہ بنائیں",
+        "viewResult": "نتیجہ دیکھیں",
+        "resultCard": "رزلٹ کارڈ",
+        "marksheet": "مارک شیٹ",
+        "totalMarks": "کل نمبر",
+        "obtainedMarks": "حاصل شدہ نمبر",
+        "percentage": "فیصد",
+        "grade": "گریڈ",
+        "position": "پوزیشن",
+        "status": "حیثیت",
+        "pass": "کامیاب",
+        "fail": "ناکام"
+    },
+    "grading": {
+        "title": "گریڈنگ سسٹم",
+        "aPlus": "A+ (90-100%)",
+        "a": "A (80-89%)",
+        "b": "B (70-79%)",
+        "c": "C (60-69%)",
+        "d": "D (50-59%)",
+        "f": "F (50% سے کم)"
+    },
+    "reports": {
+        "title": "امتحان کی رپورٹس",
+        "classResult": "کلاس نتیجہ شیٹ",
+        "studentResult": "طالب علم کا نتیجہ",
+        "subjectwise": "مضمون کے لحاظ سے تجزیہ",
+        "toppers": "ٹاپرز کی فہرست",
+        "failedStudents": "ناکام طلباء"
+    },
+    "messages": {
+        "examCreated": "امتحان کامیابی سے بنایا گیا",
+        "marksEntered": "نمبر کامیابی سے درج ہوئے",
+        "resultGenerated": "نتیجہ کامیابی سے بن گیا",
+        "invalidMarks": "غلط نمبر درج کیے گئے",
+        "marksExceedMax": "نمبر زیادہ سے زیادہ نمبروں سے زیادہ نہیں ہو سکتے"
+    }
+}

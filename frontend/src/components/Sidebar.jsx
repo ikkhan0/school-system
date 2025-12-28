@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useContext, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import AuthContext from '../context/AuthContext';
 import {
     Home, Users, UserCheck, DollarSign, BookOpen, FileText,
@@ -9,6 +10,7 @@ import {
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
     const { user } = useContext(AuthContext);
+    const { t } = useTranslation(['common', 'students', 'fees', 'exams', 'reports']);
     const location = useLocation();
     const [expandedMenus, setExpandedMenus] = useState({});
 

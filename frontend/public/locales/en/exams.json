@@ -1,0 +1,70 @@
+{
+    "title": "Examinations",
+    "management": "Exam Management",
+    "exams": {
+        "title": "Exams",
+        "createExam": "Create Exam",
+        "editExam": "Edit Exam",
+        "deleteExam": "Delete Exam",
+        "examName": "Exam Name",
+        "examType": "Exam Type",
+        "examDate": "Exam Date",
+        "totalMarks": "Total Marks",
+        "passingMarks": "Passing Marks"
+    },
+    "types": {
+        "monthly": "Monthly Test",
+        "midTerm": "Mid Term",
+        "final": "Final Exam",
+        "quiz": "Quiz",
+        "practical": "Practical"
+    },
+    "marks": {
+        "title": "Marks Entry",
+        "enterMarks": "Enter Marks",
+        "obtainedMarks": "Obtained Marks",
+        "maxMarks": "Maximum Marks",
+        "percentage": "Percentage",
+        "grade": "Grade",
+        "remarks": "Remarks"
+    },
+    "results": {
+        "title": "Results",
+        "generateResult": "Generate Result",
+        "viewResult": "View Result",
+        "resultCard": "Result Card",
+        "marksheet": "Marksheet",
+        "totalMarks": "Total Marks",
+        "obtainedMarks": "Obtained Marks",
+        "percentage": "Percentage",
+        "grade": "Grade",
+        "position": "Position",
+        "status": "Status",
+        "pass": "Pass",
+        "fail": "Fail"
+    },
+    "grading": {
+        "title": "Grading System",
+        "aPlus": "A+ (90-100%)",
+        "a": "A (80-89%)",
+        "b": "B (70-79%)",
+        "c": "C (60-69%)",
+        "d": "D (50-59%)",
+        "f": "F (Below 50%)"
+    },
+    "reports": {
+        "title": "Exam Reports",
+        "classResult": "Class Result Sheet",
+        "studentResult": "Student Result",
+        "subjectwise": "Subjectwise Analysis",
+        "toppers": "Toppers List",
+        "failedStudents": "Failed Students"
+    },
+    "messages": {
+        "examCreated": "Exam created successfully",
+        "marksEntered": "Marks entered successfully",
+        "resultGenerated": "Result generated successfully",
+        "invalidMarks": "Invalid marks entered",
+        "marksExceedMax": "Marks cannot exceed maximum marks"
+    }
+}

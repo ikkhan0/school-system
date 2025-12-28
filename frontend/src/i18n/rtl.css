@@ -1,0 +1,196 @@
+/* RTL Support for Arabic, Urdu, and Persian */
+
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+[dir="rtl"] body {
+    text-align: right;
+}
+
+/* Sidebar RTL */
+[dir="rtl"] .sidebar {
+    right: 0;
+    left: auto;
+}
+
+[dir="rtl"] .sidebar-content {
+    padding-right: 1rem;
+    padding-left: 0.5rem;
+}
+
+/* Navigation RTL */
+[dir="rtl"] .nav-item {
+    padding-right: 1rem;
+    padding-left: 0;
+}
+
+[dir="rtl"] .nav-icon {
+    margin-left: 0.75rem;
+    margin-right: 0;
+}
+
+/* Forms RTL */
+[dir="rtl"] .form-label {
+    text-align: right;
+}
+
+[dir="rtl"] .form-input {
+    text-align: right;
+}
+
+[dir="rtl"] .form-select {
+    background-position: left 0.5rem center;
+    padding-right: 0.75rem;
+    padding-left: 2.5rem;
+}
+
+/* Buttons RTL */
+[dir="rtl"] .btn-icon {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+/* Tables RTL */
+[dir="rtl"] .table th,
+[dir="rtl"] .table td {
+    text-align: right;
+}
+
+[dir="rtl"] .table-actions {
+    text-align: left;
+}
+
+/* Cards RTL */
+[dir="rtl"] .card-icon {
+    margin-left: 1rem;
+    margin-right: 0;
+}
+
+/* Modal RTL */
+[dir="rtl"] .modal-close {
+    right: auto;
+    left: 1rem;
+}
+
+/* Dropdown RTL */
+[dir="rtl"] .dropdown-menu {
+    right: auto;
+    left: 0;
+}
+
+/* Utility Classes RTL */
+[dir="rtl"] .text-left {
+    text-align: right !important;
+}
+
+[dir="rtl"] .text-right {
+    text-align: left !important;
+}
+
+[dir="rtl"] .ml-1 {
+    margin-right: 0.25rem;
+    margin-left: 0;
+}
+
+[dir="rtl"] .ml-2 {
+    margin-right: 0.5rem;
+    margin-left: 0;
+}
+
+[dir="rtl"] .ml-3 {
+    margin-right: 0.75rem;
+    margin-left: 0;
+}
+
+[dir="rtl"] .ml-4 {
+    margin-right: 1rem;
+    margin-left: 0;
+}
+
+[dir="rtl"] .mr-1 {
+    margin-left: 0.25rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .mr-2 {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .mr-3 {
+    margin-left: 0.75rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .mr-4 {
+    margin-left: 1rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .pl-1 {
+    padding-right: 0.25rem;
+    padding-left: 0;
+}
+
+[dir="rtl"] .pl-2 {
+    padding-right: 0.5rem;
+    padding-left: 0;
+}
+
+[dir="rtl"] .pl-3 {
+    padding-right: 0.75rem;
+    padding-left: 0;
+}
+
+[dir="rtl"] .pl-4 {
+    padding-right: 1rem;
+    padding-left: 0;
+}
+
+[dir="rtl"] .pr-1 {
+    padding-left: 0.25rem;
+    padding-right: 0;
+}
+
+[dir="rtl"] .pr-2 {
+    padding-left: 0.5rem;
+    padding-right: 0;
+}
+
+[dir="rtl"] .pr-3 {
+    padding-left: 0.75rem;
+    padding-right: 0;
+}
+
+[dir="rtl"] .pr-4 {
+    padding-left: 1rem;
+    padding-right: 0;
+}
+
+/* Flip icons for RTL */
+[dir="rtl"] .icon-flip {
+    transform: scaleX(-1);
+}
+
+/* Chart RTL adjustments */
+[dir="rtl"] .recharts-wrapper {
+    direction: ltr;
+    /* Keep charts LTR for readability */
+}
+
+/* Toast/Notifications RTL */
+[dir="rtl"] .toast {
+    right: auto;
+    left: 1rem;
+}
+
+/* Breadcrumb RTL */
+[dir="rtl"] .breadcrumb {
+    direction: rtl;
+}
+
+[dir="rtl"] .breadcrumb-separator {
+    transform: scaleX(-1);
+}
