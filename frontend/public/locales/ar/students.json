@@ -1,0 +1,114 @@
+{
+    "title": "الطلاب",
+    "management": "إدارة الطلاب",
+    "admission": {
+        "title": "قبول الطلاب",
+        "newAdmission": "قبول جديد",
+        "admissionNumber": "رقم القبول",
+        "admissionDate": "تاريخ القبول",
+        "formDetails": "تفاصيل نموذج القبول"
+    },
+    "personalInfo": {
+        "title": "المعلومات الشخصية",
+        "firstName": "الاسم الأول",
+        "middleName": "الاسم الأوسط",
+        "lastName": "اسم العائلة",
+        "fullName": "الاسم الكامل",
+        "dateOfBirth": "تاريخ الميلاد",
+        "gender": "الجنس",
+        "maleGender": "ذكر",
+        "female": "أنثى",
+        "other": "آخر",
+        "bloodGroup": "فصيلة الدم",
+        "religion": "الديانة",
+        "caste": "الطبقة",
+        "category": "الفئة",
+        "nationalId": "الرقم الوطني / نموذج ب",
+        "photo": "صورة الطالب"
+    },
+    "contact": {
+        "title": "معلومات الاتصال",
+        "mobileNumber": "رقم الجوال",
+        "email": "عنوان البريد الإلكتروني",
+        "currentAddress": "العنوان الحالي",
+        "permanentAddress": "العنوان الدائم",
+        "city": "المدينة",
+        "state": "الولاية",
+        "postalCode": "الرمز البريدي"
+    },
+    "parentInfo": {
+        "title": "معلومات ولي الأمر",
+        "fatherName": "اسم الأب",
+        "fatherPhone": "هاتف الأب",
+        "fatherOccupation": "مهنة الأب",
+        "fatherIncome": "الدخل الشهري للأب",
+        "motherName": "اسم الأم",
+        "motherPhone": "هاتف الأم",
+        "motherOccupation": "مهنة الأم",
+        "guardianName": "اسم ولي الأمر",
+        "guardianPhone": "هاتف ولي الأمر",
+        "guardianRelation": "صلة القرابة مع ولي الأمر",
+        "guardianAddress": "عنوان ولي الأمر"
+    },
+    "academicInfo": {
+        "title": "المعلومات الأكاديمية",
+        "class": "الفصل",
+        "section": "الشعبة",
+        "rollNumber": "رقم القيد",
+        "session": "الجلسة الأكاديمية",
+        "subjects": "المواد المسجلة",
+        "previousSchool": "المدرسة السابقة",
+        "previousClass": "الفصل السابق",
+        "transferCertificate": "شهادة النقل"
+    },
+    "documents": {
+        "title": "المستندات",
+        "birthCertificate": "شهادة الميلاد",
+        "transferCertificate": "شهادة النقل",
+        "medicalRecords": "السجلات الطبية",
+        "photographs": "الصور الفوتوغرافية",
+        "otherDocuments": "مستندات أخرى",
+        "uploadDocument": "رفع مستند"
+    },
+    "list": {
+        "title": "قائمة الطلاب",
+        "totalStudents": "إجمالي الطلاب",
+        "activeStudents": "الطلاب النشطون",
+        "inactiveStudents": "الطلاب غير النشطين",
+        "searchPlaceholder": "البحث بالاسم أو رقم القيد أو رقم القبول",
+        "allClasses": "جميع الفصول",
+        "showingCount": "عرض {{filtered}} من {{total}} طالب",
+        "filterByClass": "تصفية حسب الفصل",
+        "filterBySection": "تصفية حسب الشعبة",
+        "filterBySession": "تصفية حسب الجلسة",
+        "exportList": "تصدير قائمة الطلاب"
+    },
+    "profile": {
+        "title": "ملف الطالب",
+        "viewProfile": "عرض الملف الشخصي",
+        "editProfile": "تعديل الملف الشخصي",
+        "studentDetails": "تفاصيل الطالب",
+        "feeDetails": "تفاصيل الرسوم",
+        "attendanceRecord": "سجل الحضور",
+        "examResults": "نتائج الامتحانات",
+        "documents": "المستندات"
+    },
+    "actions": {
+        "addStudent": "إضافة طالب",
+        "editStudent": "تعديل طالب",
+        "deleteStudent": "حذف طالب",
+        "activateStudent": "تفعيل الطالب",
+        "deactivateStudent": "إلغاء تفعيل الطالب",
+        "promoteStudent": "ترقية الطالب",
+        "importStudents": "استيراد الطلاب",
+        "exportStudents": "تصدير الطلاب"
+    },
+    "messages": {
+        "studentAdded": "تمت إضافة الطالب بنجاح",
+        "studentUpdated": "تم تحديث الطالب بنجاح",
+        "studentDeleted": "تم حذف الطالب بنجاح",
+        "confirmDelete": "هل أنت متأكد من حذف هذا الطالب؟",
+        "noStudentsFound": "لم يتم العثور على طلاب",
+        "loadingStudents": "جاري تحميل الطلاب..."
+    }
+}

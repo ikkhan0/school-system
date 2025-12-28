@@ -1,0 +1,74 @@
+{
+    "title": "إدارة الرسوم",
+    "collection": {
+        "title": "تحصيل الرسوم",
+        "collectFees": "تحصيل الرسوم",
+        "feeVoucher": "إيصال الرسوم",
+        "paymentHistory": "سجل الدفعات",
+        "pendingFees": "الرسوم المعلقة",
+        "searchStudent": "البحث عن طالب"
+    },
+    "payment": {
+        "studentName": "اسم الطالب",
+        "class": "الفصل",
+        "section": "الشعبة",
+        "month": "الشهر",
+        "totalAmount": "المبلغ الإجمالي",
+        "paidAmount": "المبلغ المدفوع",
+        "remainingAmount": "المبلغ المتبقي",
+        "paymentDate": "تاريخ الدفع",
+        "paymentMode": "طريقة الدفع",
+        "receiptNumber": "رقم الإيصال",
+        "cash": "نقداً",
+        "cheque": "شيك",
+        "bankTransfer": "تحويل بنكي",
+        "online": "دفع إلكتروني"
+    },
+    "structure": {
+        "title": "هيكل الرسوم",
+        "monthlyFee": "الرسوم الشهرية",
+        "admissionFee": "رسوم القبول",
+        "examFee": "رسوم الامتحان",
+        "transportFee": "رسوم النقل",
+        "libraryFee": "رسوم المكتبة",
+        "sportsFee": "رسوم الرياضة",
+        "otherFees": "رسوم أخرى",
+        "totalFee": "إجمالي الرسوم"
+    },
+    "discount": {
+        "title": "الخصومات",
+        "discountPolicies": "سياسات الخصم",
+        "siblingDiscount": "خصم الأشقاء",
+        "scholarshipDiscount": "خصم المنحة الدراسية",
+        "earlyPayment": "خصم الدفع المبكر",
+        "discountAmount": "مبلغ الخصم",
+        "discountPercentage": "نسبة الخصم",
+        "applyDiscount": "تطبيق الخصم"
+    },
+    "voucher": {
+        "title": "إيصال الرسوم",
+        "generateVoucher": "إنشاء إيصال",
+        "printVoucher": "طباعة الإيصال",
+        "sendViaWhatsApp": "إرسال عبر واتساب",
+        "dueDate": "تاريخ الاستحقاق",
+        "issueDate": "تاريخ الإصدار",
+        "voucherNumber": "رقم الإيصال"
+    },
+    "reports": {
+        "title": "تقارير الرسوم",
+        "dailyCollection": "التحصيل اليومي",
+        "monthlyCollection": "التحصيل الشهري",
+        "defaultersList": "قائمة المتأخرين",
+        "paidStudents": "الطلاب الذين دفعوا",
+        "unpaidStudents": "الطلاب الذين لم يدفعوا",
+        "collectionSummary": "ملخص التحصيل"
+    },
+    "messages": {
+        "paymentSuccess": "تم تسجيل الدفعة بنجاح",
+        "voucherGenerated": "تم إنشاء الإيصال بنجاح",
+        "discountApplied": "تم تطبيق الخصم بنجاح",
+        "paymentFailed": "فشل الدفع",
+        "invalidAmount": "مبلغ غير صالح",
+        "noFeesFound": "لم يتم العثور على رسوم لهذا الطالب"
+    }
+}

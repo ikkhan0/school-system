@@ -1,0 +1,54 @@
+{
+    "title": "التقارير",
+    "generation": "إنشاء التقارير",
+    "types": {
+        "student": "تقارير الطلاب",
+        "fee": "تقارير الرسوم",
+        "attendance": "تقارير الحضور",
+        "exam": "تقارير الامتحانات",
+        "staff": "تقارير الموظفين",
+        "financial": "التقارير المالية"
+    },
+    "filters": {
+        "selectReport": "اختر نوع التقرير",
+        "selectClass": "اختر الفصل",
+        "selectSection": "اختر الشعبة",
+        "selectSession": "اختر الجلسة",
+        "selectMonth": "اختر الشهر",
+        "selectDateRange": "اختر النطاق الزمني",
+        "fromDate": "من تاريخ",
+        "toDate": "إلى تاريخ"
+    },
+    "actions": {
+        "generate": "إنشاء تقرير",
+        "exportPDF": "تصدير إلى PDF",
+        "exportExcel": "تصدير إلى Excel",
+        "print": "طباعة التقرير",
+        "email": "إرسال التقرير بالبريد",
+        "share": "مشاركة التقرير"
+    },
+    "student": {
+        "studentList": "قائمة الطلاب",
+        "studentProfile": "تقرير ملف الطالب",
+        "admissionReport": "تقرير القبول",
+        "promotionReport": "تقرير الترقية"
+    },
+    "fee": {
+        "collectionReport": "تقرير تحصيل الرسوم",
+        "defaultersReport": "المتأخرون في دفع الرسوم",
+        "monthlyCollection": "التحصيل الشهري",
+        "classwiseCollection": "التحصيل حسب الفصل"
+    },
+    "attendance": {
+        "dailyAttendance": "الحضور اليومي",
+        "monthlyAttendance": "الحضور الشهري",
+        "absentReport": "تقرير الغياب",
+        "shortageReport": "نقص الحضور"
+    },
+    "messages": {
+        "reportGenerated": "تم إنشاء التقرير بنجاح",
+        "noDataFound": "لم يتم العثور على بيانات للمعايير المحددة",
+        "selectFilters": "يرجى اختيار الفلاتر المطلوبة",
+        "generatingReport": "جاري إنشاء التقرير..."
+    }
+}
