@@ -49,6 +49,7 @@ import SessionManagement from './pages/SessionManagement';
 import StudentPromotion from './pages/StudentPromotion';
 import Funds from './pages/Funds';
 import WhatsappTemplates from './pages/WhatsappTemplates';
+import BulkSubjectAssignment from './pages/BulkSubjectAssignment';
 
 import './App.css';
 
@@ -90,6 +91,7 @@ function App() {
                   <Route path="/exams/edit/:id" element={<ProtectedRoute><EditExam /></ProtectedRoute>} />
                   <Route path="/exam-menu" element={<ProtectedRoute><ExamMenu /></ProtectedRoute>} />
                   <Route path="/subjects" element={<ProtectedRoute><SubjectManager /></ProtectedRoute>} />
+                  <Route path="/bulk-subject-assignment" element={<ProtectedRoute><BulkSubjectAssignment /></ProtectedRoute>} />
                   <Route path="/fee-menu" element={<ProtectedRoute><FeeMenu /></ProtectedRoute>} />
                   <Route path="/discount-policies" element={<ProtectedRoute><DiscountPolicies /></ProtectedRoute>} />
                   <Route path="/family-messaging" element={<ProtectedRoute><FamilyFeeMessaging /></ProtectedRoute>} />

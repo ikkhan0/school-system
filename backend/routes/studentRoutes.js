@@ -714,6 +714,68 @@ router.post('/:id/subjects/enroll', protect, async (req, res) => {
     }
 });
 
+// @desc    Bulk Assign Subjects to Multiple Students
+// @route   POST /api/students/bulk-assign-subjects
+router.post('/bulk-assign-subjects', protect, async (req, res) => {
+    try {
+        const { student_ids, subject_ids } = req.body;
+
+        if (!student_ids || !Array.isArray(student_ids) || student_ids.length === 0) {
+            return res.status(400).json({ message: 'Please provide an array of student IDs' });
+        }
+
+        if (!subject_ids || !Array.isArray(subject_ids) || subject_ids.length === 0) {
+            return res.status(400).json({ message: 'Please provide an array of subject IDs' });
+        }
+
+        console.log(`📚 Bulk assigning ${subject_ids.length} subject(s) to ${student_ids.length} student(s)`);
+
+        let updated = 0;
+        let skipped = 0;
+
+        for (const studentId of student_ids) {
+            const student = await Student.findOne({
+                _id: studentId,
+                tenant_id: req.tenant_id
+            });
+
+            if (!student) {
+                console.warn(`Student ${studentId} not found, skipping`);
+                skipped++;
+                continue;
+            }
+
+            // Get existing subject IDs
+            const existingSubjectIds = student.enrolled_subjects.map(es => es.subject_id.toString());
+
+            // Add new subjects that aren't already enrolled
+            for (const subjectId of subject_ids) {
+                if (!existingSubjectIds.includes(subjectId.toString())) {
+                    student.enrolled_subjects.push({
+                        subject_id: subjectId,
+                        enrollment_date: new Date(),
+                        is_active: true
+                    });
+                }
+            }
+
+            await student.save();
+            updated++;
+        }
+
+        console.log(`✅ Bulk assignment complete: ${updated} students updated, ${skipped} skipped`);
+
+        res.json({
+            message: `Successfully assigned subjects to ${updated} student(s)`,
+            updated,
+            skipped
+        });
+    } catch (error) {
+        console.error('Error bulk assigning subjects:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // @desc    Get Single Student
 // @route   GET /api/students/:id
 router.get('/:id', protect, checkPermission('students.view'), async (req, res) => {
