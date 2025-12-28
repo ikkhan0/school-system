@@ -26,13 +26,12 @@ i18n
             caches: ['localStorage'], // Cache user's language selection
         },
 
-        ns: ['common', 'dashboard', 'students', 'fees', 'attendance', 'exams', '
-reports'], // Namespaces
-    defaultNS: 'common', // Default namespace
+        ns: ['common', 'dashboard', 'students', 'fees', 'attendance', 'exams', 'reports'], // Namespaces
+        defaultNS: 'common', // Default namespace
 
-            react: {
-                useSuspense: true, // Use Suspense for loading
-            },
-  });
+        react: {
+            useSuspense: true, // Use Suspense for loading
+        },
+    });
 
 export default i18n;
