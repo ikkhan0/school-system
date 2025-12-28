@@ -20,13 +20,14 @@
         "practical": "عملی"
     },
     "marks": {
-        "title": "نمبروں کی اندراج",
-        "enterMarks": "نمبر درج کریں",
-        "obtainedMarks": "حاصل شدہ نمبر",
-        "maxMarks": "زیادہ سے زیادہ نمبر",
+        "title": "نمبرات اندراج",
+        "examLabel": "امتحان",
+        "enterMarks": "نمبرات درج کریں",
+        "obtainedMarks": "حاصل شدہ نمبرات",
+        "maxMarks": "زیادہ سے زیادہ نمبرات",
         "percentage": "فیصد",
         "grade": "گریڈ",
-        "remarks": "تبصرے"
+        "remarks": "ریمارکس"
     },
     "results": {
         "title": "نتائج",

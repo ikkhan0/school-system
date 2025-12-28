@@ -288,7 +288,7 @@ const MarksEntry = () => {
             <div className="bg-white p-4 sm:p-6 rounded shadow mb-4 sm:mb-6 space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
                     <div>
-                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">Exam</label>
+                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">{t('exams:marks.examLabel')}</label>
                         <select
                             value={examId}
                             onChange={e => setExamId(e.target.value)}
@@ -299,7 +299,7 @@ const MarksEntry = () => {
                     </div>
 
                     <div>
-                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">Class</label>
+                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">{t('common:common.class', 'Class')}</label>
                         <select
                             value={selectedClass}
                             onChange={e => {
@@ -317,7 +317,7 @@ const MarksEntry = () => {
                     </div>
 
                     <div>
-                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">Section</label>
+                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">{t('common:common.section', 'Section')}</label>
                         <select
                             value={selectedSection}
                             onChange={e => setSelectedSection(e.target.value)}

@@ -76,6 +76,8 @@
         "activeStudents": "فعال طلباء",
         "inactiveStudents": "غیر فعال طلباء",
         "searchPlaceholder": "نام، رول نمبر، یا داخلہ نمبر سے تلاش کریں",
+        "allClasses": "تمام جماعتیں",
+        "showingCount": "کل {{total}} میں سے {{filtered}} طلباء دیکھ رہے ہیں",
         "filterByClass": "جماعت کے لحاظ سے فلٹر کریں",
         "filterBySection": "سیکشن کے لحاظ سے فلٹر کریں",
         "filterBySession": "سیشن کے لحاظ سے فلٹر کریں",

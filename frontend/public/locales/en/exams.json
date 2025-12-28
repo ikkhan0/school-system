@@ -21,6 +21,7 @@
     },
     "marks": {
         "title": "Marks Entry",
+        "examLabel": "Exam",
         "enterMarks": "Enter Marks",
         "obtainedMarks": "Obtained Marks",
         "maxMarks": "Maximum Marks",

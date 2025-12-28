@@ -181,7 +181,7 @@ const Students = () => {
                         onChange={(e) => setFilterClass(e.target.value)}
                         className="px-4 py-2 text-sm sm:text-base border rounded-lg focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
                     >
-                        <option value="">All Classes</option>
+                        <option value="">{t('students:list.allClasses')}</option>
                         {classes.map(c => (
                             <option key={c._id} value={c.name}>{c.name}</option>
                         ))}
@@ -190,7 +190,7 @@ const Students = () => {
 
                 {/* Student Count */}
                 <div className="mb-4 text-sm text-gray-600">
-                    Showing {filteredStudents.length} of {students.length} students
+                    {t('students:list.showingCount', { filtered: filteredStudents.length, total: students.length })}
                 </div>
 
                 {/* Student Cards Grid */}

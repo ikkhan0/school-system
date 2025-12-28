@@ -76,6 +76,8 @@
         "activeStudents": "Active Students",
         "inactiveStudents": "Inactive Students",
         "searchPlaceholder": "Search by name, roll number, or admission number",
+        "allClasses": "All Classes",
+        "showingCount": "Showing {{filtered}} of {{total}} students",
         "filterByClass": "Filter by Class",
         "filterBySection": "Filter by Section",
         "filterBySession": "Filter by Session",

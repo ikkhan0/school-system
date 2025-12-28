@@ -88,7 +88,13 @@
         "address": "Address",
         "description": "Description",
         "notes": "Notes",
-        "remarks": "Remarks"
+        "remarks": "Remarks",
+        "class": "Class",
+        "section": "Section",
+        "subject": "Subject",
+        "roll": "Roll No",
+        "marks": "Marks",
+        "totalMarks": "Total Marks"
     },
     "buttons": {
         "saveChanges": "Save Changes",
