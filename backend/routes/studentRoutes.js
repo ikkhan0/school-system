@@ -421,6 +421,54 @@ router.get('/list', protect, async (req, res) => {
     }
 });
 
+// @desc    Get Students by Class, Section, and Subject (for marks entry)
+// @route   GET /api/students/list/by-subject?class_id=X&section_id=Y&subject_id=Z
+router.get('/list/by-subject', protect, async(req, res) =\u003e {
+    try {
+        const { class_id, section_id, subject_id } = req.query;
+
+        if(!subject_id) {
+            return res.status(400).json({ message: 'Subject ID is required' });
+        }
+
+        let query = {
+            tenant_id: req.tenant_id,
+            is_active: true
+        };
+
+        // Add session filter if available
+        if(req.session_id) {
+    query.current_session_id = req.session_id;
+}
+
+// Add class and section filters
+if (class_id) query.class_id = class_id;
+if (section_id) query.section_id = section_id;
+
+// Filter by students who have this subject enrolled and active
+query['enrolled_subjects'] = {
+    $elemMatch: {
+        subject_id: subject_id,
+        is_active: true
+    }
+};
+
+console.log(`📚 Fetching students enrolled in subject ${subject_id} for ${class_id}-${section_id}`);
+
+const students = await Student.find(query)
+    .populate('family_id')
+    .populate('enrolled_subjects.subject_id')
+    .sort({ roll_no: 1 });
+
+console.log(`✅ Found ${students.length} students enrolled in the subject`);
+
+res.json(students);
+    } catch (error) {
+    console.error('Error fetching students by subject:', error);
+    res.status(500).json({ message: error.message });
+}
+});
+
 // @desc    Delete a Student
 // @route   DELETE /api/students/:id
 router.delete('/:id', protect, checkPermission('students.delete'), async (req, res) => {
