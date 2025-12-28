@@ -26,109 +26,109 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     const menuItems = [
         {
-            title: 'Dashboard',
+            titleKey: 'navigation.dashboard',
             icon: Home,
             path: '/dashboard',
             type: 'link'
         },
         {
-            title: 'Students',
+            titleKey: 'navigation.students',
             icon: Users,
             type: 'group',
             paths: ['/students', '/sibling-management'],
             items: [
-                { title: 'Student List', path: '/students' },
-                { title: 'Add Student', path: '/students/add' },
-                { title: 'Sibling Management', path: '/sibling-management' }
+                { titleKey: 'navigation.studentList', path: '/students' },
+                { titleKey: 'navigation.addStudent', path: '/students/add' },
+                { titleKey: 'navigation.siblingManagement', path: '/sibling-management' }
             ]
         },
         {
-            title: 'Staff',
+            titleKey: 'navigation.staff',
             icon: UserCheck,
             type: 'group',
             paths: ['/staff'],
             items: [
-                { title: 'Staff List', path: '/staff' },
-                { title: 'Add Staff', path: '/staff/add' },
-                { title: 'Staff Attendance', path: '/staff/attendance' }
+                { titleKey: 'navigation.staffList', path: '/staff' },
+                { titleKey: 'navigation.addStaff', path: '/staff/add' },
+                { titleKey: 'navigation.staffAttendance', path: '/staff/attendance' }
             ]
         },
         {
-            title: 'Fees',
+            titleKey: 'navigation.fees',
             icon: DollarSign,
             type: 'group',
             paths: ['/fee', '/discount', '/family-messaging'],
             items: [
-                { title: 'Fee Collection', path: '/fee-collection' },
-                { title: 'Bulk Fee Slips', path: '/bulk-slips' },
-                { title: 'Manage Funds', path: '/funds' },
-                { title: 'Discount Policies', path: '/discount-policies' },
-                { title: 'Family Messaging', path: '/family-messaging' }
+                { titleKey: 'navigation.feeCollection', path: '/fee-collection' },
+                { titleKey: 'navigation.bulkFeeSlips', path: '/bulk-slips' },
+                { titleKey: 'navigation.manageFunds', path: '/funds' },
+                { titleKey: 'navigation.discountPolicies', path: '/discount-policies' },
+                { titleKey: 'navigation.familyMessaging', path: '/family-messaging' }
             ]
         },
         {
-            title: 'Academic',
+            titleKey: 'navigation.academic',
             icon: BookOpen,
             type: 'group',
             paths: ['/classes', '/subjects', '/evaluation', '/sessions', '/student-promotion'],
             items: [
-                { title: 'Classes', path: '/classes' },
-                { title: 'Subjects', path: '/subjects' },
-                { title: 'Attendance', path: '/evaluation' },
-                { title: 'Sessions', path: '/sessions' },
-                { title: 'Student Promotion', path: '/student-promotion' }
+                { titleKey: 'navigation.classes', path: '/classes' },
+                { titleKey: 'navigation.subjects', path: '/subjects' },
+                { titleKey: 'navigation.attendance', path: '/evaluation' },
+                { titleKey: 'navigation.sessions', path: '/sessions' },
+                { titleKey: 'navigation.studentPromotion', path: '/student-promotion' }
             ]
         },
         {
-            title: 'Exams',
+            titleKey: 'navigation.exams',
             icon: FileText,
             type: 'group',
             paths: ['/exam', '/marks', '/results', '/class-result-sheet'],
             items: [
-                { title: 'Exam Menu', path: '/exam-menu' },
-                { title: 'Exam Manager', path: '/exams' },
-                { title: 'Marks Entry', path: '/marks' },
-                { title: 'Result Generation', path: '/results' },
-                { title: 'Class Result Sheet', path: '/class-result-sheet' }
+                { titleKey: 'navigation.examMenu', path: '/exam-menu' },
+                { titleKey: 'navigation.examManager', path: '/exams' },
+                { titleKey: 'navigation.marksEntry', path: '/marks' },
+                { titleKey: 'navigation.resultGeneration', path: '/results' },
+                { titleKey: 'navigation.classResultSheet', path: '/class-result-sheet' }
             ]
         },
         {
-            title: 'Reports',
+            titleKey: 'navigation.reports',
             icon: BarChart,
             type: 'group',
             paths: ['/reports', '/advanced-reports'],
             items: [
-                { title: 'Basic Reports', path: '/reports' },
-                { title: 'Advanced Reports', path: '/advanced-reports' }
+                { titleKey: 'navigation.basicReports', path: '/reports' },
+                { titleKey: 'navigation.advancedReports', path: '/advanced-reports' }
             ]
         },
         {
-            title: 'Expenses',
+            titleKey: 'navigation.expenses',
             icon: DollarSign,
             type: 'group',
             paths: ['/expense'],
             items: [
-                { title: 'Expense Heads', path: '/expense-heads' },
-                { title: 'Expense Manager', path: '/expenses' }
+                { titleKey: 'navigation.expenseHeads', path: '/expense-heads' },
+                { titleKey: 'navigation.expenseManager', path: '/expenses' }
             ]
         },
         {
-            title: 'Users',
+            titleKey: 'navigation.users',
             icon: Shield,
             path: '/users',
             type: 'link'
         },
         {
-            title: 'Communication',
+            titleKey: 'navigation.communication',
             icon: MessageCircle,
             type: 'group',
             paths: ['/whatsapp-templates'],
             items: [
-                { title: 'WhatsApp Templates', path: '/whatsapp-templates' }
+                { titleKey: 'navigation.whatsappTemplates', path: '/whatsapp-templates' }
             ]
         },
         {
-            title: 'Settings',
+            titleKey: 'navigation.settings',
             icon: Settings,
             path: '/settings',
             type: 'link'
@@ -186,12 +186,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                     `}
                                 >
                                     <item.icon size={20} />
-                                    <span className="font-medium text-sm">{item.title}</span>
+                                    <span className="font-medium text-sm">{t(`common:${item.titleKey}`)}</span>
                                 </Link>
                             ) : (
                                 <div>
                                     <button
-                                        onClick={() => toggleMenu(item.title)}
+                                        onClick={() => toggleMenu(item.titleKey)}
                                         className={`
                                             w-full flex items-center justify-between px-3 py-2.5 rounded-lg
                                             transition-colors duration-150
@@ -203,15 +203,15 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                     >
                                         <div className="flex items-center space-x-3">
                                             <item.icon size={20} />
-                                            <span className="font-medium text-sm">{item.title}</span>
+                                            <span className="font-medium text-sm">{t(`common:${item.titleKey}`)}</span>
                                         </div>
-                                        {expandedMenus[item.title] ? (
+                                        {expandedMenus[item.titleKey] ? (
                                             <ChevronDown size={16} />
                                         ) : (
                                             <ChevronRight size={16} />
                                         )}
                                     </button>
-                                    {expandedMenus[item.title] && (
+                                    {expandedMenus[item.titleKey] && (
                                         <div className="ml-4 mt-1 space-y-1">
                                             {item.items.map((subItem, subIndex) => (
                                                 <Link
@@ -226,7 +226,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                                         }
                                                     `}
                                                 >
-                                                    {subItem.title}
+                                                    {t(`common:${subItem.titleKey}`)}
                                                 </Link>
                                             ))}
                                         </div>
