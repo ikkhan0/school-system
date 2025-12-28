@@ -74,32 +74,42 @@ const MarksEntry = () => {
         }
     };
 
-    // Fetch students when class/section changes
+    // Fetch students when class/section/subject changes
     useEffect(() => {
-        if (!user || !selectedClass || !selectedSection) return;
+        if (!user || !selectedClass || !selectedSection || !selectedSubject) return;
 
         // Get class name from selected class ID
         const classData = classes.find(c => c._id === selectedClass);
         if (!classData) return;
 
+        // Find the selected subject's ID from classSubjects
+        const subjectData = classSubjects.find(s => s.name === selectedSubject);
+        if (!subjectData) {
+            console.warn('Subject not found in classSubjects');
+            setStudents([]);
+            return;
+        }
+
         setLoading(true);
 
-        // TODO: Implement subject filtering once students have enrolled_subjects data
-        console.warn('⚠️ Showing all students - subject filtering not yet implemented. Students need enrolled_subjects data.');
+        console.log(`📚 Fetching students enrolled in ${selectedSubject} (${subjectData._id}) for ${classData.name}-${selectedSection}`);
 
-        fetch(`${API_URL}/api/students/list?class_id=${classData.name}&section_id=${selectedSection}`, {
+        // Use the subject-filtered endpoint
+        fetch(`${API_URL}/api/students/list/by-subject?class_id=${classData.name}&section_id=${selectedSection}&subject_id=${subjectData._id}`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
             .then(data => {
+                console.log(`✅ Found ${data.length} students enrolled in ${selectedSubject}`);
                 setStudents(data);
                 setLoading(false);
             })
             .catch(err => {
-                console.error(err);
+                console.error('Error fetching students by subject:', err);
+                setStudents([]);
                 setLoading(false);
             });
-    }, [selectedClass, selectedSection, user, classes]);
+    }, [selectedClass, selectedSection, selectedSubject, user, classes, classSubjects]);
 
     // Load existing marks when exam/class/section/subject changes
     useEffect(() => {
@@ -420,10 +430,28 @@ const MarksEntry = () => {
             )}
 
             {/* Empty State */}
-            {!loading && students.length === 0 && (
-                <div className="bg-white rounded shadow p-8 text-center text-gray-500">
-                    <p>No students found for the selected class and section.</p>
-                    <p className="text-sm mt-2">Please select a different class or section.</p>
+            {!loading && students.length === 0 && selectedSubject && (
+                <div className="bg-white rounded shadow p-8 text-center">
+                    <div className="text-yellow-600 mb-4">
+                        <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <p className="text-lg font-semibold text-gray-700 mb-2">
+                        No students enrolled in <strong>{selectedSubject}</strong>
+                    </p>
+                    <p className="text-sm text-gray-600 mb-4">
+                        {classes.find(c => c._id === selectedClass)?.name} - {selectedSection}
+                    </p>
+                    <div className="bg-blue-50 border border-blue-200 rounded p-4 text-left">
+                        <p className="font-semibold text-blue-900 mb-2">To fix this:</p>
+                        <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+                            <li>Go to <strong>Bulk Subject Assignment</strong> page</li>
+                            <li>Select this class and section</li>
+                            <li>Assign <strong>{selectedSubject}</strong> to the students</li>
+                            <li>Return here to enter marks</li>
+                        </ol>
+                    </div>
                 </div>
             )}
 
