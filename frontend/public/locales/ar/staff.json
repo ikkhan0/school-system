@@ -1,0 +1,66 @@
+{
+    "title": "إدارة الموظفين",
+    "list": "قائمة الموظفين",
+    "add": "إضافة موظف",
+    "edit": "تعديل موظف",
+    "profile": "ملف الموظف",
+    "attendance": "حضور الموظفين",
+    "totalStaff": "إجمالي الموظفين",
+    "activeStaff": "الموظفين النشطين",
+    "presentToday": "الحاضرون اليوم",
+    "absentToday": "الغائبون اليوم",
+    "personalInfo": {
+        "title": "المعلومات الشخصية",
+        "firstName": "الاسم الأول",
+        "lastName": "اسم العائلة",
+        "fullName": "الاسم الكامل",
+        "fatherName": "اسم الأب",
+        "cnic": "رقم الهوية الوطنية",
+        "dateOfBirth": "تاريخ الميلاد",
+        "gender": "الجنس",
+        "male": "ذكر",
+        "female": "أنثى",
+        "photo": "الصورة"
+    },
+    "contact": {
+        "title": "معلومات الاتصال",
+        "phone": "رقم الهاتف",
+        "email": "عنوان البريد الإلكتروني",
+        "address": "العنوان",
+        "city": "المدينة",
+        "emergencyContact": "جهة اتصال الطوارئ"
+    },
+    "employment": {
+        "title": "تفاصيل التوظيف",
+        "employeeId": "رقم الموظف",
+        "designation": "المسمى الوظيفي",
+        "department": "القسم",
+        "joiningDate": "تاريخ الالتحاق",
+        "salary": "الراتب الشهري",
+        "qualification": "المؤهل",
+        "experience": "الخبرة (بالسنوات)"
+    },
+    "roles": {
+        "teacher": "معلم",
+        "admin": "مدير",
+        "accountant": "محاسب",
+        "librarian": "أمين مكتبة",
+        "labAssistant": "مساعد مختبر",
+        "other": "آخر"
+    },
+    "actions": {
+        "markAttendance": "تسجيل الحضور",
+        "viewAttendance": "عرض الحضور",
+        "viewProfile": "عرض الملف الشخصي",
+        "editProfile": "تعديل الملف الشخصي",
+        "deactivate": "إلغاء التفعيل",
+        "activate": "تفعيل"
+    },
+    "messages": {
+        "added": "تمت إضافة الموظف بنجاح",
+        "updated": "تم تحديث الموظف بنجاح",
+        "deleted": "تم حذف الموظف بنجاح",
+        "attendanceMarked": "تم تسجيل الحضور بنجاح",
+        "notFound": "لم يتم العثور على موظفين"
+    }
+}

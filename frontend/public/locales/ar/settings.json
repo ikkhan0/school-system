@@ -1,0 +1,61 @@
+{
+    "title": "الإعدادات",
+    "schoolSettings": "إعدادات المدرسة",
+    "systemSettings": "إعدادات النظام",
+    "preferences": "التفضيلات",
+    "school": {
+        "title": "معلومات المدرسة",
+        "name": "اسم المدرسة",
+        "email": "البريد الإلكتروني للمدرسة",
+        "phone": "هاتف المدرسة",
+        "address": "عنوان المدرسة",
+        "logo": "شعار المدرسة",
+        "uploadLogo": "رفع الشعار",
+        "changeLogo": "تغيير الشعار"
+    },
+    "academic": {
+        "title": "الإعدادات الأكاديمية",
+        "currentSession": "الجلسة الحالية",
+        "dateFormat": "تنسيق التاريخ",
+        "timeFormat": "تنسيق الوقت",
+        "weekStart": "بداية الأسبوع",
+        "gradeSystem": "نظام التقديرات"
+    },
+    "financial": {
+        "title": "الإعدادات المالية",
+        "currency": "العملة",
+        "currencySymbol": "رمز العملة",
+        "taxRate": "معدل الضريبة (%)",
+        "lateFeeAmount": "رسوم التأخير",
+        "bankDetails": "التفاصيل المصرفية"
+    },
+    "notification": {
+        "title": "إعدادات الإشعارات",
+        "emailNotifications": "إشعارات البريد الإلكتروني",
+        "smsNotifications": "إشعارات الرسائل النصية",
+        "whatsappNotifications": "إشعارات واتساب",
+        "enableReminders": "تفعيل التذكيرات"
+    },
+    "appearance": {
+        "title": "المظهر",
+        "theme": "السمة",
+        "light": "فاتح",
+        "dark": "داكن",
+        "auto": "تلقائي",
+        "language": "اللغة",
+        "dateFormat": "تنسيق التاريخ"
+    },
+    "backup": {
+        "title": "النسخ الاحتياطي والاستعادة",
+        "backupNow": "إنشاء نسخة احتياطية الآن",
+        "restoreBackup": "استعادة النسخة الاحتياطية",
+        "autoBackup": "النسخ الاحتياطي التلقائي",
+        "lastBackup": "آخر نسخة احتياطية"
+    },
+    "messages": {
+        "saved": "تم حفظ الإعدادات بنجاح",
+        "failed": "فشل في تحديث الإعدادات",
+        "logoUploaded": "تم رفع الشعار بنجاح",
+        "backupCreated": "تم إنشاء النسخة الاحتياطية بنجاح"
+    }
+}

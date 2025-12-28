@@ -26,7 +26,7 @@ i18n
             caches: ['localStorage'], // Cache user's language selection
         },
 
-        ns: ['common', 'dashboard', 'students', 'fees', 'attendance', 'exams', 'reports'], // Namespaces
+        ns: ['common', 'dashboard', 'students', 'fees', 'attendance', 'exams', 'reports', 'sessions', 'staff', 'settings', 'communication'], // Namespaces
         defaultNS: 'common', // Default namespace
 
         react: {

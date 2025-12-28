@@ -6,8 +6,10 @@ import SettingsContext from '../context/SettingsContext';
 import { formatDate } from '../utils/dateFormatter';
 import { SessionContext } from '../context/SessionContext';
 import { Calendar, Plus, Lock, Unlock, Archive, Edit2, Check, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const SessionManagement = () => {
+    const { t } = useTranslation(['sessions', 'common']);
     const { user } = useContext(AuthContext);
     const { dateFormat } = useContext(SettingsContext);
     const { refreshSessions } = useContext(SessionContext);
@@ -36,7 +38,7 @@ const SessionManagement = () => {
             setSessions(response.data);
         } catch (error) {
             console.error('Error fetching sessions:', error);
-            alert('Failed to load sessions');
+            alert(t('sessions:messages.loadFailed'));
         } finally {
             setLoading(false);
         }
@@ -51,14 +53,14 @@ const SessionManagement = () => {
                     formData,
                     { headers: { Authorization: `Bearer ${user.token} ` } }
                 );
-                alert('Session updated successfully!');
+                alert(t('sessions:messages.updated'));
             } else {
                 await axios.post(
                     `${API_URL} /api/sessions`,
                     formData,
                     { headers: { Authorization: `Bearer ${user.token} ` } }
                 );
-                alert('Session created successfully!');
+                alert(t('sessions:messages.created'));
             }
 
             setShowAddForm(false);
@@ -68,7 +70,7 @@ const SessionManagement = () => {
             refreshSessions();
         } catch (error) {
             console.error('Error saving session:', error);
-            alert(error.response?.data?.message || 'Failed to save session');
+            alert(error.response?.data?.message || t('sessions:messages.failed'));
         }
     };
 
@@ -93,12 +95,12 @@ const SessionManagement = () => {
             );
             fetchSessions();
         } catch (error) {
-            alert('Failed to update lock status');
+            alert(t('sessions:messages.lockFailed'));
         }
     };
 
     const archiveSession = async (sessionId) => {
-        if (!confirm('Are you sure you want to archive this session? It will no longer appear in the session switcher.')) {
+        if (!confirm(t('sessions:confirm.archive'))) {
             return;
         }
 
@@ -108,11 +110,11 @@ const SessionManagement = () => {
                 {},
                 { headers: { Authorization: `Bearer ${user.token}` } }
             );
-            alert('Session archived successfully!');
+            alert(t('sessions:messages.archived'));
             fetchSessions();
             refreshSessions();
         } catch (error) {
-            alert('Failed to archive session');
+            alert(t('sessions:messages.failed'));
         }
     };
 
@@ -126,7 +128,7 @@ const SessionManagement = () => {
             fetchSessions();
             refreshSessions();
         } catch (error) {
-            alert('Failed to set as current');
+            alert(t('sessions:messages.failed'));
         }
     };
 
@@ -142,8 +144,8 @@ const SessionManagement = () => {
         <div className="p-6 max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Academic Sessions</h1>
-                    <p className="text-gray-600 text-sm mt-1">Manage academic years and sessions</p>
+                    <h1 className="text-2xl font-bold text-gray-800">{t('sessions:title')}</h1>
+                    <p className="text-gray-600 text-sm mt-1">{t('sessions:description')}</p>
                 </div>
                 <button
                     onClick={() => {
@@ -154,7 +156,7 @@ const SessionManagement = () => {
                     className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                 >
                     <Plus size={20} />
-                    Add New Session
+                    {t('sessions:addNew')}
                 </button>
             </div>
 
@@ -162,26 +164,26 @@ const SessionManagement = () => {
             {showAddForm && (
                 <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                     <h2 className="text-lg font-semibold mb-4">
-                        {editingSession ? 'Edit Session' : 'Create New Session'}
+                        {editingSession ? t('sessions:edit') : t('sessions:createNew')}
                     </h2>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Session Name *
+                                    {t('sessions:sessionName')} *
                                 </label>
                                 <input
                                     type="text"
                                     value={formData.session_name}
                                     onChange={(e) => setFormData({ ...formData, session_name: e.target.value })}
-                                    placeholder="e.g., 2024-2025"
+                                    placeholder={t('sessions:placeholder.sessionName')}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
                                     required
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Start Date *
+                                    {t('sessions:startDate')} *
                                 </label>
                                 <input
                                     type="date"
@@ -193,7 +195,7 @@ const SessionManagement = () => {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    End Date *
+                                    {t('sessions:endDate')} *
                                 </label>
                                 <input
                                     type="date"
@@ -212,18 +214,18 @@ const SessionManagement = () => {
                                     className="mr-2"
                                 />
                                 <label htmlFor="is_current" className="text-sm font-medium text-gray-700">
-                                    Set as Current Session
+                                    {t('sessions:setCurrent')}
                                 </label>
                             </div>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Notes
+                                {t('sessions:notes')}
                             </label>
                             <textarea
                                 value={formData.notes}
                                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                placeholder="Optional notes about this session"
+                                placeholder={t('sessions:placeholder.notes')}
                                 className="w-full border border-gray-300 rounded-lg px-3 py-2"
                                 rows="2"
                             />
@@ -234,7 +236,7 @@ const SessionManagement = () => {
                                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
                             >
                                 <Check size={18} />
-                                {editingSession ? 'Update' : 'Create'} Session
+                                {editingSession ? t('sessions:buttons.update') : t('sessions:buttons.create')}
                             </button>
                             <button
                                 type="button"
@@ -245,7 +247,7 @@ const SessionManagement = () => {
                                 className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 flex items-center gap-2"
                             >
                                 <X size={18} />
-                                Cancel
+                                {t('common:cancel')}
                             </button>
                         </div>
                     </form>
@@ -267,17 +269,17 @@ const SessionManagement = () => {
                             </div>
                             {session.is_current && (
                                 <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-semibold">
-                                    Current
+                                    {t('sessions:current')}
                                 </span>
                             )}
                         </div>
 
                         <div className="space-y-2 text-sm text-gray-600 mb-4">
                             <p>
-                                <strong>Start:</strong> {formatDate(session.start_date, dateFormat)}
+                                <strong>{t('sessions:startDate')}:</strong> {formatDate(session.start_date, dateFormat)}
                             </p>
                             <p>
-                                <strong>End:</strong> {formatDate(session.end_date, dateFormat)}
+                                <strong>{t('sessions:endDate')}:</strong> {formatDate(session.end_date, dateFormat)}
                             </p>
                             {session.notes && (
                                 <p className="text-xs italic">{session.notes}</p>
@@ -287,11 +289,11 @@ const SessionManagement = () => {
                         <div className="flex items-center gap-2 mb-3">
                             <span className={`text-xs px-2 py-1 rounded-full ${session.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                                 }`}>
-                                {session.is_active ? 'Active' : 'Archived'}
+                                {session.is_active ? t('sessions:active') : t('sessions:archived')}
                             </span>
                             <span className={`text-xs px-2 py-1 rounded-full ${session.is_locked ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'
                                 }`}>
-                                {session.is_locked ? 'Locked' : 'Unlocked'}
+                                {session.is_locked ? t('sessions:locked') : t('sessions:unlocked')}
                             </span>
                         </div>
 
@@ -301,7 +303,7 @@ const SessionManagement = () => {
                                 className="flex items-center gap-1 text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded"
                             >
                                 <Edit2 size={14} />
-                                Edit
+                                {t('common:edit')}
                             </button>
 
                             {!session.is_current && session.is_active && (
@@ -310,7 +312,7 @@ const SessionManagement = () => {
                                     className="flex items-center gap-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1.5 rounded"
                                 >
                                     <Check size={14} />
-                                    Set Current
+                                    {t('sessions:buttons.setCurrent')}
                                 </button>
                             )}
 
@@ -319,7 +321,7 @@ const SessionManagement = () => {
                                 className="flex items-center gap-1 text-xs bg-yellow-100 hover:bg-yellow-200 text-yellow-700 px-3 py-1.5 rounded"
                             >
                                 {session.is_locked ? <Unlock size={14} /> : <Lock size={14} />}
-                                {session.is_locked ? 'Unlock' : 'Lock'}
+                                {session.is_locked ? t('sessions:unlock') : t('sessions:lock')}
                             </button>
 
                             {session.is_active && !session.is_current && (
@@ -328,7 +330,7 @@ const SessionManagement = () => {
                                     className="flex items-center gap-1 text-xs bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1.5 rounded"
                                 >
                                     <Archive size={14} />
-                                    Archive
+                                    {t('sessions:archive')}
                                 </button>
                             )}
                         </div>
@@ -339,13 +341,13 @@ const SessionManagement = () => {
             {sessions.length === 0 && (
                 <div className="text-center py-12 bg-white rounded-lg shadow-md">
                     <Calendar size={48} className="mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-700 mb-2">No Sessions Found</h3>
-                    <p className="text-gray-500 mb-4">Create your first academic session to get started</p>
+                    <h3 className="text-lg font-semibold text-gray-700 mb-2">{t('sessions:empty.title')}</h3>
+                    <p className="text-gray-500 mb-4">{t('sessions:empty.description')}</p>
                     <button
                         onClick={() => setShowAddForm(true)}
                         className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
                     >
-                        Create Session
+                        {t('sessions:empty.action')}
                     </button>
                 </div>
             )}

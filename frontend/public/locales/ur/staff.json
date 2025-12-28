@@ -1,0 +1,66 @@
+{
+    "title": "عملہ کا انتظام",
+    "list": "عملہ کی فہرست",
+    "add": "عملہ شامل کریں",
+    "edit": "عملہ میں ترمیم کریں",
+    "profile": "عملہ کا پروفائل",
+    "attendance": "عملہ کی حاضری",
+    "totalStaff": "کل عملہ",
+    "activeStaff": "فعال عملہ",
+    "presentToday": "آج حاضر",
+    "absentToday": "آج غیر حاضر",
+    "personalInfo": {
+        "title": "ذاتی معلومات",
+        "firstName": "پہلا نام",
+        "lastName": "آخری نام",
+        "fullName": "مکمل نام",
+        "fatherName": "والد کا نام",
+        "cnic": "شناختی کارڈ نمبر",
+        "dateOfBirth": "تاریخ پیدائش",
+        "gender": "جنس",
+        "male": "مرد",
+        "female": "عورت",
+        "photo": "تصویر"
+    },
+    "contact": {
+        "title": "رابطے کی معلومات",
+        "phone": "فون نمبر",
+        "email": "ای میل ایڈریس",
+        "address": "پتہ",
+        "city": "شہر",
+        "emergencyContact": "ہنگامی رابطہ"
+    },
+    "employment": {
+        "title": "ملازمت کی تفصیلات",
+        "employeeId": "ملازم آئی ڈی",
+        "designation": "عہدہ",
+        "department": "شعبہ",
+        "joiningDate": "شمولیت کی تاریخ",
+        "salary": "ماہانہ تنخواہ",
+        "qualification": "تعلیمی قابلیت",
+        "experience": "تجربہ (سال)"
+    },
+    "roles": {
+        "teacher": "استاد",
+        "admin": "منتظم",
+        "accountant": "اکاؤنٹنٹ",
+        "librarian": "لائبریرین",
+        "labAssistant": "لیب اسسٹنٹ",
+        "other": "دیگر"
+    },
+    "actions": {
+        "markAttendance": "حاضری لگائیں",
+        "viewAttendance": "حاضری دیکھیں",
+        "viewProfile": "پروفائل دیکھیں",
+        "editProfile": "پروفائل میں ترمیم کریں",
+        "deactivate": "غیر فعال کریں",
+        "activate": "فعال کریں"
+    },
+    "messages": {
+        "added": "عملہ کامیابی سے شامل ہوا",
+        "updated": "عملہ کامیابی سے اپ ڈیٹ ہوا",
+        "deleted": "عملہ کامیابی سے حذف ہوا",
+        "attendanceMarked": "حاضری کامیابی سے لگائی گئی",
+        "notFound": "کوئی عملہ نہیں ملا"
+    }
+}
