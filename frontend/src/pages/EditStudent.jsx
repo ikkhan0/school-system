@@ -166,24 +166,38 @@ const EditStudent = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            console.log('🔍 Form submission started');
+            console.log('📋 Current formData.image:', formData.image);
+            console.log('📋 Current formData.image type:', typeof formData.image);
+            console.log('📋 Is File?:', formData.image instanceof File);
+
             const data = new FormData();
             Object.keys(formData).forEach(key => {
                 if (key === 'subjects') {
                     data.append(key, JSON.stringify(formData[key]));
+                    console.log(`✅ Appended ${key}:`, JSON.stringify(formData[key]));
                 } else if (key === 'image' && formData[key]) {
                     data.append(key, formData[key]);
+                    console.log(`📸 Appended IMAGE:`, {
+                        name: formData[key].name,
+                        size: formData[key].size,
+                        type: formData[key].type
+                    });
                 } else if (formData[key]) {
                     data.append(key, formData[key]);
+                    console.log(`✅ Appended ${key}:`, formData[key]);
                 }
             });
 
-            await axios.put(`${API_URL}/api/students/${id}`, data, {
+            console.log('📤 Sending PUT request to:', `${API_URL}/api/students/${id}`);
+            const response = await axios.put(`${API_URL}/api/students/${id}`, data, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                     'Content-Type': 'multipart/form-data'
                 }
             });
 
+            console.log('✅ Response received:', response.data);
             alert('Student updated successfully!');
             navigate(`/student-profile/${id}`);
         } catch (error) {
