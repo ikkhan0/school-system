@@ -1,35 +1,81 @@
-const http = require('http');
+require('dotenv').config();
+const mongoose = require('mongoose');
+const User = require('./models/User');
+const School = require('./models/School');
+const Tenant = require('./models/Tenant');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const data = JSON.stringify({
-    username: 'admin',
-    password: 'admin'
-});
+// LOGIC FROM authRoutes.js
+async function testLoginLogic() {
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log('Connected to DB');
 
-const options = {
-    hostname: 'localhost',
-    port: 5000,
-    path: '/api/auth/login',
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': data.length
+        // Hardcode a username to test.
+        // I need a valid username. 'admin' is common.
+        const username = 'admin';
+        const password = 'password'; // Guessing, but logic should fail gracefully if wrong password, not 500.
+
+        // Find user
+        console.log(`Finding user: ${username}`);
+        const validUser = await User.findOne({ username })
+            .populate('school_id')
+            .populate('tenant_id');
+
+        console.log('User found:', validUser ? 'YES' : 'NO');
+        if (validUser) {
+            console.log('User details:', JSON.stringify(validUser, null, 2));
+
+            // Test password compare
+            // Note: if validUser.password is not a hash, bcrypt might error? 
+            // Or if it's missing?
+            console.log('Testing password comparison...');
+            const match = await bcrypt.compare(password, validUser.password);
+            console.log('Password match:', match);
+
+            // Simulate the rest
+            // Check if user is active
+            if (!validUser.is_active) {
+                console.log('User inactive');
+                return;
+            }
+
+            // Get school info
+            const schoolId = validUser.school_id ? validUser.school_id._id : null;
+            const tenantId = validUser.tenant_id ? validUser.tenant_id._id : null;
+
+            console.log('SchoolID:', schoolId);
+            console.log('TenantID:', tenantId);
+
+            let schoolName = 'Unknown School';
+            if (validUser.tenant_id && validUser.tenant_id.school_name) {
+                schoolName = validUser.tenant_id.school_name;
+            } else if (validUser.school_id && validUser.school_id.school_name) {
+                schoolName = validUser.school_id.school_name;
+            }
+            console.log('SchoolName:', schoolName);
+
+            // Generate Token
+            const token = jwt.sign(
+                {
+                    id: validUser._id,
+                    role: validUser.role,
+                    tenant_id: tenantId,
+                    school_id: schoolId
+                },
+                process.env.JWT_SECRET || 'secret123',
+                { expiresIn: '30d' }
+            );
+            console.log('Token generated successfully');
+        }
+
+    } catch (error) {
+        console.error('CRASH DETECTED:');
+        console.error(error);
+    } finally {
+        await mongoose.disconnect();
     }
-};
+}
 
-const req = http.request(options, (res) => {
-    console.log(`StatusCode: ${res.statusCode}`);
-    let body = '';
-    res.on('data', (d) => {
-        body += d;
-    });
-    res.on('end', () => {
-        console.log('Response:', body);
-    });
-});
-
-req.on('error', (error) => {
-    console.error('Error:', error);
-});
-
-req.write(data);
-req.end();
+testLoginLogic();

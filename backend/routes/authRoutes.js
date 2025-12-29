@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const School = require('../models/School'); // Ensure School model is registered
+const School = require('../models/School');
 const User = require('../models/User');
+const Tenant = require('../models/Tenant'); // Ensure Tenant model is registered
 
 // Generate JWT
 const generateToken = (id) => {
