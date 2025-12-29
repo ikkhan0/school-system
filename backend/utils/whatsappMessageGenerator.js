@@ -186,6 +186,8 @@ function generateSingleStudentFeeMessage(student, fee, school) {
  */
 function generateWhatsAppLink(phoneNumber, message) {
     try {
+        if (!phoneNumber) return null;
+
         // Clean phone number (remove spaces, dashes, etc.)
         let cleanNumber = phoneNumber.replace(/[\s\-\(\)]/g, '');
 

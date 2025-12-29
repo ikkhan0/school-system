@@ -313,6 +313,8 @@ router.post('/bulk-whatsapp', protect, async (req, res) => {
         // Group by family
         const familyGroups = {};
         students.forEach(student => {
+            if (!student.family_id) return; // Skip students with broken family references
+
             const familyId = student.family_id._id.toString();
             if (!familyGroups[familyId]) {
                 familyGroups[familyId] = {
