@@ -8,25 +8,22 @@ const multer = require('multer');
 const path = require('path');
 
 // Multer Config for staff photos
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, `staff-${Date.now()}${path.extname(file.originalname)}`);
-    }
-});
+const { uploadToImgBB } = require('../config/imgbb');
+
+// Multer Config for memory storage
+const storage = multer.memoryStorage();
 
 const upload = multer({
     storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     fileFilter: (req, file, cb) => {
-        const filetypes = /jpeg|jpg|png/;
+        const filetypes = /jpeg|jpg|png|gif|webp/; // Added more formats
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = filetypes.test(file.mimetype);
         if (extname && mimetype) {
             return cb(null, true);
         } else {
-            cb('Error: Images Only!');
+            cb(new Error('Images Only! (jpeg, jpg, png, gif, webp)'));
         }
     }
 });
@@ -44,20 +41,40 @@ router.post('/add', protect, upload.single('photo'), async (req, res) => {
         let parsedClasses = [];
 
         if (assigned_subjects) {
-            parsedSubjects = Array.isArray(assigned_subjects)
-                ? assigned_subjects
-                : JSON.parse(assigned_subjects);
+            try {
+                parsedSubjects = Array.isArray(assigned_subjects)
+                    ? assigned_subjects
+                    : JSON.parse(assigned_subjects);
+            } catch (e) {
+                parsedSubjects = [];
+            }
         }
 
         if (assigned_classes) {
-            parsedClasses = Array.isArray(assigned_classes)
-                ? assigned_classes
-                : JSON.parse(assigned_classes);
+            try {
+                parsedClasses = Array.isArray(assigned_classes)
+                    ? assigned_classes
+                    : JSON.parse(assigned_classes);
+            } catch (e) {
+                parsedClasses = [];
+            }
+        }
+
+        // Handle photo upload to ImgBB
+        let photoUrl = '';
+        if (req.file) {
+            try {
+                const base64Image = req.file.buffer.toString('base64');
+                photoUrl = await uploadToImgBB(base64Image);
+            } catch (uploadError) {
+                console.error("ImgBB Upload Error:", uploadError);
+                // Fallback or continue without image
+            }
         }
 
         const staff = await Staff.create({
             ...staffData,
-            photo: req.file ? `/uploads/${req.file.filename}` : '',
+            photo: photoUrl,
             tenant_id: req.tenant_id,
             assigned_subjects: parsedSubjects.map(id => ({ subject_id: id })),
             assigned_classes: parsedClasses
@@ -152,30 +169,41 @@ router.put('/:id', protect, upload.single('photo'), async (req, res) => {
 
         // Update basic fields
         Object.keys(staffData).forEach(key => {
-            if (staffData[key] !== undefined && staffData[key] !== '') {
+            if (staffData[key] !== undefined && staffData[key] !== 'null' && staffData[key] !== '') {
+                // Handle string "null" or empty if needed, or specific logic
                 staff[key] = staffData[key];
             }
         });
 
         // Update photo if new file uploaded
         if (req.file) {
-            staff.photo = `/uploads/${req.file.filename}`;
+            try {
+                const base64Image = req.file.buffer.toString('base64');
+                const photoUrl = await uploadToImgBB(base64Image);
+                staff.photo = photoUrl;
+            } catch (uploadError) {
+                console.error("ImgBB Upload Update Error:", uploadError);
+            }
         }
 
         // Update subjects if provided
         if (assigned_subjects) {
-            const parsedSubjects = Array.isArray(assigned_subjects)
-                ? assigned_subjects
-                : JSON.parse(assigned_subjects);
-            staff.assigned_subjects = parsedSubjects.map(id => ({ subject_id: id }));
+            try {
+                const parsedSubjects = Array.isArray(assigned_subjects)
+                    ? assigned_subjects
+                    : JSON.parse(assigned_subjects);
+                staff.assigned_subjects = parsedSubjects.map(id => ({ subject_id: id }));
+            } catch (e) { /* ignore JSON parse error */ }
         }
 
         // Update classes if provided
         if (assigned_classes) {
-            const parsedClasses = Array.isArray(assigned_classes)
-                ? assigned_classes
-                : JSON.parse(assigned_classes);
-            staff.assigned_classes = parsedClasses;
+            try {
+                const parsedClasses = Array.isArray(assigned_classes)
+                    ? assigned_classes
+                    : JSON.parse(assigned_classes);
+                staff.assigned_classes = parsedClasses;
+            } catch (e) { /* ignore */ }
         }
 
         await staff.save();
