@@ -19,8 +19,13 @@ router.get('/', protect, async (req, res) => {
     try {
         const { search } = req.query;
 
-        // Build query
-        const query = { tenant_id: req.tenant_id };
+        // Build query to support both tenant_id and school_id
+        const query = {
+            $or: [
+                { tenant_id: req.tenant_id },
+                { school_id: req.tenant_id }
+            ]
+        };
 
         // Add search filter if provided
         if (search) {
@@ -63,7 +68,10 @@ router.get('/:id', protect, async (req, res) => {
     try {
         const family = await Family.findOne({
             _id: req.params.id,
-            tenant_id: req.tenant_id
+            $or: [
+                { tenant_id: req.tenant_id },
+                { school_id: req.tenant_id }
+            ]
         });
 
         if (!family) {
