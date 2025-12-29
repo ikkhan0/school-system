@@ -5,7 +5,7 @@ const School = require('../models/School');
 const multer = require('multer');
 const { uploadToImgBB, deleteFromImgBB } = require('../config/imgbb');
 
-// Memory storage for ImgBB upload
+// Memory storage for ImgBB upload (used for school logos - public is OK)
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,

@@ -5,6 +5,7 @@ const checkPermission = require('../middleware/checkPermission');
 const Student = require('../models/Student');
 const Family = require('../models/Family');
 const { uploadToImgBB, deleteFromImgBB } = require('../config/imgbb');
+const { bufferToBase64DataURI, validateImageSize } = require('../utils/imageHelper');
 
 const multer = require('multer');
 const path = require('path');
@@ -295,28 +296,28 @@ router.post('/add', protect, checkPermission('students.create'), upload.single('
             }
         }
 
-        // Upload photo to ImgBB if provided
+        // Convert photo to Base64 for private storage (not using ImgBB for privacy)
         let photoUrl = '';
         if (req.file) {
             try {
-                console.log('📤 Starting student photo upload to ImgBB...');
+                console.log('📤 Processing student photo (Base64 for privacy)...');
                 console.log('File size:', req.file.size, 'bytes');
                 console.log('File mimetype:', req.file.mimetype);
 
-                const result = await uploadToImgBB(
-                    req.file.buffer,
-                    `student_${Date.now()}`
-                );
-                photoUrl = result.url;
-                console.log('✅ Student photo uploaded to ImgBB:', photoUrl);
+                // Validate image size (max 5MB)
+                validateImageSize(req.file.buffer, 5);
+
+                // Convert to Base64 data URI for private storage
+                photoUrl = bufferToBase64DataURI(req.file.buffer, req.file.mimetype);
+                console.log('✅ Student photo converted to Base64 (private storage)');
             } catch (uploadError) {
-                console.error('❌ ImgBB upload error:', uploadError);
+                console.error('❌ Photo processing error:', uploadError);
                 console.error('Error details:', {
                     message: uploadError.message,
                     stack: uploadError.stack,
                     name: uploadError.name
                 });
-                // Continue without photo if upload fails
+                // Continue without photo if processing fails
                 console.warn('⚠️ Continuing student creation without photo');
             }
         }
@@ -948,19 +949,16 @@ router.put('/:id', protect, upload.single('image'), async (req, res) => {
             }
         });
 
-        // Update photo if new file uploaded
+        // Update photo if new file uploaded (Base64 for privacy)
         if (req.file) {
             try {
-                // Upload new photo to ImgBB
-                const result = await uploadToImgBB(
-                    req.file.buffer,
-                    `student_${student._id}_${Date.now()}`
-                );
-                student.photo = result.url;
-                console.log('Student photo updated on ImgBB:', result.url);
+                // Validate and convert to Base64
+                validateImageSize(req.file.buffer, 5);
+                student.photo = bufferToBase64DataURI(req.file.buffer, req.file.mimetype);
+                console.log('Student photo updated (Base64 private storage)');
             } catch (uploadError) {
-                console.error('ImgBB upload error:', uploadError);
-                // Continue without updating photo if upload fails
+                console.error('Photo processing error:', uploadError);
+                // Continue without updating photo if processing fails
             }
         }
 
