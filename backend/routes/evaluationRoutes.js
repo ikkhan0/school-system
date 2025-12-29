@@ -20,9 +20,9 @@ router.get('/list', protect, async (req, res) => {
 
         // 1. Get all students (filtered by session if available)
         const studentQuery = { class_id, section_id, is_active: true, tenant_id: req.tenant_id };
-        if (req.session_id) {
-            studentQuery.current_session_id = req.session_id;
-        }
+        // if (req.session_id) {
+        //     studentQuery.current_session_id = req.session_id;
+        // }
         const students = await Student.find(studentQuery).populate('family_id');
 
         // 2. Get existing logs (filtered by session if available)
