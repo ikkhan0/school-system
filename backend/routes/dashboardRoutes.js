@@ -5,6 +5,8 @@ const Fee = require('../models/Fee');
 const DailyLog = require('../models/DailyLog');
 const Result = require('../models/Result');
 const Staff = require('../models/Staff');
+const Class = require('../models/Class');
+const Exam = require('../models/Exam');
 
 const { protect } = require('../middleware/auth');
 
@@ -23,6 +25,15 @@ router.get('/stats', protect, async (req, res) => {
 
         const totalStudents = await Student.countDocuments(studentQuery);
         const totalStaff = await Staff.countDocuments({ tenant_id: tenantId });
+        const totalClasses = await Class.countDocuments({ tenant_id: tenantId });
+
+        const todayDate = new Date();
+        todayDate.setHours(0, 0, 0, 0);
+        const upcomingExams = await Exam.countDocuments({
+            tenant_id: tenantId,
+            exam_date: { $gte: todayDate },
+            is_active: true
+        });
 
         // Today's attendance with session filter
         const today = new Date();
@@ -64,6 +75,8 @@ router.get('/stats', protect, async (req, res) => {
         res.json({
             totalStudents,
             totalStaff,
+            totalClasses,
+            upcomingExams,
             todayPresent,
             todayAbsent,
             feeDefaulters: activeDefaulters.length,

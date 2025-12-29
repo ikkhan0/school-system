@@ -30,9 +30,8 @@ router.get('/list', protect, async (req, res) => {
             student_id: { $in: students.map(s => s._id) },
             date: queryDate
         };
-        if (req.session_id) {
-            logQuery.session_id = req.session_id;
-        }
+        // Removed strict session_id check for logs to ensure backward compatibility
+        // The students are already filtered by session, so we only get logs for relevant students.
         const existingLogs = await DailyLog.find(logQuery);
 
         // 3. Merge
