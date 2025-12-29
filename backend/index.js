@@ -49,7 +49,7 @@ app.use('/api/exams', require('./routes/examRoutes'));
 app.use('/api/sessions', require('./routes/sessionRoutes'));
 app.use('/api/reports', require('./routes/reportsRoutes'));
 app.use('/api/whatsapp-templates', require('./routes/whatsappTemplateRoutes'));
-app.use('/api/family', require('./routes/familyRoutes'));
+app.use('/api/families', require('./routes/familyRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/super-admin', require('./routes/superAdminRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
