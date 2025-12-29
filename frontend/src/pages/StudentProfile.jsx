@@ -37,6 +37,14 @@ const StudentProfile = () => {
             const studentRes = await axios.get(`${API_URL}/api/students/${id}/profile`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
+
+            console.log('📥 Student profile received:', {
+                hasPhoto: !!studentRes.data.photo,
+                photoType: typeof studentRes.data.photo,
+                photoLength: studentRes.data.photo ? studentRes.data.photo.length : 0,
+                photoPreview: studentRes.data.photo ? studentRes.data.photo.substring(0, 50) + '...' : 'NO PHOTO'
+            });
+
             setStudent(studentRes.data);
 
             // Properly flatten student data for editing
