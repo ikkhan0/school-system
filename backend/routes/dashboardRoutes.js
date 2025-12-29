@@ -6,8 +6,10 @@ const DailyLog = require('../models/DailyLog');
 const Result = require('../models/Result');
 const Staff = require('../models/Staff');
 
+const { protect } = require('../middleware/auth');
+
 // GET /api/dashboard/stats - Existing stats
-router.get('/stats', async (req, res) => {
+router.get('/stats', protect, async (req, res) => {
     try {
         // Filter by tenant_id for multi-tenant isolation
         const tenantId = req.tenant_id;
@@ -74,7 +76,7 @@ router.get('/stats', async (req, res) => {
 });
 
 // GET /api/dashboard/charts - New endpoint for chart data
-router.get('/charts', async (req, res) => {
+router.get('/charts', protect, async (req, res) => {
     try {
         const tenantId = req.tenant_id;
 
@@ -198,7 +200,7 @@ router.get('/charts', async (req, res) => {
 });
 
 // GET /api/dashboard/absent-today - Get today's absent students
-router.get('/absent-today', async (req, res) => {
+router.get('/absent-today', protect, async (req, res) => {
     try {
         const tenantId = req.tenant_id;
         const today = new Date();
