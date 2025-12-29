@@ -157,17 +157,23 @@ const ResultGeneration = () => {
 
                             {/* Right: Student Photo */}
                             <div className="w-20 h-24 border-2 border-black bg-gray-100 flex items-center justify-center overflow-hidden">
-                                {(result.student_id.photo || result.student_id.image) ? (
-                                    <img
-                                        src={(result.student_id.photo || result.student_id.image).startsWith('http') || (result.student_id.photo || result.student_id.image).startsWith('data:')
-                                            ? (result.student_id.photo || result.student_id.image)
-                                            : `${API_URL}${result.student_id.photo || result.student_id.image}`}
-                                        alt="Student"
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <User className="text-gray-400" size={40} />
-                                )}
+                                {(() => {
+                                    const photo = result.student_id?.photo || result.student_id?.image;
+                                    if (photo) {
+                                        const src = (photo.startsWith('http') || photo.startsWith('data:'))
+                                            ? photo
+                                            : `${API_URL}${photo}`;
+                                        return (
+                                            <img
+                                                src={src}
+                                                alt="Student"
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => { e.target.style.display = 'none'; }}
+                                            />
+                                        );
+                                    }
+                                    return <User className="text-gray-400" size={40} />;
+                                })()}
                             </div>
                         </div>
 
