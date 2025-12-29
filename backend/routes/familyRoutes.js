@@ -216,7 +216,7 @@ router.post('/:id/whatsapp-message', protect, async (req, res) => {
             })
         );
 
-        const school = await School.findById(req.tenant_id);
+        const school = await School.findById(req.tenant_id) || { name: 'School', school_name: 'School', phone: '' };
 
         let message = "";
         try {
@@ -315,7 +315,7 @@ router.post('/bulk-whatsapp', protect, async (req, res) => {
             familyGroups[familyId].students.push(student);
         });
 
-        const school = await School.findById(req.tenant_id);
+        const school = await School.findById(req.tenant_id) || { name: 'School', school_name: 'School', phone: '' };
 
         // Generate messages for each family
         const familiesData = await Promise.all(

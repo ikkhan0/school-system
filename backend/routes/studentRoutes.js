@@ -525,6 +525,10 @@ router.get('/:id/siblings', protect, async (req, res) => {
             return res.status(404).json({ message: 'Student not found' });
         }
 
+        if (!student.family_id) {
+            return res.json([]);
+        }
+
         // Find siblings by family_id
         const siblings = await Student.find({
             family_id: student.family_id,

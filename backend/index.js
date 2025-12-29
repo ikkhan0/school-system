@@ -47,13 +47,20 @@ app.use('/api/fees', require('./routes/feeRoutes'));
 // app.use('/api/attendance', require('./routes/attendanceRoutes'));
 app.use('/api/exams', require('./routes/examRoutes'));
 app.use('/api/sessions', require('./routes/sessionRoutes'));
-app.use('/api/reports', require('./routes/reportRoutes'));
+app.use('/api/reports', require('./routes/reportsRoutes'));
 app.use('/api/whatsapp-templates', require('./routes/whatsappTemplateRoutes'));
 app.use('/api/family', require('./routes/familyRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/super-admin', require('./routes/superAdminRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/school', require('./routes/schoolRoutes'));
+app.use('/api/discounts', require('./routes/discountRoutes'));
+app.use('/api/expenses', require('./routes/expenseRoutes'));
+app.use('/api/evaluations', require('./routes/evaluationRoutes'));
+app.use('/api/promotions', require('./routes/promotionRoutes'));
+app.use('/api/fee-generation', require('./routes/feeGenerationRoutes'));
+app.use('/api/funds', require('./routes/fundRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Health check
 app.get('/api/health', (req, res) => {

@@ -461,6 +461,52 @@ router.get('/students', protect, async (req, res) => {
                 'Inactive': s.inactive
             }));
             res.json(formatted);
+        } else if (type === 'custom') {
+            const { fields } = req.query;
+            const fieldsToSelect = fields ? fields.split(',').join(' ') : 'roll_no full_name father_name class_id section_id';
+
+            const students = await Student.find(query).select(fieldsToSelect);
+
+            // Map Mongoose documents to flat objects with readable keys
+            const fieldLabels = {
+                roll_no: 'Roll No',
+                full_name: 'Name',
+                father_name: 'Father Name',
+                class_id: 'Class',
+                section_id: 'Section',
+                father_mobile: 'Father Mobile',
+                student_mobile: 'Student Mobile',
+                admission_date: 'Admission Date',
+                monthly_fee: 'Monthly Fee',
+                status: 'Status',
+                gender: 'Gender',
+                dob: 'Date of Birth',
+                address: 'Address',
+                city: 'City',
+                blood_group: 'Blood Group',
+                religion: 'Religion',
+                cnic: 'B-Form/CNIC',
+                father_cnic: 'Father CNIC'
+            };
+
+            const formatted = students.map(student => {
+                const doc = student.toObject();
+                const currentRow = {};
+
+                // Only include requested fields
+                const requestedFields = fields ? fields.split(',') : Object.keys(fieldLabels);
+
+                requestedFields.forEach(field => {
+                    let value = doc[field];
+                    if (field === 'admission_date' || field === 'dob') {
+                        value = value ? new Date(value).toLocaleDateString() : '-';
+                    }
+                    currentRow[fieldLabels[field] || field] = value || '-';
+                });
+                return currentRow;
+            });
+
+            res.json(formatted);
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
