@@ -1,0 +1,29 @@
+{
+    "title": "لوحة التحكم",
+    "welcome": "مرحباً",
+    "welcomeBack": "مرحباً بعودتك",
+    "stats": {
+        "totalStudents": "إجمالي الطلاب",
+        "totalStaff": "إجمالي الموظفين",
+        "totalClasses": "إجمالي الفصول",
+        "totalRevenue": "إجمالي الإيرادات",
+        "pendingFees": "الرسوم المعلقة",
+        "todayAttendance": "حضور اليوم",
+        "thisMonth": "هذا الشهر",
+        "thisWeek": "هذا الأسبوع"
+    },
+    "quickActions": {
+        "title": "إجراءات سريعة",
+        "addStudent": "إضافة طالب",
+        "collectFee": "تحصيل رسوم",
+        "markAttendance": "تسجيل الحضور",
+        "viewReports": "عرض التقارير",
+        "manageExams": "إدارة الامتحانات",
+        "sendNotification": "إرسال إشعار"
+    },
+    "absentStudents": {
+        "title": "الطلاب الغائبون اليوم",
+        "noAbsent": "لا يوجد طلاب غائبون اليوم",
+        "viewAll": "عرض الكل"
+    }
+}

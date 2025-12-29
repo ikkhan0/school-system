@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: school-management-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGO_URI
+        value: mongodb+srv://imran_db_user:Imran321123@school.ubwky7x.mongodb.net/school_db?retryWrites=true&w=majority&appName=Cluster0
+      - key: JWT_SECRET
+        value: isoft_secret_key_123
+      - key: PORT
+        value: 5000

@@ -1,0 +1,66 @@
+{
+    "title": "Staff Management",
+    "list": "Staff List",
+    "add": "Add Staff",
+    "edit": "Edit Staff",
+    "profile": "Staff Profile",
+    "attendance": "Staff Attendance",
+    "totalStaff": "Total Staff",
+    "activeStaff": "Active Staff",
+    "presentToday": "Present Today",
+    "absentToday": "Absent Today",
+    "personalInfo": {
+        "title": "Personal Information",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "fullName": "Full Name",
+        "fatherName": "Father's Name",
+        "cnic": "CNIC",
+        "dateOfBirth": "Date of Birth",
+        "gender": "Gender",
+        "male": "Male",
+        "female": "Female",
+        "photo": "Photo"
+    },
+    "contact": {
+        "title": "Contact Information",
+        "phone": "Phone Number",
+        "email": "Email Address",
+        "address": "Address",
+        "city": "City",
+        "emergencyContact": "Emergency Contact"
+    },
+    "employment": {
+        "title": "Employment Details",
+        "employeeId": "Employee ID",
+        "designation": "Designation",
+        "department": "Department",
+        "joiningDate": "Joining Date",
+        "salary": "Monthly Salary",
+        "qualification": "Qualification",
+        "experience": "Experience (Years)"
+    },
+    "roles": {
+        "teacher": "Teacher",
+        "admin": "Administrator",
+        "accountant": "Accountant",
+        "librarian": "Librarian",
+        "labAssistant": "Lab Assistant",
+        "other": "Other"
+    },
+    "actions": {
+        "markAttendance": "Mark Attendance",
+        "viewAttendance": "View Attendance",
+        "viewProfile": "View Profile",
+        "editProfile": "Edit Profile",
+        "deactivate": "Deactivate",
+        "activate": "Activate"
+    },
+    "messages": {
+        "added": "Staff member added successfully",
+        "updated": "Staff member updated successfully",
+        "deleted": "Staff member deleted successfully",
+        "attendanceMarked": "Attendance marked successfully",
+        "notFound": "No staff members found"
+    }
+}

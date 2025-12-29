@@ -1,0 +1,74 @@
+{
+    "title": "فیس مینجمنٹ",
+    "collection": {
+        "title": "فیس وصولی",
+        "collectFees": "فیس وصول کریں",
+        "feeVoucher": "فیس واؤچر",
+        "paymentHistory": "ادائیگی کی تاریخ",
+        "pendingFees": "زیر التواء فیسیں",
+        "searchStudent": "طالب علم تلاش کریں"
+    },
+    "payment": {
+        "studentName": "طالب علم کا نام",
+        "class": "جماعت",
+        "section": "سیکشن",
+        "month": "مہینہ",
+        "totalAmount": "کل رقم",
+        "paidAmount": "ادا شدہ رقم",
+        "remainingAmount": "باقی رقم",
+        "paymentDate": "ادائیگی کی تاریخ",
+        "paymentMode": "ادائیگی کا طریقہ",
+        "receiptNumber": "رسید نمبر",
+        "cash": "نقد",
+        "cheque": "چیک",
+        "bankTransfer": "بینک ٹرانسفر",
+        "online": "آن لائن ادائیگی"
+    },
+    "structure": {
+        "title": "فیس کا ڈھانچہ",
+        "monthlyFee": "ماہانہ فیس",
+        "admissionFee": "داخلہ فیس",
+        "examFee": "امتحانی فیس",
+        "transportFee": "ٹرانسپورٹ فیس",
+        "libraryFee": "لائبریری فیس",
+        "sportsFee": "کھیلوں کی فیس",
+        "otherFees": "دیگر فیسیں",
+        "totalFee": "کل فیس"
+    },
+    "discount": {
+        "title": "رعایتیں",
+        "discountPolicies": "رعایتی پالیسیاں",
+        "siblingDiscount": "بہن بھائی کی رعایت",
+        "scholarshipDiscount": "وظیفہ رعایت",
+        "earlyPayment": "جلد ادائیگی کی رعایت",
+        "discountAmount": "رعایت کی رقم",
+        "discountPercentage": "رعایت کی شرح",
+        "applyDiscount": "رعایت لگائیں"
+    },
+    "voucher": {
+        "title": "فیس واؤچر",
+        "generateVoucher": "واؤچر بنائیں",
+        "printVoucher": "واؤچر پرنٹ کریں",
+        "sendViaWhatsApp": "واٹس ایپ کے ذریعے بھیجیں",
+        "dueDate": "آخری تاریخ",
+        "issueDate": "جاری کرنے کی تاریخ",
+        "voucherNumber": "واؤچر نمبر"
+    },
+    "reports": {
+        "title": "فیس رپورٹس",
+        "dailyCollection": "روزانہ وصولی",
+        "monthlyCollection": "ماہانہ وصولی",
+        "defaultersList": "واجبات نہ دینے والوں کی فہرست",
+        "paidStudents": "فیس ادا کرنے والے طلباء",
+        "unpaidStudents": "فیس نہ دینے والے طلباء",
+        "collectionSummary": "وصولی کا خلاصہ"
+    },
+    "messages": {
+        "paymentSuccess": "ادائیگی کامیابی سے ریکارڈ ہو گئی",
+        "voucherGenerated": "واؤچر کامیابی سے بن گیا",
+        "discountApplied": "رعایت کامیابی سے لاگو ہو گئی",
+        "paymentFailed": "ادائیگی ناکام ہو گئی",
+        "invalidAmount": "غلط رقم درج کی گئی",
+        "noFeesFound": "اس طالب علم کے لیے کوئی فیس نہیں ملی"
+    }
+}

@@ -1,0 +1,52 @@
+{
+    "whatsapp": {
+        "title": "قوالب واتساب",
+        "templates": "القوالب",
+        "createTemplate": "إنشاء قالب",
+        "editTemplate": "تعديل القالب",
+        "templateName": "اسم القالب",
+        "templateContent": "محتوى القالب",
+        "variables": "المتغيرات",
+        "addVariable": "إضافة متغير",
+        "preview": "معاينة",
+        "sendMessage": "إرسال رسالة",
+        "bulkSend": "إرسال جماعي",
+        "selectRecipients": "اختر المستلمين",
+        "categories": {
+            "attendance": "الحضور",
+            "fees": "الرسوم",
+            "exams": "الامتحانات",
+            "general": "عام",
+            "announcements": "الإعلانات"
+        },
+        "defaultTemplates": {
+            "absent": "إشعار الغياب",
+            "feeReminder": "تذكير بالرسوم",
+            "examSchedule": "جدول الامتحانات",
+            "resultAnnouncement": "إعلان النتائج"
+        }
+    },
+    "messaging": {
+        "title": "المراسلة العائلية",
+        "send": "إرسال رسالة",
+        "compose": "إنشاء رسالة",
+        "recipient": "المستلم",
+        "subject": "الموضوع",
+        "message": "الرسالة",
+        "selectFamily": "اختر العائلة",
+        "selectStudents": "اختر الطلاب",
+        "allParents": "جميع أولياء الأمور",
+        "history": "سجل الرسائل",
+        "sent": "الرسائل المرسلة",
+        "scheduled": "المجدولة"
+    },
+    "messages": {
+        "templateCreated": "تم إنشاء القالب بنجاح",
+        "templateUpdated": "تم تحديث القالب بنجاح",
+        "templateDeleted": "تم حذف القالب بنجاح",
+        "messageSent": "تم إرسال الرسالة بنجاح",
+        "bulkMessageSent": "تم إرسال رسالة جماعية إلى {{count}} مستلم",
+        "sendFailed": "فشل في إرسال الرسالة",
+        "invalidTemplate": "تنسيق قالب غير صالح"
+    }
+}

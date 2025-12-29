@@ -1,0 +1,52 @@
+{
+    "whatsapp": {
+        "title": "واٹس ایپ ٹیمپلیٹس",
+        "templates": "ٹیمپلیٹس",
+        "createTemplate": "ٹیمپلیٹ بنائیں",
+        "editTemplate": "ٹیمپلیٹ میں ترمیم کریں",
+        "templateName": "ٹیمپلیٹ کا نام",
+        "templateContent": "ٹیمپلیٹ کا مواد",
+        "variables": "متغیرات",
+        "addVariable": "متغیر شامل کریں",
+        "preview": "پیش نظارہ",
+        "sendMessage": "پیغام بھیجیں",
+        "bulkSend": "بلک بھیجیں",
+        "selectRecipients": "وصول کنندگان منتخب کریں",
+        "categories": {
+            "attendance": "حاضری",
+            "fees": "فیسیں",
+            "exams": "امتحانات",
+            "general": "عمومی",
+            "announcements": "اعلانات"
+        },
+        "defaultTemplates": {
+            "absent": "غیر حاضری کی اطلاع",
+            "feeReminder": "فیس کی یاد دہانی",
+            "examSchedule": "امتحان کا شیڈول",
+            "resultAnnouncement": "نتیجہ کا اعلان"
+        }
+    },
+    "messaging": {
+        "title": "خاندانی پیغام رسانی",
+        "send": "پیغام بھیجیں",
+        "compose": "پیغام لکھیں",
+        "recipient": "وصول کنندہ",
+        "subject": "موضوع",
+        "message": "پیغام",
+        "selectFamily": "خاندان منتخب کریں",
+        "selectStudents": "طلباء منتخب کریں",
+        "allParents": "تمام والدین",
+        "history": "پیغامات کی تاریخ",
+        "sent": "بھیجے گئے پیغامات",
+        "scheduled": "طے شدہ"
+    },
+    "messages": {
+        "templateCreated": "ٹیمپلیٹ کامیابی سے بنایا گیا",
+        "templateUpdated": "ٹیمپلیٹ کامیابی سے اپ ڈیٹ ہوا",
+        "templateDeleted": "ٹیمپلیٹ کامیابی سے حذف ہوا",
+        "messageSent": "پیغام کامیابی سے بھیجا گیا",
+        "bulkMessageSent": "{{count}} وصول کنندگان کو بلک پیغام بھیجا گیا",
+        "sendFailed": "پیغام بھیجنے میں ناکامی",
+        "invalidTemplate": "غلط ٹیمپلیٹ فارمیٹ"
+    }
+}

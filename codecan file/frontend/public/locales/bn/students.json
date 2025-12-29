@@ -1,0 +1,114 @@
+{
+    "title": "Students",
+    "management": "Student Management",
+    "admission": {
+        "title": "Student Admission",
+        "newAdmission": "New Admission",
+        "admissionNumber": "Admission Number",
+        "admissionDate": "Admission Date",
+        "formDetails": "Admission Form Details"
+    },
+    "personalInfo": {
+        "title": "Personal Information",
+        "firstName": "First Name",
+        "middleName": "Middle Name",
+        "lastName": "Last Name",
+        "fullName": "Full Name",
+        "dateOfBirth": "Date of Birth",
+        "gender": "Gender",
+        "maleGender": "Male",
+        "female": "Female",
+        "other": "Other",
+        "bloodGroup": "Blood Group",
+        "religion": "Religion",
+        "caste": "Caste",
+        "category": "Category",
+        "nationalId": "National ID / B-Form",
+        "photo": "Student Photo"
+    },
+    "contact": {
+        "title": "Contact Information",
+        "mobileNumber": "Mobile Number",
+        "email": "Email Address",
+        "currentAddress": "Current Address",
+        "permanentAddress": "Permanent Address",
+        "city": "City",
+        "state": "State",
+        "postalCode": "Postal Code"
+    },
+    "parentInfo": {
+        "title": "Parent/Guardian Information",
+        "fatherName": "Father's Name",
+        "fatherPhone": "Father's Phone",
+        "fatherOccupation": "Father's Occupation",
+        "fatherIncome": "Father's Monthly Income",
+        "motherName": "Mother's Name",
+        "motherPhone": "Mother's Phone",
+        "motherOccupation": "Mother's Occupation",
+        "guardianName": "Guardian's Name",
+        "guardianPhone": "Guardian's Phone",
+        "guardianRelation": "Relation with Guardian",
+        "guardianAddress": "Guardian's Address"
+    },
+    "academicInfo": {
+        "title": "Academic Information",
+        "class": "Class",
+        "section": "Section",
+        "rollNumber": "Roll Number",
+        "session": "Academic Session",
+        "subjects": "Enrolled Subjects",
+        "previousSchool": "Previous School",
+        "previousClass": "Previous Class",
+        "transferCertificate": "Transfer Certificate"
+    },
+    "documents": {
+        "title": "Documents",
+        "birthCertificate": "Birth Certificate",
+        "transferCertificate": "Transfer Certificate",
+        "medicalRecords": "Medical Records",
+        "photographs": "Photographs",
+        "otherDocuments": "Other Documents",
+        "uploadDocument": "Upload Document"
+    },
+    "list": {
+        "title": "Students List",
+        "totalStudents": "Total Students",
+        "activeStudents": "Active Students",
+        "inactiveStudents": "Inactive Students",
+        "searchPlaceholder": "Search by name, roll number, or admission number",
+        "allClasses": "All Classes",
+        "showingCount": "Showing {{filtered}} of {{total}} students",
+        "filterByClass": "Filter by Class",
+        "filterBySection": "Filter by Section",
+        "filterBySession": "Filter by Session",
+        "exportList": "Export Students List"
+    },
+    "profile": {
+        "title": "Student Profile",
+        "viewProfile": "View Profile",
+        "editProfile": "Edit Profile",
+        "studentDetails": "Student Details",
+        "feeDetails": "Fee Details",
+        "attendanceRecord": "Attendance Record",
+        "examResults": "Exam Results",
+        "documents": "Documents"
+    },
+    "actions": {
+        "addStudent": "Add Student",
+        "editStudent": "Edit Student",
+        "deleteStudent": "Delete Student",
+        "activateStudent": "Activate Student",
+        "deactivateStudent": "Deactivate Student",
+        "promoteStudent": "Promote Student",
+        "importStudents": "Import Students",
+        "exportStudents": "Export Students"
+    },
+    "messages": {
+        "studentAdded": "Student added successfully",
+        "studentUpdated": "Student updated successfully",
+        "studentDeleted": "Student deleted successfully",
+        "confirmDelete": "Are you sure you want to delete this student?",
+        "noStudentsFound": "No students found",
+        "loadingStudents": "Loading students..."
+    }
+}

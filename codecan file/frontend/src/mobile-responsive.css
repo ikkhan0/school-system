@@ -1,0 +1,122 @@
+/* Mobile Responsive Utilities - Add to end of index.css */
+
+/* Mobile Responsive Base Styles */
+@media (max-width: 640px) {
+
+    /* Make all tables horizontally scrollable on mobile */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Reduce padding on mobile for all containers */
+    .max-w-7xl,
+    .max-w-6xl,
+    .max-w-5xl,
+    .max-w-4xl {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    /* Responsive text sizes */
+    h1 {
+        font-size: 1.5rem !important;
+        line-height: 2rem !important;
+    }
+
+    h2 {
+        font-size: 1.25rem !important;
+        line-height: 1.75rem !important;
+    }
+
+    h3 {
+        font-size: 1.125rem !important;
+        line-height: 1.5rem !important;
+    }
+
+    /* Button adjustments */
+    button:not(.no-mobile-adjust),
+    .btn {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.875rem !important;
+    }
+
+    /* Input fields - 16px prevents zoom on iOS */
+    input,
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+
+    /* Card padding */
+    .bg-white,
+    .shadow {
+        padding: 1rem !important;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+
+    .max-w-7xl,
+    .max-w-6xl {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+/* Responsive table wrapper */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+    .table-responsive table {
+        min-width: 600px;
+    }
+
+    .table-responsive th,
+    .table-responsive td {
+        padding: 0.5rem !important;
+        font-size: 0.875rem !important;
+    }
+}
+
+/* Responsive grid utility */
+.responsive-grid-1-2-3 {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .responsive-grid-1-2-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .responsive-grid-1-2-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Responsive container padding */
+.responsive-container {
+    padding: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .responsive-container {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .responsive-container {
+        padding: 2rem;
+    }
+}

@@ -1,0 +1,64 @@
+/* Print-friendly styles */
+@media print {
+
+    /* Hide navigation and non-essential elements */
+    .no-print,
+    nav,
+    button,
+    .navbar,
+    .sidebar,
+    .mobile-menu,
+    .action-buttons {
+        display: none !important;
+    }
+
+    /* Optimize page layout */
+    body {
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+    /* Ensure tables fit on page */
+    table {
+        page-break-inside: auto;
+        width: 100%;
+        font-size: 10pt;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    /* Optimize text for print */
+    h1,
+    h2,
+    h3 {
+        page-break-after: avoid;
+        color: black;
+    }
+
+    /* Remove shadows and borders */
+    .shadow,
+    .shadow-lg,
+    .shadow-md {
+        box-shadow: none !important;
+    }
+
+    /* Ensure proper spacing */
+    .container,
+    .max-w-7xl {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* Show all content */
+    .overflow-x-auto {
+        overflow: visible !important;
+    }
+}

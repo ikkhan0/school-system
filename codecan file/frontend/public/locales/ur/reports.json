@@ -1,0 +1,54 @@
+{
+    "title": "رپورٹس",
+    "generation": "رپورٹ بنانا",
+    "types": {
+        "student": "طلباء کی رپورٹس",
+        "fee": "فیس کی رپورٹس",
+        "attendance": "حاضری کی رپورٹس",
+        "exam": "امتحان کی رپورٹس",
+        "staff": "عملہ کی رپورٹس",
+        "financial": "مالیاتی رپورٹس"
+    },
+    "filters": {
+        "selectReport": "رپورٹ کی قسم منتخب کریں",
+        "selectClass": "جماعت منتخب کریں",
+        "selectSection": "سیکشن منتخب کریں",
+        "selectSession": "سیشن منتخب کریں",
+        "selectMonth": "مہینہ منتخب کریں",
+        "selectDateRange": "تاریخ کی حد منتخب کریں",
+        "fromDate": "شروع کی تاریخ",
+        "toDate": "آخری تاریخ"
+    },
+    "actions": {
+        "generate": "رپورٹ بنائیں",
+        "exportPDF": "PDF میں برآمد کریں",
+        "exportExcel": "Excel میں برآمد کریں",
+        "print": "رپورٹ پرنٹ کریں",
+        "email": "ای میل رپورٹ",
+        "share": "رپورٹ شیئر کریں"
+    },
+    "student": {
+        "studentList": "طلباء کی فہرست",
+        "studentProfile": "طالب علم پروفائل رپورٹ",
+        "admissionReport": "داخلہ رپورٹ",
+        "promotionReport": "ترقی رپورٹ"
+    },
+    "fee": {
+        "collectionReport": "فیس وصولی رپورٹ",
+        "defaultersReport": "فیس نہ دینے والے",
+        "monthlyCollection": "ماہانہ وصولی",
+        "classwiseCollection": "جماعت کے لحاظ سے وصولی"
+    },
+    "attendance": {
+        "dailyAttendance": "روزانہ حاضری",
+        "monthlyAttendance": "ماہانہ حاضری",
+        "absentReport": "غیر حاضری رپورٹ",
+        "shortageReport": "حاضری کی کمی"
+    },
+    "messages": {
+        "reportGenerated": "رپورٹ کامیابی سے بن گئی",
+        "noDataFound": "منتخب کردہ معیار کے لیے کوئی ڈیٹا نہیں ملا",
+        "selectFilters": "براہ کرم ضروری فلٹرز منتخب کریں",
+        "generatingReport": "رپورٹ بن رہی ہے..."
+    }
+}

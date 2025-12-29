@@ -1,0 +1,71 @@
+{
+    "title": "الامتحانات",
+    "management": "إدارة الامتحانات",
+    "exams": {
+        "title": "الامتحانات",
+        "createExam": "إنشاء امتحان",
+        "editExam": "تعديل امتحان",
+        "deleteExam": "حذف امتحان",
+        "examName": "اسم الامتحان",
+        "examType": "نوع الامتحان",
+        "examDate": "تاريخ الامتحان",
+        "totalMarks": "مجموع الدرجات",
+        "passingMarks": "درجة النجاح"
+    },
+    "types": {
+        "monthly": "اختبار شهري",
+        "midTerm": "امتحان منتصف الفصل",
+        "final": "الامتحان النهائي",
+        "quiz": "اختبار قصير",
+        "practical": "عملي"
+    },
+    "marks": {
+        "title": "إدخال الدرجات",
+        "examLabel": "الامتحان",
+        "enterMarks": "إدخال الدرجات",
+        "obtainedMarks": "الدرجات المحصلة",
+        "maxMarks": "الدرجات القصوى",
+        "percentage": "النسبة المئوية",
+        "grade": "التقدير",
+        "remarks": "ملاحظات"
+    },
+    "results": {
+        "title": "النتائج",
+        "generateResult": "إنشاء النتيجة",
+        "viewResult": "عرض النتيجة",
+        "resultCard": "بطاقة النتيجة",
+        "marksheet": "كشف الدرجات",
+        "totalMarks": "مجموع الدرجات",
+        "obtainedMarks": "الدرجات المحصلة",
+        "percentage": "النسبة المئوية",
+        "grade": "التقدير",
+        "position": "الترتيب",
+        "status": "الحالة",
+        "pass": "نجح",
+        "fail": "رسب"
+    },
+    "grading": {
+        "title": "نظام التقديرات",
+        "aPlus": "أ+ (90-100%)",
+        "a": "أ (80-89%)",
+        "b": "ب (70-79%)",
+        "c": "ج (60-69%)",
+        "d": "د (50-59%)",
+        "f": "راسب (أقل من 50%)"
+    },
+    "reports": {
+        "title": "تقارير الامتحانات",
+        "classResult": "ورقة نتائج الفصل",
+        "studentResult": "نتيجة الطالب",
+        "subjectwise": "تحليل حسب المادة",
+        "toppers": "قائمة المتفوقين",
+        "failedStudents": "الطلاب الراسبون"
+    },
+    "messages": {
+        "examCreated": "تم إنشاء الامتحان بنجاح",
+        "marksEntered": "تم إدخال الدرجات بنجاح",
+        "resultGenerated": "تم إنشاء النتيجة بنجاح",
+        "invalidMarks": "درجات غير صالحة",
+        "marksExceedMax": "لا يمكن أن تتجاوز الدرجات الحد الأقصى"
+    }
+}

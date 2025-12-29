@@ -1,0 +1,54 @@
+{
+    "title": "Reports",
+    "generation": "Report Generation",
+    "types": {
+        "student": "Student Reports",
+        "fee": "Fee Reports",
+        "attendance": "Attendance Reports",
+        "exam": "Exam Reports",
+        "staff": "Staff Reports",
+        "financial": "Financial Reports"
+    },
+    "filters": {
+        "selectReport": "Select Report Type",
+        "selectClass": "Select Class",
+        "selectSection": "Select Section",
+        "selectSession": "Select Session",
+        "selectMonth": "Select Month",
+        "selectDateRange": "Select Date Range",
+        "fromDate": "From Date",
+        "toDate": "To Date"
+    },
+    "actions": {
+        "generate": "Generate Report",
+        "exportPDF": "Export to PDF",
+        "exportExcel": "Export to Excel",
+        "print": "Print Report",
+        "email": "Email Report",
+        "share": "Share Report"
+    },
+    "student": {
+        "studentList": "Student List",
+        "studentProfile": "Student Profile Report",
+        "admissionReport": "Admission Report",
+        "promotionReport": "Promotion Report"
+    },
+    "fee": {
+        "collectionReport": "Fee Collection Report",
+        "defaultersReport": "Fee Defaulters",
+        "monthlyCollection": "Monthly Collection",
+        "classwiseCollection": "Classwise Collection"
+    },
+    "attendance": {
+        "dailyAttendance": "Daily Attendance",
+        "monthlyAttendance": "Monthly Attendance",
+        "absentReport": "Absent Report",
+        "shortageReport": "Attendance Shortage"
+    },
+    "messages": {
+        "reportGenerated": "Report generated successfully",
+        "noDataFound": "No data found for selected criteria",
+        "selectFilters": "Please select required filters",
+        "generatingReport": "Generating report..."
+    }
+}

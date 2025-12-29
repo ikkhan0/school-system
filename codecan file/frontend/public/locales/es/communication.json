@@ -1,0 +1,52 @@
+{
+    "whatsapp": {
+        "title": "WhatsApp Templates",
+        "templates": "Templates",
+        "createTemplate": "Create Template",
+        "editTemplate": "Edit Template",
+        "templateName": "Template Name",
+        "templateContent": "Template Content",
+        "variables": "Variables",
+        "addVariable": "Add Variable",
+        "preview": "Preview",
+        "sendMessage": "Send Message",
+        "bulkSend": "Bulk Send",
+        "selectRecipients": "Select Recipients",
+        "categories": {
+            "attendance": "Attendance",
+            "fees": "Fees",
+            "exams": "Exams",
+            "general": "General",
+            "announcements": "Announcements"
+        },
+        "defaultTemplates": {
+            "absent": "Absent Notification",
+            "feeReminder": "Fee Reminder",
+            "examSchedule": "Exam Schedule",
+            "resultAnnouncement": "Result Announcement"
+        }
+    },
+    "messaging": {
+        "title": "Family Messaging",
+        "send": "Send Message",
+        "compose": "Compose Message",
+        "recipient": "Recipient",
+        "subject": "Subject",
+        "message": "Message",
+        "selectFamily": "Select Family",
+        "selectStudents": "Select Students",
+        "allParents": "All Parents",
+        "history": "Message History",
+        "sent": "Sent Messages",
+        "scheduled": "Scheduled"
+    },
+    "messages": {
+        "templateCreated": "Template created successfully",
+        "templateUpdated": "Template updated successfully",
+        "templateDeleted": "Template deleted successfully",
+        "messageSent": "Message sent successfully",
+        "bulkMessageSent": "Bulk message sent to {{count}} recipients",
+        "sendFailed": "Failed to send message",
+        "invalidTemplate": "Invalid template format"
+    }
+}

@@ -4,15 +4,14 @@ const { protect } = require('../middleware/auth');
 const checkPermission = require('../middleware/checkPermission');
 const Student = require('../models/Student');
 const Family = require('../models/Family');
-const { uploadToImgBB, deleteFromImgBB } = require('../config/imgbb');
-const { bufferToBase64DataURI, validateImageSize } = require('../utils/imageHelper');
+const { uploadToCloudinary, deleteFromCloudinary, getPublicIdFromUrl } = require('../config/cloudinary');
 
 const multer = require('multer');
 const path = require('path');
 const { parseFile, validateStudentData, generateSampleCSV } = require('../utils/importStudents');
 
 
-// Multer Config - Memory storage for ImgBB
+// Multer Config - Memory storage for Cloudinary
 const storage = multer.memoryStorage();
 
 const upload = multer({
@@ -296,22 +295,28 @@ router.post('/add', protect, checkPermission('students.create'), upload.single('
             }
         }
 
-        // Upload photo to ImgBB
+        // Upload photo to Cloudinary if provided
         let photoUrl = '';
         if (req.file) {
             try {
-                console.log('📤 Processing student photo (ImgBB upload)...');
+                console.log('📤 Starting student photo upload to Cloudinary...');
+                console.log('File size:', req.file.size, 'bytes');
+                console.log('File mimetype:', req.file.mimetype);
 
-                // Validate image size (max 5MB)
-                validateImageSize(req.file.buffer, 5);
-
-                // Upload to ImgBB
-                const uploadResult = await uploadToImgBB(req.file.buffer, `student_${Date.now()}`);
-                photoUrl = uploadResult.url;
-
-                console.log('✅ Student photo uploaded to ImgBB:', photoUrl);
+                const result = await uploadToCloudinary(
+                    req.file.buffer,
+                    'student-photos',
+                    `student_${Date.now()}`
+                );
+                photoUrl = result.secure_url;
+                console.log('✅ Student photo uploaded to Cloudinary:', photoUrl);
             } catch (uploadError) {
-                console.error('❌ Photo upload error:', uploadError);
+                console.error('❌ Cloudinary upload error:', uploadError);
+                console.error('Error details:', {
+                    message: uploadError.message,
+                    stack: uploadError.stack,
+                    name: uploadError.name
+                });
                 // Continue without photo if upload fails
                 console.warn('⚠️ Continuing student creation without photo');
             }
@@ -792,8 +797,71 @@ router.get('/:id', protect, checkPermission('students.view'), async (req, res) =
     }
 });
 
-// Duplicate route removed
+// @desc    Update Student (including subjects)
+// @route   PUT /api/students/:id
+router.put('/:id', protect, checkPermission('students.edit'), upload.single('image'), async (req, res) => {
+    try {
+        const { father_name, father_mobile, father_cnic, subjects, ...studentData } = req.body;
 
+        const student = await Student.findOne({
+            _id: req.params.id,
+            tenant_id: req.tenant_id
+        });
+
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+
+        // Update family info if provided
+        if (father_mobile) {
+            let family = await Family.findOne({ father_mobile, tenant_id: req.tenant_id });
+            if (!family) {
+                family = await Family.create({
+                    father_name,
+                    father_mobile,
+                    father_cnic,
+                    tenant_id: req.tenant_id
+                });
+            }
+            student.family_id = family._id;
+            student.father_name = father_name;
+        }
+
+        // Update student data
+        Object.keys(studentData).forEach(key => {
+            if (studentData[key] !== undefined && studentData[key] !== '') {
+                student[key] = studentData[key];
+            }
+        });
+
+        // Update image if provided
+        if (req.file) {
+            student.image = `/uploads/${req.file.filename}`;
+        }
+
+        // Update subjects if provided
+        if (subjects) {
+            const subjectIds = Array.isArray(subjects) ? subjects : JSON.parse(subjects);
+            console.log(`📚 Updating subjects for student ${student.full_name}: ${subjectIds.length} subjects`);
+            student.enrolled_subjects = subjectIds.map(subject_id => ({
+                subject_id,
+                enrollment_date: new Date(),
+                is_active: true
+            }));
+            console.log(`✅ Subjects updated successfully for ${student.full_name}`);
+        }
+
+        await student.save();
+
+        const updatedStudent = await Student.findById(student._id)
+            .populate('family_id')
+            .populate('enrolled_subjects.subject_id');
+
+        res.json(updatedStudent);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 // NOTE: Duplicate route removed - primary profile route above handles all requests
 
@@ -881,25 +949,29 @@ router.put('/:id', protect, upload.single('image'), async (req, res) => {
             }
         });
 
-        // Update photo if new file uploaded (ImgBB)
-        console.log('📷 Checking for photo upload...', { hasFile: !!req.file });
+        // Update photo if new file uploaded
         if (req.file) {
             try {
-                console.log('📤 Uploading student photo to ImgBB...');
+                // Delete old photo from Cloudinary if exists
+                if (student.photo) {
+                    const oldPublicId = getPublicIdFromUrl(student.photo);
+                    if (oldPublicId) {
+                        await deleteFromCloudinary(oldPublicId);
+                    }
+                }
 
-                // Validate image size (max 5MB)
-                validateImageSize(req.file.buffer, 5);
-
-                const uploadResult = await uploadToImgBB(req.file.buffer, `student_${student._id}_${Date.now()}`);
-                student.photo = uploadResult.url;
-
-                console.log('✅ Student photo updated successfully (ImgBB):', student.photo);
+                // Upload new photo
+                const result = await uploadToCloudinary(
+                    req.file.buffer,
+                    'student-photos',
+                    `student_${student._id}_${Date.now()}`
+                );
+                student.photo = result.secure_url;
+                console.log('Student photo updated on Cloudinary:', result.secure_url);
             } catch (uploadError) {
-                console.error('❌ Photo upload error:', uploadError);
+                console.error('Cloudinary upload error:', uploadError);
                 // Continue without updating photo if upload fails
             }
-        } else {
-            console.log('⚠️ No photo file in request');
         }
 
         // Update subjects if provided

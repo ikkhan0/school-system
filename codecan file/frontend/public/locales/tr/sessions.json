@@ -1,0 +1,47 @@
+{
+    "title": "Academic Sessions",
+    "management": "Session Management",
+    "addNew": "Add New Session",
+    "createNew": "Create New Session",
+    "edit": "Edit Session",
+    "sessionName": "Session Name",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "setCurrent": "Set as Current Session",
+    "current": "Current",
+    "active": "Active",
+    "archived": "Archived",
+    "locked": "Locked",
+    "unlocked": "Unlocked",
+    "lock": "Lock",
+    "unlock": "Unlock",
+    "archive": "Archive",
+    "notes": "Notes",
+    "description": "Manage academic years and sessions",
+    "placeholder": {
+        "sessionName": "e.g., 2024-2025",
+        "notes": "Optional notes about this session"
+    },
+    "confirm": {
+        "archive": "Are you sure you want to archive this session? It will no longer appear in the session switcher."
+    },
+    "buttons": {
+        "setCurrent": "Set Current",
+        "update": "Update Session",
+        "create": "Create Session"
+    },
+    "messages": {
+        "created": "Session created successfully!",
+        "updated": "Session updated successfully!",
+        "archived": "Session archived successfully!",
+        "failed": "Failed to save session",
+        "loadFailed": "Failed to load sessions",
+        "lockUpdated": "Lock status updated",
+        "lockFailed": "Failed to update lock status"
+    },
+    "empty": {
+        "title": "No Sessions Found",
+        "description": "Create your first academic session to get started",
+        "action": "Create Session"
+    }
+}

@@ -1,0 +1,61 @@
+{
+    "title": "ترتیبات",
+    "schoolSettings": "اسکول کی ترتیبات",
+    "systemSettings": "نظام کی ترتیبات",
+    "preferences": "ترجیحات",
+    "school": {
+        "title": "اسکول کی معلومات",
+        "name": "اسکول کا نام",
+        "email": "اسکول کا ای میل",
+        "phone": "اسکول کا فون",
+        "address": "اسکول کا پتہ",
+        "logo": "اسکول کا لوگو",
+        "uploadLogo": "لوگو اپ لوڈ کریں",
+        "changeLogo": "لوگو تبدیل کریں"
+    },
+    "academic": {
+        "title": "تعلیمی ترتیبات",
+        "currentSession": "موجودہ سیشن",
+        "dateFormat": "تاریخ کی شکل",
+        "timeFormat": "وقت کی شکل",
+        "weekStart": "ہفتہ شروع ہوتا ہے",
+        "gradeSystem": "گریڈنگ سسٹم"
+    },
+    "financial": {
+        "title": "مالیاتی ترتیبات",
+        "currency": "کرنسی",
+        "currencySymbol": "کرنسی کی علامت",
+        "taxRate": "ٹیکس کی شرح (%)",
+        "lateFeeAmount": "تاخیر کی فیس",
+        "bankDetails": "بینک کی تفصیلات"
+    },
+    "notification": {
+        "title": "اطلاعات کی ترتیبات",
+        "emailNotifications": "ای میل اطلاعات",
+        "smsNotifications": "ایس ایم ایس اطلاعات",
+        "whatsappNotifications": "واٹس ایپ اطلاعات",
+        "enableReminders": "یاد دہانیاں فعال کریں"
+    },
+    "appearance": {
+        "title": "ظاہری شکل",
+        "theme": "تھیم",
+        "light": "روشن",
+        "dark": "تاریک",
+        "auto": "خودکار",
+        "language": "زبان",
+        "dateFormat": "تاریخ کی شکل"
+    },
+    "backup": {
+        "title": "بیک اپ اور بحالی",
+        "backupNow": "ابھی بیک اپ لیں",
+        "restoreBackup": "بیک اپ بحال کریں",
+        "autoBackup": "خودکار بیک اپ",
+        "lastBackup": "آخری بیک اپ"
+    },
+    "messages": {
+        "saved": "ترتیبات کامیابی سے محفوظ ہوئیں",
+        "failed": "ترتیبات اپ ڈیٹ کرنے میں ناکامی",
+        "logoUploaded": "لوگو کامیابی سے اپ لوڈ ہوا",
+        "backupCreated": "بیک اپ کامیابی سے بنایا گیا"
+    }
+}

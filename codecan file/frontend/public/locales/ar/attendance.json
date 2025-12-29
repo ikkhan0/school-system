@@ -1,0 +1,63 @@
+{
+    "title": "الحضور",
+    "management": "إدارة الحضور",
+    "marking": {
+        "title": "تسجيل الحضور",
+        "selectDate": "اختر التاريخ",
+        "selectClass": "اختر الفصل",
+        "selectSection": "اختر الشعبة",
+        "markAll": "تحديد الكل",
+        "markPresent": "تحديد كحاضر",
+        "markAbsent": "تحديد كغائب",
+        "markLeave": "تحديد كإجازة",
+        "markHoliday": "تحديد كعطلة"
+    },
+    "status": {
+        "present": "حاضر",
+        "absent": "غائب",
+        "late": "متأخر",
+        "leave": "في إجازة",
+        "holiday": "عطلة",
+        "halfDay": "نصف يوم"
+    },
+    "summary": {
+        "title": "ملخص الحضور",
+        "totalStudents": "إجمالي الطلاب",
+        "presentStudents": "الطلاب الحاضرون",
+        "absentStudents": "الطلاب الغائبون",
+        "leaveStudents": "الطلاب في إجازة",
+        "attendancePercentage": "نسبة الحضور"
+    },
+    "leave": {
+        "title": "إدارة الإجازات",
+        "applyLeave": "تقديم طلب إجازة",
+        "leaveType": "نوع الإجازة",
+        "sickLeave": "إجازة مرضية",
+        "casualLeave": "إجازة عارضة",
+        "medicalLeave": "إجازة طبية",
+        "fromDate": "من تاريخ",
+        "toDate": "إلى تاريخ",
+        "reason": "السبب",
+        "status": "الحالة",
+        "approved": "موافق عليها",
+        "pending": "قيد الانتظار",
+        "rejected": "مرفوضة"
+    },
+    "reports": {
+        "title": "تقارير الحضور",
+        "dailyReport": "التقرير اليومي",
+        "monthlyReport": "التقرير الشهري",
+        "classwise": "تقرير حسب الفصل",
+        "studentwise": "تقرير حسب الطالب",
+        "defaulters": "نقص الحضور",
+        "lowAttendance": "تنبيه انخفاض الحضور"
+    },
+    "messages": {
+        "attendanceMarked": "تم تسجيل الحضور بنجاح",
+        "attendanceUpdated": "تم تحديث الحضور بنجاح",
+        "leaveApplied": "تم تقديم طلب الإجازة",
+        "leaveApproved": "تمت الموافقة على الإجازة",
+        "leaveRejected": "تم رفض الإجازة",
+        "noAttendanceData": "لم يتم العثور على بيانات الحضور"
+    }
+}
