@@ -3,9 +3,9 @@ const router = express.Router();
 const { protect } = require('../middleware/auth');
 const School = require('../models/School');
 const multer = require('multer');
-const { uploadToCloudinary, deleteFromCloudinary, getPublicIdFromUrl } = require('../config/cloudinary');
+const { uploadToImgBB, deleteFromImgBB } = require('../config/imgbb');
 
-// Memory storage for Cloudinary upload
+// Memory storage for ImgBB upload
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
@@ -54,50 +54,37 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
             if (req.body.time_format) updateData.settings.time_format = req.body.time_format;
         }
 
-        // Upload to Cloudinary if file present
+        // Upload to ImgBB if file present
         if (req.file) {
             try {
-                console.log('📤 Starting logo upload to Cloudinary...');
+                console.log('📤 Starting logo upload to ImgBB...');
                 console.log('File size:', req.file.size, 'bytes');
                 console.log('File mimetype:', req.file.mimetype);
 
-                // Delete old logo from Cloudinary if exists
-                const existingSchool = await School.findById(req.tenant_id);
-                if (existingSchool && existingSchool.logo) {
-                    const oldPublicId = getPublicIdFromUrl(existingSchool.logo);
-                    if (oldPublicId) {
-                        console.log('🗑️ Deleting old logo:', oldPublicId);
-                        await deleteFromCloudinary(oldPublicId);
-                        console.log('✅ Old logo deleted from Cloudinary');
-                    }
-                }
-
-                // Upload new logo
-                console.log('⬆️ Uploading new logo...');
-                const result = await uploadToCloudinary(
+                // Upload new logo to ImgBB
+                const result = await uploadToImgBB(
                     req.file.buffer,
-                    'school-logos',
                     `school_${req.tenant_id}_logo`
                 );
 
-                updateData.logo = result.secure_url;
-                console.log('✅ Logo uploaded successfully to Cloudinary:', result.secure_url);
+                updateData.logo = result.url;
+                console.log('✅ Logo uploaded successfully to ImgBB:', result.url);
             } catch (uploadError) {
-                console.error('❌ Cloudinary upload error:', uploadError);
+                console.error('❌ ImgBB upload error:', uploadError);
                 console.error('Error details:', {
                     message: uploadError.message,
                     stack: uploadError.stack,
                     name: uploadError.name
                 });
                 return res.status(500).json({
-                    message: 'Failed to upload logo to Cloudinary',
+                    message: 'Failed to upload logo to ImgBB',
                     error: uploadError.message,
                     details: uploadError.toString()
                 });
             }
         }
 
-        console.log('Update data:', { ...updateData, logo: updateData.logo ? 'Cloudinary URL' : undefined });
+        console.log('Update data:', { ...updateData, logo: updateData.logo ? 'ImgBB URL' : undefined });
 
         // Use findOneAndUpdate with upsert to create if doesn't exist
         const school = await School.findOneAndUpdate(
