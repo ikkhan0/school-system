@@ -950,16 +950,29 @@ router.put('/:id', protect, upload.single('image'), async (req, res) => {
         });
 
         // Update photo if new file uploaded (Base64 for privacy)
+        console.log('📷 Checking for photo upload...', { hasFile: !!req.file });
         if (req.file) {
             try {
+                console.log('📤 Photo file detected:', {
+                    originalname: req.file.originalname,
+                    mimetype: req.file.mimetype,
+                    size: req.file.size,
+                    buffer: req.file.buffer ? 'Buffer exists' : 'NO BUFFER!'
+                });
+
                 // Validate and convert to Base64
                 validateImageSize(req.file.buffer, 5);
                 student.photo = bufferToBase64DataURI(req.file.buffer, req.file.mimetype);
-                console.log('Student photo updated (Base64 private storage)');
+                console.log('✅ Student photo updated successfully (Base64)', {
+                    photoLength: student.photo.length,
+                    photoStartsWith: student.photo.substring(0, 50)
+                });
             } catch (uploadError) {
-                console.error('Photo processing error:', uploadError);
+                console.error('❌ Photo processing error:', uploadError);
                 // Continue without updating photo if processing fails
             }
+        } else {
+            console.log('⚠️ No photo file in request');
         }
 
         // Update subjects if provided
