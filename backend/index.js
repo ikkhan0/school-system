@@ -56,7 +56,7 @@ app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/school', require('./routes/schoolRoutes'));
 app.use('/api/discounts', require('./routes/discountRoutes'));
 app.use('/api/expenses', require('./routes/expenseRoutes'));
-app.use('/api/evaluations', require('./routes/evaluationRoutes'));
+app.use('/api/evaluation', require('./routes/evaluationRoutes'));
 app.use('/api/promotions', require('./routes/promotionRoutes'));
 app.use('/api/fee-generation', require('./routes/feeGenerationRoutes'));
 app.use('/api/funds', require('./routes/fundRoutes'));
