@@ -198,10 +198,18 @@ const EditStudent = () => {
             });
 
             console.log('✅ Response received:', response.data);
+            console.log('🖼️ PHOTO IN RESPONSE:', {
+                hasPhoto: !!response.data.photo,
+                photoType: typeof response.data.photo,
+                photoLength: response.data.photo ? response.data.photo.length : 0,
+                photoPreview: response.data.photo ? response.data.photo.substring(0, 50) + '...' : 'NO PHOTO'
+            });
+
             alert('Student updated successfully!');
             navigate(`/student-profile/${id}`);
         } catch (error) {
-            console.error('Error updating student:', error);
+            console.error('❌ Error updating student:', error);
+            console.error('❌ Error details:', error.response?.data);
             alert(`Failed to update student: ${error.response?.data?.message || error.message}`);
         }
     };
