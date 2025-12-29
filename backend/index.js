@@ -44,7 +44,7 @@ app.use('/api/staff', require('./routes/staffRoutes'));
 app.use('/api/classes', require('./routes/classRoutes'));
 app.use('/api/subjects', require('./routes/subjectRoutes'));
 app.use('/api/fees', require('./routes/feeRoutes'));
-app.use('/api/attendance', require('./routes/attendanceRoutes'));
+// app.use('/api/attendance', require('./routes/attendanceRoutes'));
 app.use('/api/exams', require('./routes/examRoutes'));
 app.use('/api/sessions', require('./routes/sessionRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));

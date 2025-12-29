@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Student = require('../models/Student');
 const Fee = require('../models/Fee');
-const Attendance = require('../models/Attendance');
+const Attendance = require('../models/DailyLog');
 const Result = require('../models/Result');
 const Staff = require('../models/Staff');
 
