@@ -13,6 +13,7 @@ const AddStudent = () => {
     const [staff, setStaff] = useState([]);
     const [isStaffChild, setIsStaffChild] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [photoPreview, setPhotoPreview] = useState(null);
     const [formData, setFormData] = useState({
         full_name: '',
         father_name: '',
@@ -87,7 +88,17 @@ const AddStudent = () => {
     const handleChange = (e) => {
         const { name, value, type, files, checked } = e.target;
         if (type === 'file') {
-            setFormData(prev => ({ ...prev, [name]: files[0] }));
+            const file = files[0];
+            setFormData(prev => ({ ...prev, [name]: file }));
+
+            // Create preview
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setPhotoPreview(reader.result);
+                };
+                reader.readAsDataURL(file);
+            }
         } else if (type === 'checkbox' && name === 'is_staff_child') {
             setIsStaffChild(checked);
             setFormData(prev => ({
@@ -564,15 +575,47 @@ const AddStudent = () => {
                     {/* Photo Upload */}
                     <div>
                         <h2 className="text-xl font-bold text-gray-700 mb-4">Photo</h2>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Student Photo</label>
-                            <input
-                                type="file"
-                                name="image"
-                                onChange={handleChange}
-                                accept="image/*"
-                                className="w-full p-2 border rounded bg-white"
-                            />
+                        <div className="flex flex-col md:flex-row gap-4 items-start">
+                            {/* Photo Preview */}
+                            {photoPreview && (
+                                <div className="flex-shrink-0">
+                                    <p className="text-sm font-semibold text-gray-700 mb-2">Preview:</p>
+                                    <div className="w-32 h-32 border-2 border-blue-300 rounded-lg overflow-hidden">
+                                        <img
+                                            src={photoPreview}
+                                            alt="Preview"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Upload Input */}
+                            <div className="flex-1">
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Student Photo</label>
+                                <input
+                                    type="file"
+                                    name="image"
+                                    onChange={handleChange}
+                                    accept="image/*"
+                                    className="w-full p-2 border rounded bg-white"
+                                />
+                                {photoPreview && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setPhotoPreview(null);
+                                            setFormData(prev => ({ ...prev, image: null }));
+                                            // Reset file input
+                                            const fileInput = document.querySelector('input[name="image"]');
+                                            if (fileInput) fileInput.value = '';
+                                        }}
+                                        className="mt-2 text-sm text-red-600 hover:text-red-800"
+                                    >
+                                        Remove selected photo
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 
