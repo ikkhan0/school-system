@@ -51,6 +51,7 @@ app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/whatsapp-templates', require('./routes/whatsappTemplateRoutes'));
 app.use('/api/family', require('./routes/familyRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/super-admin', require('./routes/superAdminRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/school', require('./routes/schoolRoutes'));
 
