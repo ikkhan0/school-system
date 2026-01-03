@@ -50,6 +50,7 @@ import StudentPromotion from './pages/StudentPromotion';
 import Funds from './pages/Funds';
 import WhatsappTemplates from './pages/WhatsappTemplates';
 import BulkSubjectAssignment from './pages/BulkSubjectAssignment';
+import Profile from './pages/Profile';
 
 import './App.css';
 
@@ -106,6 +107,7 @@ function App() {
                   <Route path="/student-promotion" element={<ProtectedRoute><StudentPromotion /></ProtectedRoute>} />
                   <Route path="/funds" element={<ProtectedRoute><Funds /></ProtectedRoute>} />
                   <Route path="/whatsapp-templates" element={<ProtectedRoute><WhatsappTemplates /></ProtectedRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                 </Routes>
               </Layout>
             </SessionProvider>

@@ -128,6 +128,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             ]
         },
         {
+            titleKey: 'navigation.profile',
+            icon: User,
+            path: '/profile',
+            type: 'link'
+        },
+        {
             titleKey: 'navigation.settings',
             icon: Settings,
             path: '/settings',
