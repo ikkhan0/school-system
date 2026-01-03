@@ -132,9 +132,10 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             icon: DollarSign,
             type: 'group',
             paths: ['/expense'],
+            permissions: ['settings.edit'], // Expenses requires settings.edit
             items: [
-                { titleKey: 'navigation.expenseHeads', path: '/expense-heads' },
-                { titleKey: 'navigation.expenseManager', path: '/expenses' }
+                { titleKey: 'navigation.expenseHeads', path: '/expense-heads', permission: 'settings.edit' },
+                { titleKey: 'navigation.expenseManager', path: '/expenses', permission: 'settings.edit' }
             ]
         },
         {
@@ -149,8 +150,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             icon: MessageCircle,
             type: 'group',
             paths: ['/whatsapp-templates'],
+            permissions: ['settings.edit'], // Communication requires settings.edit
             items: [
-                { titleKey: 'navigation.whatsappTemplates', path: '/whatsapp-templates' }
+                { titleKey: 'navigation.whatsappTemplates', path: '/whatsapp-templates', permission: 'settings.edit' }
             ]
         },
         {
@@ -163,7 +165,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             titleKey: 'navigation.settings',
             icon: Settings,
             path: '/settings',
-            type: 'link'
+            type: 'link',
+            permission: 'settings.view' // Settings requires settings.view
         }
     ];
 
