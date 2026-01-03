@@ -37,8 +37,16 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     // Check if user has ANY of the permissions (for groups)
     const hasAnyPermission = (permissions) => {
-        if (!permissions || permissions.length === 0) return true;
+        // If no permissions specified, HIDE the menu item (secure by default)
+        if (!permissions || permissions.length === 0) {
+            // Exception: school_admin and super_admin see everything
+            return user?.role === 'super_admin' || user?.role === 'school_admin';
+        }
+
+        // Admins bypass all checks
         if (user?.role === 'super_admin' || user?.role === 'school_admin') return true;
+
+        // Check if user has ANY of the required permissions
         return permissions.some(perm => user?.permissions?.includes(perm));
     };
 
