@@ -129,10 +129,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             icon: BarChart,
             type: 'group',
             paths: ['/reports', '/advanced-reports'],
-            permissions: ['reports.view', 'reports.academic.view', 'reports.fee.view', 'reports.academic.export'], // Show if has ANY report permission
+            permissions: ['reports.view', 'reports.academic.view', 'reports.fee.view', 'reports.attendance.view', 'reports.staff.view'],
             items: [
-                { titleKey: 'navigation.basicReports', path: '/reports', permission: 'reports.academic.view' },
-                { titleKey: 'navigation.advancedReports', path: '/advanced-reports', permission: 'reports.academic.export' }
+                { titleKey: 'navigation.academicReports', path: '/reports', permission: 'reports.academic.view' },
+                { titleKey: 'navigation.feeReports', path: '/reports?tab=defaulters', permission: 'reports.fee.view' },
+                { titleKey: 'navigation.attendanceReports', path: '/reports?tab=attendance', permission: 'reports.attendance.view' },
+                { titleKey: 'navigation.staffReports', path: '/reports?tab=staff', permission: 'reports.staff.view' }
             ]
         },
         {
