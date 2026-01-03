@@ -180,4 +180,93 @@ router.delete('/:id', protect, async (req, res) => {
     }
 });
 
+// ========== USER SELF-SERVICE ENDPOINTS ==========
+
+// @desc    Get current user's profile
+// @route   GET /api/users/profile
+router.get('/profile', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json(user);
+    } catch (error) {
+        console.error('Get profile error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @desc    Update current user's own profile
+// @route   PUT /api/users/profile
+router.put('/profile', protect, async (req, res) => {
+    try {
+        const { full_name, email, preferred_language } = req.body;
+
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Update only allowed  fields
+        if (full_name !== undefined) user.full_name = full_name;
+        if (email !== undefined) user.email = email;
+        if (preferred_language !== undefined) user.preferred_language = preferred_language;
+
+        await user.save();
+
+        // Return user without password
+        const userResponse = user.toObject();
+        delete userResponse.password;
+
+        res.json({
+            message: 'Profile updated successfully',
+            user: userResponse
+        });
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @desc    Change current user's own password
+// @route   POST /api/users/change-password
+router.post('/change-password', protect, async (req, res) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+
+        if (!oldPassword || !newPassword) {
+            return res.status(400).json({ message: 'Old password and new password are required' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: 'New password must be at least 6 characters' });
+        }
+
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Verify oldPassword
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Current password is incorrect' });
+        }
+
+        // Hash and update password
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+
+        res.json({ message: 'Password changed successfully' });
+    } catch (error) {
+        console.error('Change password error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 module.exports = router;

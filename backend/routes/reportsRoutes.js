@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
+const checkPermission = require('../middleware/checkPermission');
 const Student = require('../models/Student');
 const DailyLog = require('../models/DailyLog');
 const Fee = require('../models/Fee');
@@ -9,7 +10,7 @@ const Result = require('../models/Result'); // Changed from ExamResult
 
 // @desc    Get Fee Defaulters (Balance > 0)
 // @route   GET /api/reports/defaulters
-router.get('/defaulters', protect, async (req, res) => {
+router.get('/defaulters', protect, checkPermission('reports.view'), async (req, res) => {
     try {
         const students = await Student.find({ is_active: true, tenant_id: req.tenant_id }).populate('family_id');
 
@@ -35,7 +36,7 @@ router.get('/defaulters', protect, async (req, res) => {
 
 // @desc    Get Attendance Shortage (<75%)
 // @route   GET /api/reports/shortage
-router.get('/shortage', protect, async (req, res) => {
+router.get('/shortage', protect, checkPermission('reports.view'), async (req, res) => {
     try {
         const students = await Student.find({ is_active: true, tenant_id: req.tenant_id }).populate('family_id');
 

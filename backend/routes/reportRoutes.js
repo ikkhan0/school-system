@@ -5,9 +5,11 @@ const Fee = require('../models/Fee');
 const Attendance = require('../models/DailyLog');
 const Result = require('../models/Result');
 const Staff = require('../models/Staff');
+const { protect } = require('../middleware/auth');
+const checkPermission = require('../middleware/checkPermission');
 
 // Student Reports
-router.get('/students', async (req, res) => {
+router.get('/students', protect, checkPermission('reports.view'), async (req, res) => {
     try {
         const { type, class_id, section_id, status, session_id } = req.query;
         let query = {};
@@ -101,7 +103,7 @@ router.get('/students', async (req, res) => {
 });
 
 // Fee Reports
-router.get('/fees', async (req, res) => {
+router.get('/fees', protect, checkPermission('reports.view'), async (req, res) => {
     try {
         const { type, start_date, end_date, class_id, month } = req.query;
 
@@ -165,7 +167,7 @@ router.get('/fees', async (req, res) => {
 });
 
 // Attendance Reports
-router.get('/attendance', async (req, res) => {
+router.get('/attendance', protect, checkPermission('reports.view'), async (req, res) => {
     try {
         const { type, start_date, end_date, class_id, section_id } = req.query;
 
@@ -258,7 +260,7 @@ router.get('/attendance', async (req, res) => {
 });
 
 // Exam Reports
-router.get('/exams', async (req, res) => {
+router.get('/exams', protect, checkPermission('reports.view'), async (req, res) => {
     try {
         const { type, class_id } = req.query;
 
@@ -312,7 +314,7 @@ router.get('/exams', async (req, res) => {
 });
 
 // Staff Reports
-router.get('/staff', async (req, res) => {
+router.get('/staff', protect, checkPermission('reports.view'), async (req, res) => {
     try {
         const { type, start_date, end_date } = req.query;
 
