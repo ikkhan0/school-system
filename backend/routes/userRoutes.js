@@ -133,13 +133,44 @@ router.patch('/:id/password', protect, async (req, res) => {
             return res.status(400).json({ message: 'Password must be at least 6 characters' });
         }
 
-        const user = await User.findOne({
+        const targetUser = await User.findOne({
             _id: req.params.id,
             tenant_id: req.tenant_id
         });
 
-        if (!user) {
+        if (!targetUser) {
             return res.status(404).json({ message: 'User not found' });
+        }
+
+        // SECURITY CHECK: Prevent privilege escalation
+        // Define role hierarchy (lower number = higher privilege)
+        const roleHierarchy = {
+            'super_admin': 1,
+            'school_admin': 2,
+            'teacher': 3,
+            'accountant': 3,
+            'cashier': 3,
+            'receptionist': 3,
+            'librarian': 3,
+            'transport_manager': 3
+        };
+
+        const requesterLevel = roleHierarchy[req.user.role] || 99;
+        const targetLevel = roleHierarchy[targetUser.role] || 99;
+
+        // Only super_admin and school_admin can reset passwords
+        if (req.user.role !== 'super_admin' && req.user.role !== 'school_admin') {
+            return res.status(403).json({
+                message: 'Only administrators can reset user passwords'
+            });
+        }
+
+        // Cannot reset password for higher or equal privilege level
+        // Exception: super_admin can reset anyone's password
+        if (req.user.role !== 'super_admin' && targetLevel <= requesterLevel) {
+            return res.status(403).json({
+                message: 'Cannot reset password for administrators or users of equal privilege level'
+            });
         }
 
         // Hash and update password
