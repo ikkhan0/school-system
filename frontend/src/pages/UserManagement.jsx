@@ -280,8 +280,8 @@ const AddUserModal = ({ onClose, onSuccess, token }) => {
         setLoading(true);
 
         try {
-            // Apply role template permissions
-            const permissions = ROLE_TEMPLATES[formData.role] || [];
+            // Start with NO permissions - admin will set them manually via Permissions button
+            const permissions = [];
 
             await axios.post('/api/users', { ...formData, permissions }, {
                 headers: { Authorization: `Bearer ${token}` }
