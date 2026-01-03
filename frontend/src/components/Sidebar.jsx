@@ -24,22 +24,42 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         }));
     };
 
+    // Permission checking function
+    const hasPermission = (requiredPermission) => {
+        // super_admin and school_admin have access to everything
+        if (user?.role === 'super_admin' || user?.role === 'school_admin') {
+            return true;
+        }
+
+        // Check if user has the specific permission
+        return user?.permissions?.includes(requiredPermission);
+    };
+
+    // Check if user has ANY of the permissions (for groups)
+    const hasAnyPermission = (permissions) => {
+        if (!permissions || permissions.length === 0) return true;
+        if (user?.role === 'super_admin' || user?.role === 'school_admin') return true;
+        return permissions.some(perm => user?.permissions?.includes(perm));
+    };
+
     const menuItems = [
         {
             titleKey: 'navigation.dashboard',
             icon: Home,
             path: '/dashboard',
-            type: 'link'
+            type: 'link',
+            permission: 'reports.view' // Dashboard requires reports.view
         },
         {
             titleKey: 'navigation.students',
             icon: Users,
             type: 'group',
             paths: ['/students', '/sibling-management'],
+            permissions: ['students.view'], // Group requires students.view
             items: [
-                { titleKey: 'navigation.studentList', path: '/students' },
-                { titleKey: 'navigation.addStudent', path: '/students/add' },
-                { titleKey: 'navigation.siblingManagement', path: '/sibling-management' }
+                { titleKey: 'navigation.studentList', path: '/students', permission: 'students.view' },
+                { titleKey: 'navigation.addStudent', path: '/students/add', permission: 'students.create' },
+                { titleKey: 'navigation.siblingManagement', path: '/sibling-management', permission: 'students.view' }
             ]
         },
         {
@@ -47,10 +67,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             icon: UserCheck,
             type: 'group',
             paths: ['/staff'],
+            permissions: ['staff.view'], // Group requires staff.view
             items: [
-                { titleKey: 'navigation.staffList', path: '/staff' },
-                { titleKey: 'navigation.addStaff', path: '/staff/add' },
-                { titleKey: 'navigation.staffAttendance', path: '/staff/attendance' }
+                { titleKey: 'navigation.staffList', path: '/staff', permission: 'staff.view' },
+                { titleKey: 'navigation.addStaff', path: '/staff/add', permission: 'staff.create' },
+                { titleKey: 'navigation.staffAttendance', path: '/staff/attendance', permission: 'staff.view' }
             ]
         },
         {
@@ -58,12 +79,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             icon: DollarSign,
             type: 'group',
             paths: ['/fee', '/discount', '/family-messaging'],
+            permissions: ['fees.view'], // Group requires fees.view
             items: [
-                { titleKey: 'navigation.feeCollection', path: '/fee-collection' },
-                { titleKey: 'navigation.bulkFeeSlips', path: '/bulk-slips' },
-                { titleKey: 'navigation.manageFunds', path: '/funds' },
-                { titleKey: 'navigation.discountPolicies', path: '/discount-policies' },
-                { titleKey: 'navigation.familyMessaging', path: '/family-messaging' }
+                { titleKey: 'navigation.feeCollection', path: '/fee-collection', permission: 'fees.collect' },
+                { titleKey: 'navigation.bulkFeeSlips', path: '/bulk-slips', permission: 'fees.view' },
+                { titleKey: 'navigation.manageFunds', path: '/funds', permission: 'fees.view' },
+                { titleKey: 'navigation.discountPolicies', path: '/discount-policies', permission: 'fees.discount' },
+                { titleKey: 'navigation.familyMessaging', path: '/family-messaging', permission: 'fees.view' }
             ]
         },
         {
@@ -71,12 +93,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             icon: BookOpen,
             type: 'group',
             paths: ['/classes', '/subjects', '/evaluation', '/sessions', '/student-promotion'],
+            permissions: ['classes.view', 'attendance.view'], // Require either permission
             items: [
-                { titleKey: 'navigation.classes', path: '/classes' },
-                { titleKey: 'navigation.subjects', path: '/subjects' },
-                { titleKey: 'navigation.attendance', path: '/evaluation' },
-                { titleKey: 'navigation.sessions', path: '/sessions' },
-                { titleKey: 'navigation.studentPromotion', path: '/student-promotion' }
+                { titleKey: 'navigation.classes', path: '/classes', permission: 'classes.view' },
+                { titleKey: 'navigation.subjects', path: '/subjects', permission: 'classes.view' },
+                { titleKey: 'navigation.attendance', path: '/evaluation', permission: 'attendance.mark' },
+                { titleKey: 'navigation.sessions', path: '/sessions', permission: 'settings.edit' },
+                { titleKey: 'navigation.studentPromotion', path: '/student-promotion', permission: 'settings.edit' }
             ]
         },
         {
@@ -84,12 +107,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             icon: FileText,
             type: 'group',
             paths: ['/exam', '/marks', '/results', '/class-result-sheet'],
+            permissions: ['exams.view'], // Group requires exams.view
             items: [
-                { titleKey: 'navigation.examMenu', path: '/exam-menu' },
-                { titleKey: 'navigation.examManager', path: '/exams' },
-                { titleKey: 'navigation.marksEntry', path: '/marks' },
-                { titleKey: 'navigation.resultGeneration', path: '/results' },
-                { titleKey: 'navigation.classResultSheet', path: '/class-result-sheet' }
+                { titleKey: 'navigation.examMenu', path: '/exam-menu', permission: 'exams.view' },
+                { titleKey: 'navigation.examManager', path: '/exams', permission: 'exams.view' },
+                { titleKey: 'navigation.marksEntry', path: '/marks', permission: 'exams.results' },
+                { titleKey: 'navigation.resultGeneration', path: '/results', permission: 'exams.view' },
+                { titleKey: 'navigation.classResultSheet', path: '/class-result-sheet', permission: 'exams.view' }
             ]
         },
         {
@@ -97,9 +121,10 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             icon: BarChart,
             type: 'group',
             paths: ['/reports', '/advanced-reports'],
+            permissions: ['reports.view'], // Group requires reports.view
             items: [
-                { titleKey: 'navigation.basicReports', path: '/reports' },
-                { titleKey: 'navigation.advancedReports', path: '/advanced-reports' }
+                { titleKey: 'navigation.basicReports', path: '/reports', permission: 'reports.view' },
+                { titleKey: 'navigation.advancedReports', path: '/advanced-reports', permission: 'reports.view' }
             ]
         },
         {
@@ -116,7 +141,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             titleKey: 'navigation.users',
             icon: Shield,
             path: '/users',
-            type: 'link'
+            type: 'link',
+            permission: 'users.view' // Users page requires users.view
         },
         {
             titleKey: 'navigation.communication',
@@ -219,22 +245,27 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                     </button>
                                     {expandedMenus[item.titleKey] && (
                                         <div className="ml-4 mt-1 space-y-1">
-                                            {item.items.map((subItem, subIndex) => (
-                                                <Link
-                                                    key={subIndex}
-                                                    to={subItem.path}
-                                                    className={`
+                                            {item.items
+                                                .filter(subItem => {
+                                                    // Filter sub-items based on permissions
+                                                    return subItem.permission ? hasPermission(subItem.permission) : true;
+                                                })
+                                                .map((subItem, subIndex) => (
+                                                    <Link
+                                                        key={subIndex}
+                                                        to={subItem.path}
+                                                        className={`
                                                         block px-3 py-2 rounded-lg text-sm
                                                         transition-colors duration-150
                                                         ${isActive(subItem.path)
-                                                            ? 'bg-blue-50 text-blue-600 font-medium'
-                                                            : 'text-gray-600 hover:bg-gray-50'
-                                                        }
+                                                                ? 'bg-blue-50 text-blue-600 font-medium'
+                                                                : 'text-gray-600 hover:bg-gray-50'
+                                                            }
                                                     `}
-                                                >
-                                                    {t(`common:${subItem.titleKey}`)}
-                                                </Link>
-                                            ))}
+                                                    >
+                                                        {t(`common:${subItem.titleKey}`)}
+                                                    </Link>
+                                                ))}
                                         </div>
                                     )}
                                 </div>
