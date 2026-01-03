@@ -115,13 +115,13 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             icon: FileText,
             type: 'group',
             paths: ['/exam', '/marks', '/results', '/class-result-sheet'],
-            permissions: ['exams.view'], // Group requires exams.view
+            permissions: ['exams.view', 'exams.marks.entry', 'exams.marks.view'], // Group if has ANY exam permission
             items: [
                 { titleKey: 'navigation.examMenu', path: '/exam-menu', permission: 'exams.view' },
                 { titleKey: 'navigation.examManager', path: '/exams', permission: 'exams.view' },
-                { titleKey: 'navigation.marksEntry', path: '/marks', permission: 'exams.results' },
-                { titleKey: 'navigation.resultGeneration', path: '/results', permission: 'exams.view' },
-                { titleKey: 'navigation.classResultSheet', path: '/class-result-sheet', permission: 'exams.view' }
+                { titleKey: 'navigation.marksEntry', path: '/marks', permission: 'exams.marks.entry' },
+                { titleKey: 'navigation.resultGeneration', path: '/results', permission: 'exams.results.print' },
+                { titleKey: 'navigation.classResultSheet', path: '/class-result-sheet', permission: 'exams.marks.view' }
             ]
         },
         {
@@ -129,10 +129,10 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             icon: BarChart,
             type: 'group',
             paths: ['/reports', '/advanced-reports'],
-            permissions: ['reports.view'], // Group requires reports.view
+            permissions: ['reports.view', 'reports.academic.view', 'reports.fee.view', 'reports.academic.export'], // Show if has ANY report permission
             items: [
-                { titleKey: 'navigation.basicReports', path: '/reports', permission: 'reports.view' },
-                { titleKey: 'navigation.advancedReports', path: '/advanced-reports', permission: 'reports.view' }
+                { titleKey: 'navigation.basicReports', path: '/reports', permission: 'reports.academic.view' },
+                { titleKey: 'navigation.advancedReports', path: '/advanced-reports', permission: 'reports.academic.export' }
             ]
         },
         {
