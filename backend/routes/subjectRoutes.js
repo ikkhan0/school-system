@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Subject = require('../models/Subject');
 const { protect } = require('../middleware/auth');
+const checkPermission = require('../middleware/checkPermission');
 
 // @desc    Create a new subject
 // @route   POST /api/subjects
-router.post('/', protect, async (req, res) => {
+router.post('/', protect, checkPermission('classes.edit'), async (req, res) => {
     try {
         const subject = await Subject.create({
             ...req.body,
@@ -19,7 +20,7 @@ router.post('/', protect, async (req, res) => {
 
 // @desc    Get all subjects for school
 // @route   GET /api/subjects
-router.get('/', protect, async (req, res) => {
+router.get('/', protect, checkPermission('classes.view'), async (req, res) => {
     try {
         const subjects = await Subject.find({
             tenant_id: req.tenant_id,
@@ -33,7 +34,7 @@ router.get('/', protect, async (req, res) => {
 
 // @desc    Get subjects for a specific class
 // @route   GET /api/subjects/class/:classId
-router.get('/class/:classId', protect, async (req, res) => {
+router.get('/class/:classId', protect, checkPermission('classes.view'), async (req, res) => {
     try {
         const Class = require('../models/Class');
         const classData = await Class.findById(req.params.classId).populate('subjects');
@@ -50,7 +51,7 @@ router.get('/class/:classId', protect, async (req, res) => {
 
 // @desc    Update a subject
 // @route   PUT /api/subjects/:id
-router.put('/:id', protect, async (req, res) => {
+router.put('/:id', protect, checkPermission('classes.edit'), async (req, res) => {
     try {
         const subject = await Subject.findOne({
             _id: req.params.id,
@@ -72,7 +73,7 @@ router.put('/:id', protect, async (req, res) => {
 
 // @desc    Delete a subject (soft delete)
 // @route   DELETE /api/subjects/:id
-router.delete('/:id', protect, async (req, res) => {
+router.delete('/:id', protect, checkPermission('classes.edit'), async (req, res) => {
     try {
         const subject = await Subject.findOne({
             _id: req.params.id,

@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
+const checkPermission = require('../middleware/checkPermission');
 const Class = require('../models/Class');
 
 // @route   GET /api/classes
 // @desc    Get all classes
 // @access  Private
-router.get('/', protect, async (req, res) => {
+router.get('/', protect, checkPermission('classes.view'), async (req, res) => {
     try {
         const classes = await Class.find({ tenant_id: req.tenant_id }).sort({ name: 1 });
         res.json(classes);
@@ -19,7 +20,7 @@ router.get('/', protect, async (req, res) => {
 // @route   POST /api/classes
 // @desc    Create a new class
 // @access  Private
-router.post('/', protect, async (req, res) => {
+router.post('/', protect, checkPermission('classes.create'), async (req, res) => {
     const { name, sections } = req.body;
 
     try {
@@ -40,7 +41,7 @@ router.post('/', protect, async (req, res) => {
 // @route   PUT /api/classes/:id
 // @desc    Update class name and/or sections
 // @access  Private
-router.put('/:id', protect, async (req, res) => {
+router.put('/:id', protect, checkPermission('classes.edit'), async (req, res) => {
     const { name, sections } = req.body;
 
     try {
@@ -68,7 +69,7 @@ router.put('/:id', protect, async (req, res) => {
 // @route   DELETE /api/classes/:id
 // @desc    Delete a class
 // @access  Private
-router.delete('/:id', protect, async (req, res) => {
+router.delete('/:id', protect, checkPermission('classes.delete'), async (req, res) => {
     try {
         const classData = await Class.findOne({
             _id: req.params.id,
@@ -90,7 +91,7 @@ router.delete('/:id', protect, async (req, res) => {
 // @route   PUT /api/classes/:id/subjects
 // @desc    Assign subjects to a class and auto-assign to all students in that class
 // @access  Private
-router.put('/:id/subjects', protect, async (req, res) => {
+router.put('/:id/subjects', protect, checkPermission('classes.edit'), async (req, res) => {
     try {
         const { subjects } = req.body; // Array of subject IDs
         const Student = require('../models/Student');

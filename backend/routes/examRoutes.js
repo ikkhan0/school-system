@@ -5,10 +5,11 @@ const Result = require('../models/Result');
 const Student = require('../models/Student');
 
 const { protect } = require('../middleware/auth');
+const checkPermission = require('../middleware/checkPermission');
 
 // @desc    Create Exam
 // @route   POST /api/exams
-router.post('/', protect, async (req, res) => {
+router.post('/', protect, checkPermission('exams.create'), async (req, res) => {
     try {
         const exam = await Exam.create({
             ...req.body,
@@ -26,7 +27,7 @@ router.post('/', protect, async (req, res) => {
 
 // @desc    Update Exam
 // @route   PUT /api/exams/:id
-router.put('/:id', protect, async (req, res) => {
+router.put('/:id', protect, checkPermission('exams.edit'), async (req, res) => {
     try {
         const exam = await Exam.findOne({ _id: req.params.id, tenant_id: req.tenant_id });
 
@@ -46,7 +47,7 @@ router.put('/:id', protect, async (req, res) => {
 
 // @desc    Get All Exams (Active and Inactive)
 // @route   GET /api/exams
-router.get('/', protect, async (req, res) => {
+router.get('/', protect, checkPermission('exams.view'), async (req, res) => {
     try {
         // Return all exams, not just active ones
         const exams = await Exam.find({ tenant_id: req.tenant_id }).sort({ createdAt: -1 });
@@ -58,7 +59,7 @@ router.get('/', protect, async (req, res) => {
 
 // @desc    Delete Exam
 // @route   DELETE /api/exams/:id
-router.delete('/:id', protect, async (req, res) => {
+router.delete('/:id', protect, checkPermission('exams.delete'), async (req, res) => {
     try {
         const exam = await Exam.findOne({ _id: req.params.id, tenant_id: req.tenant_id });
 
@@ -111,7 +112,7 @@ router.patch('/:id/toggle-active', protect, async (req, res) => {
 // @desc    Save Marks (Bulk)
 // @desc    Save Marks (Bulk)
 // @route   POST /api/exams/marks
-router.post('/marks', protect, async (req, res) => {
+router.post('/marks', protect, checkPermission('exams.results'), async (req, res) => {
     try {
         const { exam_id, class_id, section_id, subject, marks_data } = req.body;
         // marks_data = [{ student_id, obtained_marks, total_marks }]
@@ -205,7 +206,7 @@ const Fee = require('../models/Fee'); // Add Fee model import
 
 // @desc    Get Result Card Data for Class
 // @route   GET /api/exams/results?exam_id=X&class_id=Y&section_id=Z
-router.get('/results', protect, async (req, res) => {
+router.get('/results', protect, checkPermission('exams.view'), async (req, res) => {
     try {
         const { exam_id, class_id, section_id } = req.query;
 

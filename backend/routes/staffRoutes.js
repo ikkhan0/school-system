@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
+const checkPermission = require('../middleware/checkPermission');
 const Staff = require('../models/Staff');
 const StaffAttendance = require('../models/StaffAttendance');
 const Salary = require('../models/Salary');
@@ -32,7 +33,7 @@ const upload = multer({
 
 // @desc    Add new staff member
 // @route   POST /api/staff/add
-router.post('/add', protect, upload.single('photo'), async (req, res) => {
+router.post('/add', protect, checkPermission('staff.create'), upload.single('photo'), async (req, res) => {
     try {
         const { assigned_subjects, assigned_classes, ...staffData } = req.body;
 
@@ -89,7 +90,7 @@ router.post('/add', protect, upload.single('photo'), async (req, res) => {
 
 // @desc    Get all staff members (alias for /list)
 // @route   GET /api/staff
-router.get('/', protect, async (req, res) => {
+router.get('/', protect, checkPermission('staff.view'), async (req, res) => {
     try {
         const { designation, department, status } = req.query;
 
@@ -112,7 +113,7 @@ router.get('/', protect, async (req, res) => {
 
 // @desc    Get all staff members
 // @route   GET /api/staff/list
-router.get('/list', protect, async (req, res) => {
+router.get('/list', protect, checkPermission('staff.view'), async (req, res) => {
     try {
         const { designation, department, status } = req.query;
 
@@ -135,7 +136,7 @@ router.get('/list', protect, async (req, res) => {
 
 // @desc    Get staff member details
 // @route   GET /api/staff/:id
-router.get('/:id', protect, async (req, res) => {
+router.get('/:id', protect, checkPermission('staff.view'), async (req, res) => {
     try {
         const staff = await Staff.findOne({
             _id: req.params.id,
@@ -154,7 +155,7 @@ router.get('/:id', protect, async (req, res) => {
 
 // @desc    Update staff member
 // @route   PUT /api/staff/:id
-router.put('/:id', protect, upload.single('photo'), async (req, res) => {
+router.put('/:id', protect, checkPermission('staff.edit'), upload.single('photo'), async (req, res) => {
     try {
         const { assigned_subjects, assigned_classes, ...staffData } = req.body;
 
@@ -241,7 +242,7 @@ router.get('/:id/profile', protect, async (req, res) => {
 
 // @desc    Mark staff attendance
 // @route   POST /api/staff/attendance/mark
-router.post('/attendance/mark', protect, async (req, res) => {
+router.post('/attendance/mark', protect, checkPermission('staff.edit'), async (req, res) => {
     try {
         const { attendanceRecords } = req.body;
         const fs = require('fs');
@@ -376,7 +377,7 @@ router.post('/attendance/mark', protect, async (req, res) => {
 
 // @desc    Get daily attendance
 // @route   GET /api/staff/attendance/daily?date=YYYY-MM-DD
-router.get('/attendance/daily', protect, async (req, res) => {
+router.get('/attendance/daily', protect, checkPermission('staff.view'), async (req, res) => {
     try {
         const { date } = req.query;
         const targetDate = date ? new Date(date) : new Date();

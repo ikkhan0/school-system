@@ -5,10 +5,11 @@ const Student = require('../models/Student');
 const Family = require('../models/Family');
 
 const { protect } = require('../middleware/auth');
+const checkPermission = require('../middleware/checkPermission');
 
 // @desc    Get Daily Logs for a class (or initialize them)
 // @route   GET /api/evaluation/list?class_id=X&section_id=Y&date=YYYY-MM-DD
-router.get('/list', protect, async (req, res) => {
+router.get('/list', protect, checkPermission('attendance.view'), async (req, res) => {
     try {
         const { class_id, section_id, date } = req.query;
         if (!class_id || !section_id || !date) {
@@ -67,7 +68,7 @@ router.get('/list', protect, async (req, res) => {
 
 // @desc    Save/Update Bulk Evaluation
 // @route   POST /api/evaluation/save
-router.post('/save', protect, async (req, res) => {
+router.post('/save', protect, checkPermission('attendance.mark'), async (req, res) => {
     try {
         const { date, evaluations } = req.body;
 
