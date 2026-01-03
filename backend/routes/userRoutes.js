@@ -174,8 +174,8 @@ router.patch('/:id/password', protect, async (req, res) => {
         }
 
         // Hash and update password
-        user.password = await bcrypt.hash(password, 10);
-        await user.save();
+        targetUser.password = await bcrypt.hash(password, 10);
+        await targetUser.save();
 
         res.json({ message: 'Password updated successfully' });
     } catch (error) {
