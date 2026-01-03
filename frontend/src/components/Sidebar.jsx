@@ -215,75 +215,91 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
                 {/* Navigation Menu */}
                 <nav className="flex-1 overflow-y-auto py-4 px-2">
-                    {menuItems.map((item, index) => (
-                        <div key={index} className="mb-1">
-                            {item.type === 'link' ? (
-                                <Link
-                                    to={item.path}
-                                    className={`
+                    {menuItems
+                        .filter(item => {
+                            // Hide admin-only items from non-admins
+                            if (item.adminOnly && user?.role !== 'super_admin' && user?.role !== 'school_admin') {
+                                return false;
+                            }
+                            // Check group permissions
+                            if (item.type === 'group' && item.permissions) {
+                                return hasAnyPermission(item.permissions);
+                            }
+                            // Check link permissions
+                            if (item.type === 'link' && item.permission) {
+                                return hasPermission(item.permission);
+                            }
+                            return true;
+                        })
+                        .map((item, index) => (
+                            <div key={index} className="mb-1">
+                                {item.type === 'link' ? (
+                                    <Link
+                                        to={item.path}
+                                        className={`
                                         flex items-center space-x-3 px-3 py-2.5 rounded-lg
                                         transition-colors duration-150
                                         ${isActive(item.path)
-                                            ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600'
-                                            : 'text-gray-700 hover:bg-gray-50'
-                                        }
+                                                ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600'
+                                                : 'text-gray-700 hover:bg-gray-50'
+                                            }
                                     `}
-                                >
-                                    <item.icon size={20} />
-                                    <span className="font-medium text-sm">{t(`common:${item.titleKey}`)}</span>
-                                </Link>
-                            ) : (
-                                <div>
-                                    <button
-                                        onClick={() => toggleMenu(item.titleKey)}
-                                        className={`
+                                    >
+                                        <item.icon size={20} />
+                                        <span className="font-medium text-sm">{t(`common:${item.titleKey}`)}</span>
+                                    </Link>
+                                ) : (
+                                    <div>
+                                        <button
+                                            onClick={() => toggleMenu(item.titleKey)}
+                                            className={`
                                             w-full flex items-center justify-between px-3 py-2.5 rounded-lg
                                             transition-colors duration-150
                                             ${isGroupActive(item.paths)
-                                                ? 'bg-gray-50 text-blue-600'
-                                                : 'text-gray-700 hover:bg-gray-50'
-                                            }
+                                                    ? 'bg-gray-50 text-blue-600'
+                                                    : 'text-gray-700 hover:bg-gray-50'
+                                                }
                                         `}
-                                    >
-                                        <div className="flex items-center space-x-3">
-                                            <item.icon size={20} />
-                                            <span className="font-medium text-sm">{t(`common:${item.titleKey}`)}</span>
-                                        </div>
-                                        {expandedMenus[item.titleKey] ? (
-                                            <ChevronDown size={16} />
-                                        ) : (
-                                            <ChevronRight size={16} />
-                                        )}
-                                    </button>
-                                    {expandedMenus[item.titleKey] && (
-                                        <div className="ml-4 mt-1 space-y-1">
-                                            {item.items
-                                                .filter(subItem => {
-                                                    // Filter sub-items based on permissions
-                                                    return subItem.permission ? hasPermission(subItem.permission) : true;
-                                                })
-                                                .map((subItem, subIndex) => (
-                                                    <Link
-                                                        key={subIndex}
-                                                        to={subItem.path}
-                                                        className={`
+                                        >
+                                            <div className="flex items-center space-x-3">
+                                                <item.icon size={20} />
+                                                <span className="font-medium text-sm">{t(`common:${item.titleKey}`)}</span>
+                                            </div>
+                                            {expandedMenus[item.titleKey] ? (
+                                                <ChevronDown size={16} />
+                                            ) : (
+                                                <ChevronRight size={16} />
+                                            )}
+                                        </button>
+                                        {expandedMenus[item.titleKey] && (
+                                            <div className="ml-4 mt-1 space-y-1">
+                                                {item.items
+                                                    .filter(subItem => {
+                                                        // Filter sub-items based on permissions
+                                                        return subItem.permission ? hasPermission(subItem.permission) : true;
+                                                    })
+                                                    .map((subItem, subIndex) => (
+                                                        <Link
+                                                            key={subIndex}
+                                                            to={subItem.path}
+                                                            className={`
                                                         block px-3 py-2 rounded-lg text-sm
                                                         transition-colors duration-150
                                                         ${isActive(subItem.path)
-                                                                ? 'bg-blue-50 text-blue-600 font-medium'
-                                                                : 'text-gray-600 hover:bg-gray-50'
-                                                            }
+                                                                    ? 'bg-blue-50 text-blue-600 font-medium'
+                                                                    : 'text-gray-600 hover:bg-gray-50'
+                                                                }
                                                     `}
-                                                    >
-                                                        {t(`common:${subItem.titleKey}`)}
-                                                    </Link>
-                                                ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    ))}
+                                                        >
+                                                            {t(`common:${subItem.titleKey}`)}
+                                                        </Link>
+                                                    ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
                 </nav>
 
                 {/* User Info Section */}
