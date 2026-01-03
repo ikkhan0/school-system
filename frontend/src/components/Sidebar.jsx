@@ -151,7 +151,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             icon: Shield,
             path: '/users',
             type: 'link',
-            permission: 'users.view' // Users page requires users.view
+            permission: 'users.view',
+            adminOnly: true // Only admins can access user management
         },
         {
             titleKey: 'navigation.communication',
