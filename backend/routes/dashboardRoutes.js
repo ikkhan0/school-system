@@ -72,6 +72,12 @@ router.get('/stats', protect, async (req, res) => {
 
         const totalFeeOutstanding = activeDefaulters.reduce((sum, f) => sum + (f.balance || 0), 0);
 
+        // Get unique student IDs who have outstanding dues
+        // Using Set to avoid counting the same student multiple times (e.g., arrears)
+        const uniqueStudentsWithDues = new Set(
+            activeDefaulters.map(fee => fee.student_id._id.toString())
+        );
+
         res.json({
             totalStudents,
             totalStaff,
@@ -79,7 +85,7 @@ router.get('/stats', protect, async (req, res) => {
             upcomingExams,
             todayPresent,
             todayAbsent,
-            feeDefaulters: activeDefaulters.length,
+            feeDefaulters: uniqueStudentsWithDues.size, // Count unique students, not fee records
             totalFeeOutstanding: Math.round(totalFeeOutstanding)
         });
     } catch (error) {
