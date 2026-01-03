@@ -52,6 +52,18 @@ const Dashboard = () => {
             const res = await fetch(`${API_URL}/api/dashboard/stats`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
+
+            // Check for 403 BEFORE parsing JSON
+            if (res.status === 403) {
+                setError('no_permission');
+                setLoading(false);
+                return;
+            }
+
+            if (!res.ok) {
+                throw new Error('Failed to fetch stats');
+            }
+
             const data = await res.json();
 
             // Calculate attendance rate
@@ -76,6 +88,16 @@ const Dashboard = () => {
             const res = await fetch(`${API_URL}/api/dashboard/charts`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
+
+            // Check for 403 BEFORE parsing JSON  
+            if (res.status === 403) {
+                return; // Already handled in fetchDashboardStats
+            }
+
+            if (!res.ok) {
+                throw new Error('Failed to fetch charts');
+            }
+
             const data = await res.json();
             setChartData(data);
         } catch (error) {
