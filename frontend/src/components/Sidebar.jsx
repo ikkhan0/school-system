@@ -5,7 +5,7 @@ import AuthContext from '../context/AuthContext';
 import {
     Home, Users, UserCheck, DollarSign, BookOpen, FileText,
     BarChart, Shield, Settings, ChevronDown, ChevronRight,
-    Calendar, GraduationCap, Menu, X, MessageCircle
+    Calendar, GraduationCap, Menu, X, MessageCircle, User
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
