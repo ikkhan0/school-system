@@ -65,25 +65,54 @@ router.patch('/:id', protect, async (req, res) => {
     try {
         const { full_name, email, role, is_active } = req.body;
 
-        const user = await User.findOne({
+        const targetUser = await User.findOne({
             _id: req.params.id,
             tenant_id: req.tenant_id
         });
 
-        if (!user) {
+        if (!targetUser) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Update fields
-        if (full_name !== undefined) user.full_name = full_name;
-        if (email !== undefined) user.email = email;
-        if (role !== undefined) user.role = role;
-        if (is_active !== undefined) user.is_active = is_active;
+        // SECURITY CHECK: Only admins can edit users
+        if (req.user.role !== 'super_admin' && req.user.role !== 'school_admin') {
+            return res.status(403).json({
+                message: 'Only administrators can edit user accounts'
+            });
+        }
 
-        await user.save();
+        // SECURITY CHECK: school_admin cannot edit other admins
+        const roleHierarchy = {
+            'super_admin': 1,
+            'school_admin': 2,
+            'teacher': 3,
+            'accountant': 3,
+            'cashier': 3,
+            'receptionist': 3,
+            'librarian': 3,
+            'transport_manager': 3
+        };
+
+        const requesterLevel = roleHierarchy[req.user.role] || 99;
+        const targetLevel = roleHierarchy[targetUser.role] || 99;
+
+        // school_admin cannot edit users of equal or higher privilege
+        if (req.user.role === 'school_admin' && targetLevel <= requesterLevel) {
+            return res.status(403).json({
+                message: 'Cannot edit administrators or users of equal privilege level'
+            });
+        }
+
+        // Update user fields
+        if (full_name) targetUser.full_name = full_name;
+        if (email) targetUser.email = email;
+        if (role) targetUser.role = role;
+        if (typeof is_active !== 'undefined') targetUser.is_active = is_active;
+
+        await targetUser.save();
 
         // Return user without password
-        const userResponse = user.toObject();
+        const userResponse = targetUser.toObject();
         delete userResponse.password;
 
         res.json(userResponse);
@@ -188,21 +217,48 @@ router.patch('/:id/password', protect, async (req, res) => {
 // @route   DELETE /api/users/:id
 router.delete('/:id', protect, async (req, res) => {
     try {
-        const user = await User.findOne({
+        const targetUser = await User.findOne({
             _id: req.params.id,
             tenant_id: req.tenant_id
         });
 
-        if (!user) {
+        if (!targetUser) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Prevent deleting school admin
-        if (user.role === 'school_admin') {
-            return res.status(403).json({ message: 'Cannot delete school admin user' });
+        // SECURITY CHECK: Only admins can delete users
+        if (req.user.role !== 'super_admin' && req.user.role !== 'school_admin') {
+            return res.status(403).json({
+                message: 'Only administrators can delete user accounts'
+            });
         }
 
-        await User.findByIdAndDelete(req.params.id);
+        // SECURITY CHECK: Cannot delete your own account
+        if (targetUser._id.toString() === req.user._id.toString()) {
+            return res.status(403).json({
+                message: 'Cannot delete your own account'
+            });
+        }
+
+        // SECURITY CHECK: school_admin cannot delete other admins
+        const roleHierarchy = {
+            'super_admin': 1,
+            'school_admin': 2,
+            'teacher': 3,
+            'accountant': 3,
+            'cashier': 3
+        };
+
+        const requesterLevel = roleHierarchy[req.user.role] || 99;
+        const targetLevel = roleHierarchy[targetUser.role] || 99;
+
+        if (req.user.role === 'school_admin' && targetLevel <= requesterLevel) {
+            return res.status(403).json({
+                message: 'Cannot delete administrators or users of equal privilege level'
+            });
+        }
+
+        await User.deleteOne({ _id: req.params.id });
 
         res.json({ message: 'User deleted successfully' });
     } catch (error) {
