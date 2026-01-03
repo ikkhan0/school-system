@@ -37,6 +37,7 @@ const Dashboard = () => {
     });
     const [absentStudents, setAbsentStudents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
 
     useEffect(() => {
@@ -63,7 +64,9 @@ const Dashboard = () => {
             });
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching stats:', error);
+            console.error('Error fetching dashboard stats:', error);
+            setError('fetch_error');
+        } finally {
             setLoading(false);
         }
     };
