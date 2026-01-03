@@ -9,6 +9,7 @@ const UserManagement = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showPermissionsModal, setShowPermissionsModal] = useState(false);
+    const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
     const { user } = useContext(AuthContext);
@@ -44,6 +45,26 @@ const UserManagement = () => {
             fetchUsers();
         } catch (error) {
             alert(error.response?.data?.message || 'Failed to delete user');
+        }
+    };
+
+    const handleToggleActive = async (userId, currentStatus, username) => {
+        const newStatus = !currentStatus;
+        const action = newStatus ? 'activate' : 'deactivate';
+
+        if (!window.confirm(`Are you sure you want to ${action} user "${username}"?`)) {
+            return;
+        }
+
+        try {
+            await axios.patch(`/api/users/${userId}`,
+                { is_active: newStatus },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            alert(`User ${action}d successfully`);
+            fetchUsers();
+        } catch (error) {
+            alert(error.response?.data?.message || `Failed to ${action} user`);
         }
     };
 
@@ -142,6 +163,21 @@ const UserManagement = () => {
                                         >
                                             Permissions
                                         </button>
+                                        <button
+                                            onClick={() => {
+                                                setSelectedUser(user);
+                                                setShowResetPasswordModal(true);
+                                            }}
+                                            className="text-orange-600 hover:text-orange-800"
+                                        >
+                                            Reset Password
+                                        </button>
+                                        <button
+                                            onClick={() => handleToggleActive(user._id, user.is_active, user.username)}
+                                            className={user.is_active ? 'text-yellow-600 hover:text-yellow-800' : 'text-green-600 hover:text-green-800'}
+                                        >
+                                            {user.is_active ? 'Deactivate' : 'Activate'}
+                                        </button>
                                         {user.role !== 'school_admin' && (
                                             <button
                                                 onClick={() => handleDeleteUser(user._id, user.username)}
@@ -203,6 +239,21 @@ const UserManagement = () => {
                         setShowPermissionsModal(false);
                         setSelectedUser(null);
                         fetchUsers();
+                    }}
+                    token={token}
+                />
+            )}
+
+            {showResetPasswordModal && selectedUser && (
+                <ResetPasswordModal
+                    user={selectedUser}
+                    onClose={() => {
+                        setShowResetPasswordModal(false);
+                        setSelectedUser(null);
+                    }}
+                    onSuccess={() => {
+                        setShowResetPasswordModal(false);
+                        setSelectedUser(null);
                     }}
                     token={token}
                 />
@@ -594,6 +645,104 @@ const PermissionsModal = ({ user, onClose, onSuccess, token }) => {
                             className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
                         >
                             {loading ? 'Saving...' : 'Save Permissions'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+// Reset Password Modal Component
+const ResetPasswordModal = ({ user, onClose, onSuccess, token }) => {
+    const [newPassword, setNewPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        if (newPassword.length < 6) {
+            setError('Password must be at least 6 characters');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            await axios.patch(`/api/users/${user._id}/password`,
+                { password: newPassword },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            alert(`Password reset successfully for ${user.full_name || user.username}`);
+            onSuccess();
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to reset password');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-bold text-gray-900">Reset Password</h2>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                        <strong>User:</strong> {user.full_name || user.username} (@{user.username})
+                    </p>
+                    <p className="text-sm text-blue-700 mt-1">
+                        Set a new password for this user. They will be able to login with this password immediately.
+                    </p>
+                </div>
+
+                {error && (
+                    <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700">
+                        {error}
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            New Password <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter new password (min 6 characters)"
+                            required
+                            minLength={6}
+                            autoFocus
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Minimum 6 characters required</p>
+                    </div>
+
+                    <div className="flex gap-3">
+                        <button
+                            type="submit"
+                            disabled={loading || !newPassword}
+                            className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {loading ? 'Resetting...' : 'Reset Password'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50"
+                        >
+                            Cancel
                         </button>
                     </div>
                 </form>
