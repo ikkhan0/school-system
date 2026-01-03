@@ -6,6 +6,8 @@ export const PERMISSIONS = {
     'students.create': 'Add Students',
     'students.edit': 'Edit Students',
     'students.delete': 'Delete Students',
+    'students.import': 'Import Students (CSV)',
+    'students.export': 'Export Student Data',
 
     // Staff
     'staff.view': 'View Staff',
@@ -20,18 +22,23 @@ export const PERMISSIONS = {
     'fees.edit': 'Edit Fees',
     'fees.delete': 'Delete Fees',
     'fees.discount': 'Apply Discounts',
+    'fees.voucher.print': 'Print Fee Vouchers',
+    'fees.refund': 'Process Refunds',
 
     // Attendance
     'attendance.view': 'View Attendance',
     'attendance.mark': 'Mark Attendance',
     'attendance.edit': 'Edit Attendance',
 
-    // Exams
+    // Exams - Expanded
     'exams.view': 'View Exams',
     'exams.create': 'Create Exams',
     'exams.edit': 'Edit Exams',
     'exams.delete': 'Delete Exams',
-    'exams.results': 'Enter Results',
+    'exams.marks.entry': 'Enter Student Marks',
+    'exams.marks.view': 'View Student Marks',
+    'exams.results.print': 'Print Result Cards',
+    'exams.results.publish': 'Publish Results',
 
     // Classes
     'classes.view': 'View Classes',
@@ -39,15 +46,22 @@ export const PERMISSIONS = {
     'classes.edit': 'Edit Classes',
     'classes.delete': 'Delete Classes',
 
-    // Reports
-    'reports.view': 'View Reports',
-    'reports.export': 'Export Reports',
+    // Reports - By Type
+    'reports.view': 'View All Reports (Legacy)',
+    'reports.export': 'Export All Reports (Legacy)',
+    'reports.academic.view': 'View Academic Reports',
+    'reports.academic.export': 'Export Academic Reports',
+    'reports.fee.view': 'View Fee Reports',
+    'reports.fee.export': 'Export Fee Reports',
+    'reports.defaulters.view': 'View Fee Defaulters',
+    'reports.attendance.view': 'View Attendance Reports',
+    'reports.staff.view': 'View Staff Reports',
 
     // Settings
     'settings.view': 'View Settings',
     'settings.edit': 'Edit Settings',
 
-    // Users
+    // Users - Separated
     'users.view': 'View Users',
     'users.create': 'Create Users',
     'users.edit': 'Edit Users',
@@ -60,13 +74,24 @@ export const ROLE_TEMPLATES = {
 
     teacher: [
         'students.view',
-        'students.edit',
         'attendance.view',
         'attendance.mark',
         'exams.view',
-        'exams.results',
+        'exams.marks.entry',
+        'exams.marks.view',
+        'exams.results.print',
         'classes.view',
-        'reports.view'
+        'reports.academic.view',
+        'reports.attendance.view'
+    ],
+
+    cashier: [
+        'students.view',
+        'fees.view',
+        'fees.collect',
+        'fees.voucher.print',
+        'reports.fee.view',
+        'reports.defaulters.view'
     ],
 
     accountant: [
