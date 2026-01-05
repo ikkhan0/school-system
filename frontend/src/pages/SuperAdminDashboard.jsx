@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_URL from '../config';
+
+//Configure axios base URL
+axios.defaults.baseURL = API_URL;
 
 const SuperAdminDashboard = () => {
     const [schools, setSchools] = useState([]);
