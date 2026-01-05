@@ -221,17 +221,23 @@ const ResultGeneration = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {result.subjects.map((sub, idx) => (
-                                    <tr key={idx} className="hover:bg-gray-50">
-                                        <td className="border-2 border-black p-1.5 font-semibold">{sub.subject_name}</td>
-                                        <td className="border-2 border-black p-1.5 text-center">{sub.total_marks}</td>
-                                        <td className="border-2 border-black p-1.5 text-center text-gray-600">{sub.passing_marks}</td>
-                                        <td className="border-2 border-black p-1.5 text-center font-bold text-sm">{sub.obtained_marks}</td>
-                                        <td className={`border-2 border-black p-1.5 text-center font-bold ${sub.obtained_marks >= sub.passing_marks ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-50'}`}>
-                                            {sub.obtained_marks >= sub.passing_marks ? 'PASS' : 'FAIL'}
-                                        </td>
-                                    </tr>
-                                ))}
+                                {result.subjects.map((sub, idx) => {
+                                    // Fallback for old results without passing_marks
+                                    const passingMarks = sub.passing_marks || Math.round(sub.total_marks * 0.33);
+                                    const subjectPassed = sub.obtained_marks >= passingMarks;
+
+                                    return (
+                                        <tr key={idx} className="hover:bg-gray-50">
+                                            <td className="border-2 border-black p-1.5 font-semibold">{sub.subject_name}</td>
+                                            <td className="border-2 border-black p-1.5 text-center">{sub.total_marks}</td>
+                                            <td className="border-2 border-black p-1.5 text-center text-gray-600">{passingMarks}</td>
+                                            <td className="border-2 border-black p-1.5 text-center font-bold text-sm">{sub.obtained_marks}</td>
+                                            <td className={`border-2 border-black p-1.5 text-center font-bold ${subjectPassed ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-50'}`}>
+                                                {subjectPassed ? 'PASS' : 'FAIL'}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                                 {/* Total Row */}
                                 <tr className="font-bold bg-yellow-50 text-xs">
                                     <td className="border-2 border-black p-1.5 text-right">TOTAL MARKS</td>
@@ -253,10 +259,31 @@ const ResultGeneration = () => {
                                 <div className="text-xs text-gray-600 mb-0.5">GRADE</div>
                                 <div className="text-2xl font-bold text-purple-700">{result.grade}</div>
                             </div>
-                            <div className={`border-2 border-black p-2 text-center ${result.status === 'PASS' ? 'bg-green-100' : 'bg-red-100'}`}>
+                            <div className={`border-2 border-black p-2 text-center ${(() => {
+                                // Calculate status with fallback for old results
+                                const allPassed = result.subjects.every(sub => {
+                                    const passingMarks = sub.passing_marks || Math.round(sub.total_marks * 0.33);
+                                    return sub.obtained_marks >= passingMarks;
+                                });
+                                const finalStatus = result.status || (allPassed ? 'PASS' : 'FAIL');
+                                return finalStatus === 'PASS' ? 'bg-green-100' : 'bg-red-100';
+                            })()}`}>
                                 <div className="text-xs text-gray-600 mb-0.5">RESULT</div>
-                                <div className={`text-2xl font-bold ${result.status === 'PASS' ? 'text-green-700' : 'text-red-700'}`}>
-                                    {result.status || (result.percentage >= 33 ? 'PASS' : 'FAIL')}
+                                <div className={`text-2xl font-bold ${(() => {
+                                    const allPassed = result.subjects.every(sub => {
+                                        const passingMarks = sub.passing_marks || Math.round(sub.total_marks * 0.33);
+                                        return sub.obtained_marks >= passingMarks;
+                                    });
+                                    const finalStatus = result.status || (allPassed ? 'PASS' : 'FAIL');
+                                    return finalStatus === 'PASS' ? 'text-green-700' : 'text-red-700';
+                                })()}`}>
+                                    {(() => {
+                                        const allPassed = result.subjects.every(sub => {
+                                            const passingMarks = sub.passing_marks || Math.round(sub.total_marks * 0.33);
+                                            return sub.obtained_marks >= passingMarks;
+                                        });
+                                        return result.status || (allPassed ? 'PASS' : 'FAIL');
+                                    })()}
                                 </div>
                             </div>
                         </div>
