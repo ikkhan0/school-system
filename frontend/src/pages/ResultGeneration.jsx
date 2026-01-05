@@ -1,7 +1,8 @@
-import { useState, useEffect, useContext } from 'react';
-import { Printer, MessageCircle, User } from 'lucide-react';
+import { useState, useEffect, useContext, useRef } from 'react';
+import { Printer, MessageCircle, User, Download, ImageIcon } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import API_URL from '../config';
+import html2canvas from 'html2canvas';
 
 const ResultGeneration = () => {
     const { user } = useContext(AuthContext);
@@ -80,6 +81,70 @@ const ResultGeneration = () => {
         sendWhatsApp(mobile, msg);
     };
 
+    // NEW: Capture result card as image and send via WhatsApp
+    const sendResultAsImage = async (result, studentId) => {
+        try {
+            const cardElement = document.getElementById(`result-card-${studentId}`);
+            if (!cardElement) {
+                alert('Result card not found!');
+                return;
+            }
+
+            // Show loading indicator
+            const btn = document.activeElement;
+            if (btn) btn.innerHTML = '📸 Capturing...';
+
+            // Capture the card as canvas
+            const canvas = await html2canvas(cardElement, {
+                scale: 2, // Higher quality
+                useCORS: true, // Allow cross-origin images
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+
+            // Convert canvas to blob
+            canvas.toBlob(async (blob) => {
+                try {
+                    // Create download link
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `Result_${result.student_id.roll_no}_${result.student_id.full_name}.png`;
+                    link.click();
+                    URL.revokeObjectURL(url);
+
+                    // After download, open WhatsApp
+                    setTimeout(() => {
+                        const mobile = result.student_id.father_mobile;
+                        if (!mobile) {
+                            alert('Father Mobile Number not found!');
+                            return;
+                        }
+
+                        let num = mobile.replace(/\D/g, '');
+                        if (num.length === 11 && num.startsWith('0')) {
+                            num = '92' + num.substring(1);
+                        }
+
+                        const message = `Dear Parent,\n\n📋 Result Card for ${result.student_id.full_name}\n📚 Exam: ${result.exam_id.title}\n\nPlease see the attached image downloaded to your device.\n\n- ${schoolInfo?.name || 'School'}`;
+                        window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, '_blank');
+                    }, 500);
+
+                    // Reset button
+                    if (btn) btn.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
+                    alert('✅ Result card image downloaded! Now opening WhatsApp to send...');
+                } catch (error) {
+                    console.error('Error processing image:', error);
+                    alert('Failed to process image');
+                    if (btn) btn.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
+                }
+            }, 'image/png');
+        } catch (error) {
+            console.error('Error capturing result card:', error);
+            alert('Failed to capture result card as image');
+        }
+    };
+
     const logoUrl = schoolInfo?.logo ? `${API_URL}${schoolInfo.logo}` : null;
 
     return (
@@ -130,12 +195,24 @@ const ResultGeneration = () => {
 
             <div className="print-area space-y-8">
                 {results.map((result) => (
-                    <div key={result._id} className="result-card bg-white border-4 border-black p-4 min-h-[297mm] w-[210mm] mx-auto break-after-page relative">
+                    <div key={result._id} id={`result-card-${result.student_id._id}`} className="result-card bg-white border-4 border-black p-4 min-h-[297mm] w-[210mm] mx-auto break-after-page relative">
 
-                        {/* WhatsApp Button (No Print) */}
-                        <div className="absolute top-4 right-4 no-print">
-                            <button onClick={() => sendResult(result)} className="text-green-600 hover:bg-green-50 p-2 rounded border border-green-200" title="Send Result via WhatsApp">
-                                <MessageCircle size={24} />
+                        {/* Action Buttons (No Print) */}
+                        <div className="absolute top-4 right-4 no-print flex gap-2">
+                            <button
+                                onClick={() => sendResultAsImage(result, result.student_id._id)}
+                                className="text-blue-600 hover:bg-blue-50 p-2 rounded border border-blue-200 flex items-center gap-1"
+                                title="Send Result Card as Image via WhatsApp"
+                            >
+                                <ImageIcon size={20} />
+                                <span className="text-xs">Image</span>
+                            </button>
+                            <button
+                                onClick={() => sendResult(result)}
+                                className="text-green-600 hover:bg-green-50 p-2 rounded border border-green-200"
+                                title="Send Result as Text via WhatsApp"
+                            >
+                                <MessageCircle size={20} />
                             </button>
                         </div>
 
