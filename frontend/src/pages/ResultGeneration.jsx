@@ -75,7 +75,7 @@ const ResultGeneration = () => {
     };
 
     const sendResult = (result) => {
-        const msg = `Dear Parent,\n\nExam Result: ${result.exam_id.title}\nStudent: ${result.student_id.full_name}\nObtained: ${result.total_obtained} / ${result.total_max}\nPercentage: ${result.percentage}%\nGrade: ${result.grade}\nStatus: ${result.percentage >= 33 ? 'PASS' : 'FAIL'}\n\n- ${schoolInfo?.name || 'School'}`;
+        const msg = `Dear Parent,\n\nExam Result: ${result.exam_id.title}\nStudent: ${result.student_id.full_name}\nObtained: ${result.total_obtained} / ${result.total_max}\nPercentage: ${result.percentage}%\nGrade: ${result.grade}\nStatus: ${result.status || (result.percentage >= 33 ? 'PASS' : 'FAIL')}\n\n- ${schoolInfo?.name || 'School'}`;
         const mobile = result.student_id.father_mobile;
         sendWhatsApp(mobile, msg);
     };
@@ -225,10 +225,10 @@ const ResultGeneration = () => {
                                     <tr key={idx} className="hover:bg-gray-50">
                                         <td className="border-2 border-black p-1.5 font-semibold">{sub.subject_name}</td>
                                         <td className="border-2 border-black p-1.5 text-center">{sub.total_marks}</td>
-                                        <td className="border-2 border-black p-1.5 text-center text-gray-600">33</td>
+                                        <td className="border-2 border-black p-1.5 text-center text-gray-600">{sub.passing_marks}</td>
                                         <td className="border-2 border-black p-1.5 text-center font-bold text-sm">{sub.obtained_marks}</td>
-                                        <td className={`border-2 border-black p-1.5 text-center font-bold ${sub.obtained_marks >= 33 ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-50'}`}>
-                                            {sub.obtained_marks >= 33 ? 'PASS' : 'FAIL'}
+                                        <td className={`border-2 border-black p-1.5 text-center font-bold ${sub.obtained_marks >= sub.passing_marks ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-50'}`}>
+                                            {sub.obtained_marks >= sub.passing_marks ? 'PASS' : 'FAIL'}
                                         </td>
                                     </tr>
                                 ))}
@@ -253,10 +253,10 @@ const ResultGeneration = () => {
                                 <div className="text-xs text-gray-600 mb-0.5">GRADE</div>
                                 <div className="text-2xl font-bold text-purple-700">{result.grade}</div>
                             </div>
-                            <div className={`border-2 border-black p-2 text-center ${result.percentage >= 33 ? 'bg-green-100' : 'bg-red-100'}`}>
+                            <div className={`border-2 border-black p-2 text-center ${result.status === 'PASS' ? 'bg-green-100' : 'bg-red-100'}`}>
                                 <div className="text-xs text-gray-600 mb-0.5">RESULT</div>
-                                <div className={`text-2xl font-bold ${result.percentage >= 33 ? 'text-green-700' : 'text-red-700'}`}>
-                                    {result.percentage >= 33 ? 'PASS' : 'FAIL'}
+                                <div className={`text-2xl font-bold ${result.status === 'PASS' ? 'text-green-700' : 'text-red-700'}`}>
+                                    {result.status || (result.percentage >= 33 ? 'PASS' : 'FAIL')}
                                 </div>
                             </div>
                         </div>

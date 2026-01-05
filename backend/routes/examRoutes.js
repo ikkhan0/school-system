@@ -153,11 +153,10 @@ router.get('/:exam_id/subjects/:class_id', protect, async (req, res) => {
 });
 
 // @desc    Save Marks (Bulk)
-// @desc    Save Marks (Bulk)
 // @route   POST /api/exams/marks
 router.post('/marks', protect, checkPermission('exams.results'), async (req, res) => {
     try {
-        const { exam_id, class_id, section_id, subject, marks_data } = req.body;
+        const { exam_id, class_id, section_id, subject, marks_data, passing_marks, passing_percentage } = req.body;
         // marks_data = [{ student_id, obtained_marks, total_marks }]
 
         console.log('=== MARKS SAVE DEBUG ===');
@@ -165,6 +164,8 @@ router.post('/marks', protect, checkPermission('exams.results'), async (req, res
         console.log('Class:', class_id);
         console.log('Section:', section_id);
         console.log('Subject:', subject);
+        console.log('Passing marks:', passing_marks);
+        console.log('Passing percentage:', passing_percentage);
         console.log('Number of students:', marks_data.length);
 
         for (const data of marks_data) {
@@ -189,7 +190,8 @@ router.post('/marks', protect, checkPermission('exams.results'), async (req, res
                     total_obtained: 0,
                     total_max: 0,
                     percentage: 0,
-                    grade: 'F'
+                    grade: 'F',
+                    status: 'FAIL'
                 });
             } else {
                 console.log('Found existing result record for student:', data.student_id);
@@ -201,12 +203,16 @@ router.post('/marks', protect, checkPermission('exams.results'), async (req, res
                 console.log(`Updating existing subject ${subject} at index ${subIndex}`);
                 result.subjects[subIndex].obtained_marks = data.obtained_marks;
                 result.subjects[subIndex].total_marks = data.total_marks;
+                result.subjects[subIndex].passing_marks = passing_marks;
+                result.subjects[subIndex].passing_percentage = passing_percentage;
             } else {
                 console.log(`Adding new subject ${subject}`);
                 result.subjects.push({
                     subject_name: subject,
                     obtained_marks: data.obtained_marks,
-                    total_marks: data.total_marks
+                    total_marks: data.total_marks,
+                    passing_marks: passing_marks,
+                    passing_percentage: passing_percentage
                 });
             }
 
@@ -223,12 +229,17 @@ router.post('/marks', protect, checkPermission('exams.results'), async (req, res
             else if (result.percentage >= 50) result.grade = 'D';
             else result.grade = 'F';
 
+            // Calculate overall PASS/FAIL status (all subjects must pass)
+            const allSubjectsPassed = result.subjects.every(sub => sub.obtained_marks >= sub.passing_marks);
+            result.status = allSubjectsPassed ? 'PASS' : 'FAIL';
+
             console.log('Saving result:', {
                 student_id: data.student_id,
                 subjects: result.subjects.length,
                 total: `${result.total_obtained}/${result.total_max}`,
                 percentage: result.percentage,
-                grade: result.grade
+                grade: result.grade,
+                status: result.status
             });
 
             await result.save();

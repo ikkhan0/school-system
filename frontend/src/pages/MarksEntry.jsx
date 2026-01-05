@@ -306,6 +306,11 @@ const MarksEntry = () => {
             total_marks: Number(totalMarks)
         }));
 
+        // Get passing marks and percentage for this subject
+        const subjectData = classSubjects.find(s => s.name === selectedSubject);
+        const passingMarks = subjectData?.passing_marks || Math.round(Number(totalMarks) * 0.33);
+        const passingPercentage = subjectData?.passing_percentage || 33;
+
         try {
             const res = await fetch(`${API_URL}/api/exams/marks`, {
                 method: 'POST',
@@ -318,11 +323,17 @@ const MarksEntry = () => {
                     class_id: classData.name, // Send class NAME, not ObjectId
                     section_id: selectedSection,
                     subject: selectedSubject,
-                    marks_data: marksData
+                    marks_data: marksData,
+                    passing_marks: passingMarks,
+                    passing_percentage: passingPercentage
                 })
             });
             const data = await res.json();
-            alert(data.message || 'Marks saved successfully!');
+            if (res.ok) {
+                alert(data.message || 'Marks saved successfully!');
+            } else {
+                alert(data.message || 'Failed to save marks');
+            }
         } catch (error) {
             console.error(error);
             alert('Error Saving Marks');
