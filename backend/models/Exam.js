@@ -9,13 +9,15 @@ const examSchema = mongoose.Schema({
     is_active: { type: Boolean, default: true },
     exam_type: { type: String, enum: ['Mid-Term', 'Final', 'Monthly', 'Quiz', 'Other'], default: 'Mid-Term' },
 
-    // Subjects configuration per class
+    // Subjects configuration per class and section
     subjects: [{
         class_id: { type: String, required: true }, // e.g., "Class 1", "Class 2"
+        sections: [{ type: String }], // e.g., ["A", "B", "C"] - sections that take this exam
         subject_list: [{
             subject_name: { type: String, required: true }, // e.g., "English", "Math"
             total_marks: { type: Number, required: true, default: 100 },
-            passing_marks: { type: Number, default: 33 }, // Minimum marks to pass
+            passing_marks: { type: Number, default: 33 }, // Minimum marks to pass (calculated from percentage)
+            passing_percentage: { type: Number, default: 33 }, // Percentage needed to pass (e.g., 33%)
             theory_marks: { type: Number, default: 0 }, // Theory component
             practical_marks: { type: Number, default: 0 } // Practical component
         }]

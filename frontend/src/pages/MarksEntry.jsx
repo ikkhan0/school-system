@@ -45,36 +45,56 @@ const MarksEntry = () => {
                     const firstClass = data[0];
                     setSelectedClass(firstClass._id);
                     setSelectedSection(firstClass.sections[0] || 'A');
-                    // Fetch subjects for first class
-                    fetchClassSubjects(firstClass._id);
                 }
             });
     }, [user]);
 
-    // Fetch subjects for selected class
-    const fetchClassSubjects = async (classId) => {
-        if (!classId) return;
+    // Fetch exam-specific subjects for selected class and section
+    const fetchExamSubjects = async (examId, classId, sectionId) => {
+        if (!examId || !classId) return;
 
         try {
-            const res = await fetch(`${API_URL}/api/subjects/class/${classId}`, {
-                headers: { Authorization: `Bearer ${user.token}` }
-            });
-            const data = await res.json();
-            setClassSubjects(data);
+            // Get class name from class ID
+            const classData = classes.find(c => c._id === classId);
+            if (!classData) return;
 
-            // Auto-select first subject and set its total marks
-            if (data.length > 0) {
-                setSelectedSubject(data[0].name);
-                setTotalMarks(data[0].total_marks);
+            const url = `${API_URL}/api/exams/${examId}/subjects/${classData.name}${sectionId ? `?section_id=${sectionId}` : ''}`;
+            const res = await fetch(url, { headers: { Authorization: `Bearer ${user.token}` } });
+            const data = await res.json();
+
+            if (data.subjects && data.subjects.length > 0) {
+                // Convert exam subjects to format expected by component
+                const examSubjects = data.subjects.map(s => ({
+                    _id: s.subject_name,
+                    name: s.subject_name,
+                    total_marks: s.total_marks,
+                    passing_percentage: s.passing_percentage || 33,
+                    passing_marks: s.passing_marks
+                }));
+                setClassSubjects(examSubjects);
+                setSelectedSubject(examSubjects[0].name);
+                setTotalMarks(examSubjects[0].total_marks);
             } else {
+                setClassSubjects([]);
                 setSelectedSubject('');
                 setTotalMarks(100);
+
+                // Show message if section is not configured
+                if (data.message) {
+                    console.warn(data.message);
+                }
             }
         } catch (error) {
-            console.error('Error fetching class subjects:', error);
+            console.error('Error fetching exam subjects:', error);
             setClassSubjects([]);
         }
     };
+
+    // Fetch exam subjects when exam, class, or section changes
+    useEffect(() => {
+        if (!user || !examId || !selectedClass || !selectedSection || classes.length === 0) return;
+        fetchExamSubjects(examId, selectedClass, selectedSection);
+    }, [examId, selectedClass, selectedSection, user, classes]);
 
     // Fetch students when class/section/subject changes
     useEffect(() => {
@@ -307,8 +327,7 @@ const MarksEntry = () => {
                                 setSelectedClass(classId);
                                 const cls = classes.find(c => c._id === classId);
                                 if (cls && cls.sections.length > 0) setSelectedSection(cls.sections[0]);
-                                // Fetch subjects for new class
-                                fetchClassSubjects(classId);
+                                // Subjects will be fetched by useEffect
                             }}
                             className="w-full border p-2 rounded text-sm sm:text-base"
                         >
@@ -346,18 +365,18 @@ const MarksEntry = () => {
                             disabled={classSubjects.length === 0}
                         >
                             {classSubjects.length === 0 ? (
-                                <option value="">No subjects assigned to this class</option>
+                                <option value="">No subjects configured for this exam & class</option>
                             ) : (
                                 classSubjects.map(sub => (
                                     <option key={sub._id} value={sub.name}>
-                                        {sub.name} ({sub.total_marks} marks)
+                                        {sub.name} ({sub.total_marks} marks • {sub.passing_percentage}% to pass)
                                     </option>
                                 ))
                             )}
                         </select>
                         {classSubjects.length === 0 && (
                             <p className="text-sm text-red-600 mt-1">
-                                Please assign subjects to this class in Subject Management
+                                No subjects configured for this exam and class. Please edit the exam to add subjects.
                             </p>
                         )}
                     </div>

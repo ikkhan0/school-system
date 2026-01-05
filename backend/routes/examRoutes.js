@@ -109,6 +109,49 @@ router.patch('/:id/toggle-active', protect, async (req, res) => {
     }
 });
 
+// @desc    Get Exam Subject Configuration for Class (and optionally Section)
+// @route   GET /api/exams/:exam_id/subjects/:class_id?section_id=A
+router.get('/:exam_id/subjects/:class_id', protect, async (req, res) => {
+    try {
+        const { exam_id, class_id } = req.params;
+        const { section_id } = req.query;
+
+        const exam = await Exam.findOne({ _id: exam_id, tenant_id: req.tenant_id });
+
+        if (!exam) {
+            return res.status(404).json({ message: 'Exam not found' });
+        }
+
+        // Find class configuration in exam subjects
+        const classConfig = exam.subjects.find(s => s.class_id === class_id);
+
+        if (!classConfig) {
+            return res.json({ subjects: [] });
+        }
+
+        // If section_id provided, check if that section is configured for this exam
+        if (section_id && classConfig.sections && classConfig.sections.length > 0) {
+            if (!classConfig.sections.includes(section_id)) {
+                return res.json({
+                    subjects: [],
+                    message: `Section ${section_id} is not configured for this exam in ${class_id}`
+                });
+            }
+        }
+
+        // Return the subject list with all configurations
+        res.json({
+            exam_title: exam.title,
+            exam_type: exam.exam_type,
+            configured_sections: classConfig.sections || [],
+            subjects: classConfig.subject_list
+        });
+    } catch (error) {
+        console.error('Error fetching exam subjects:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // @desc    Save Marks (Bulk)
 // @desc    Save Marks (Bulk)
 // @route   POST /api/exams/marks

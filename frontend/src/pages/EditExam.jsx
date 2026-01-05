@@ -19,8 +19,10 @@ const EditExam = () => {
         end_date: '',
         is_active: true,
         exam_type: 'Mid-Term',
-        subjects: [] // Array of { class_id, subject_list: [{ subject_name, total_marks, passing_marks, theory_marks, practical_marks }] }
+        subjects: [] // Array of { class_id, sections: [], subject_list: [] }
     });
+    const [showClassSelector, setShowClassSelector] = useState(false);
+    const [selectedClasses, setSelectedClasses] = useState([]); // Temp for bulk add
 
     useEffect(() => {
         if (!user) return;
@@ -38,13 +40,19 @@ const EditExam = () => {
             const exam = exams.find(e => e._id === id);
 
             if (exam) {
+                // Ensure sections array exists for backward compatibility
+                const processedSubjects = (exam.subjects || []).map(subject => ({
+                    ...subject,
+                    sections: subject.sections || [] // Ensure sections exist
+                }));
+
                 setFormData({
                     title: exam.title || '',
                     start_date: exam.start_date ? exam.start_date.split('T')[0] : '',
                     end_date: exam.end_date ? exam.end_date.split('T')[0] : '',
                     is_active: exam.is_active !== undefined ? exam.is_active : true,
                     exam_type: exam.exam_type || 'Mid-Term',
-                    subjects: exam.subjects || []
+                    subjects: processedSubjects
                 });
             }
             setLoading(false);
@@ -88,13 +96,77 @@ const EditExam = () => {
     };
 
     const addClass = () => {
-        setFormData(prev => ({
-            ...prev,
-            subjects: [...prev.subjects, {
-                class_id: classes[0]?.name || '',
-                subject_list: []
-            }]
-        }));
+        setShowClassSelector(true);
+    };
+
+    const addSelectedClasses = async () => {
+        if (selectedClasses.length === 0) {
+            alert('Please select at least one class');
+            return;
+        }
+
+        // Fetch subjects for all selected classes
+        const classSubjectsMap = {};
+        for (const classId of selectedClasses) {
+            try {
+                const res = await fetch(`${API_URL}/api/subjects/class/${classId}`, {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                });
+                const classSubjects = await res.json();
+                classSubjectsMap[classId] = classSubjects;
+            } catch (error) {
+                console.error(`Error fetching subjects for class ${classId}:`, error);
+                classSubjectsMap[classId] = [];
+            }
+        }
+
+        setFormData(prev => {
+            const newSubjects = [...prev.subjects];
+
+            selectedClasses.forEach(classId => {
+                // Check if class already exists
+                if (!newSubjects.find(s => s.class_id === classId)) {
+                    const cls = classes.find(c => c._id === classId);
+                    const classSubjects = classSubjectsMap[classId] || [];
+
+                    // Auto-populate subjects from class configuration
+                    const autoLoadedSubjects = classSubjects.map(sub => ({
+                        subject_name: sub.name,
+                        total_marks: sub.total_marks || 100,
+                        passing_percentage: 33,
+                        passing_marks: 33,
+                        theory_marks: 0,
+                        practical_marks: 0
+                    }));
+
+                    newSubjects.push({
+                        class_id: cls.name,
+                        sections: cls.sections || ['A'], // Default to all sections
+                        subject_list: autoLoadedSubjects
+                    });
+                }
+            });
+
+            return { ...prev, subjects: newSubjects };
+        });
+
+        setSelectedClasses([]);
+        setShowClassSelector(false);
+    };
+
+    const toggleClassSection = (classIndex, section) => {
+        setFormData(prev => {
+            const newSubjects = [...prev.subjects];
+            const sections = newSubjects[classIndex].sections || [];
+
+            if (sections.includes(section)) {
+                newSubjects[classIndex].sections = sections.filter(s => s !== section);
+            } else {
+                newSubjects[classIndex].sections = [...sections, section];
+            }
+
+            return { ...prev, subjects: newSubjects };
+        });
     };
 
     const removeClass = (index) => {
@@ -118,6 +190,7 @@ const EditExam = () => {
             newSubjects[classIndex].subject_list.push({
                 subject_name: subjects[0]?.name || '',
                 total_marks: 100,
+                passing_percentage: 33,
                 passing_marks: 33,
                 theory_marks: 0,
                 practical_marks: 0
@@ -138,6 +211,15 @@ const EditExam = () => {
         setFormData(prev => {
             const newSubjects = [...prev.subjects];
             newSubjects[classIndex].subject_list[subjectIndex][field] = value;
+
+            // Auto-calculate passing marks when percentage or total marks changes
+            if (field === 'passing_percentage' || field === 'total_marks') {
+                const subject = newSubjects[classIndex].subject_list[subjectIndex];
+                const percentage = field === 'passing_percentage' ? value : (subject.passing_percentage || 33);
+                const totalMarks = field === 'total_marks' ? value : (subject.total_marks || 100);
+                newSubjects[classIndex].subject_list[subjectIndex].passing_marks = Math.round((percentage / 100) * totalMarks);
+            }
+
             return { ...prev, subjects: newSubjects };
         });
     };
@@ -279,9 +361,57 @@ const EditExam = () => {
                                 className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
                             >
                                 <Plus size={18} />
-                                Add Class
+                                Add Classes
                             </button>
                         </div>
+
+                        {/* Bulk Class Selector Modal */}
+                        {showClassSelector && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                <div className="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full mx-4">
+                                    <h3 className="text-lg font-bold mb-4">Select Classes for this Exam</h3>
+                                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                                        {classes.map(cls => (
+                                            <label key={cls._id} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedClasses.includes(cls._id)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedClasses([...selectedClasses, cls._id]);
+                                                        } else {
+                                                            setSelectedClasses(selectedClasses.filter(id => id !== cls._id));
+                                                        }
+                                                    }}
+                                                    className="w-5 h-5"
+                                                />
+                                                <span className="font-semibold">{cls.name}</span>
+                                                <span className="text-sm text-gray-500">({cls.sections.join(', ')})</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                    <div className="flex justify-end gap-3 mt-6">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setShowClassSelector(false);
+                                                setSelectedClasses([]);
+                                            }}
+                                            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={addSelectedClasses}
+                                            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+                                        >
+                                            Add Selected Classes ({selectedClasses.length})
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {formData.subjects.length === 0 && (
                             <div className="bg-gray-50 p-6 rounded border-2 border-dashed border-gray-300 text-center text-gray-500">
@@ -295,19 +425,33 @@ const EditExam = () => {
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-3 flex-1">
                                         <label className="text-sm font-semibold text-gray-700">Class:</label>
-                                        <select
-                                            value={classConfig.class_id}
-                                            onChange={(e) => updateClassId(classIndex, e.target.value)}
-                                            className="p-2 border rounded"
-                                        >
-                                            {classes.map(cls => (
-                                                <option key={cls._id} value={cls.name}>{cls.name}</option>
-                                            ))}
-                                        </select>
+                                        <span className="font-bold text-lg">{classConfig.class_id}</span>
+
+                                        {/* Section Selector */}
+                                        <div className="flex items-center gap-2 ml-4">
+                                            <label className="text-sm font-semibold text-gray-600">Sections:</label>
+                                            {classes.find(c => c.name === classConfig.class_id)?.sections.map(section => {
+                                                const isSelected = (classConfig.sections || []).includes(section);
+                                                return (
+                                                    <button
+                                                        key={section}
+                                                        type="button"
+                                                        onClick={() => toggleClassSection(classIndex, section)}
+                                                        className={`px-3 py-1 rounded text-sm font-semibold ${isSelected
+                                                            ? 'bg-purple-600 text-white'
+                                                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                                            }`}
+                                                    >
+                                                        {section}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+
                                         <button
                                             type="button"
                                             onClick={() => addSubject(classIndex)}
-                                            className="flex items-center gap-1 bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                                            className="flex items-center gap-1 bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 ml-auto"
                                         >
                                             <Plus size={14} />
                                             Add Subject
@@ -322,6 +466,10 @@ const EditExam = () => {
                                         <Trash2 size={18} />
                                     </button>
                                 </div>
+
+                                {(classConfig.sections || []).length === 0 && (
+                                    <p className="text-sm text-yellow-600 italic mb-2">⚠️ No sections selected! Please select at least one section.</p>
+                                )}
 
                                 {classConfig.subject_list.length === 0 && (
                                     <p className="text-sm text-gray-500 italic">No subjects added yet.</p>
@@ -355,15 +503,18 @@ const EditExam = () => {
                                             </div>
 
                                             <div>
-                                                <label className="block text-xs font-semibold text-gray-600 mb-1">Passing Marks</label>
+                                                <label className="block text-xs font-semibold text-gray-600 mb-1">Passing %</label>
                                                 <input
                                                     type="number"
-                                                    value={subject.passing_marks}
-                                                    onChange={(e) => updateSubject(classIndex, subjectIndex, 'passing_marks', Number(e.target.value))}
+                                                    value={subject.passing_percentage || 33}
+                                                    onChange={(e) => updateSubject(classIndex, subjectIndex, 'passing_percentage', Number(e.target.value))}
                                                     className="w-full p-2 border rounded text-sm"
                                                     min="0"
-                                                    max={subject.total_marks}
+                                                    max="100"
                                                 />
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    = {Math.round(((subject.passing_percentage || 33) / 100) * subject.total_marks)} marks
+                                                </p>
                                             </div>
 
                                             <div>
