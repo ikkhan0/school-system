@@ -11,6 +11,7 @@ const EditStudent = () => {
     const { user } = useContext(AuthContext);
     const [classes, setClasses] = useState([]);
     const [subjects, setSubjects] = useState([]);
+    const [staffMembers, setStaffMembers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [photoPreview, setPhotoPreview] = useState(null);
     const [formData, setFormData] = useState({
@@ -39,7 +40,10 @@ const EditStudent = () => {
         medical_conditions: '',
         allergies: '',
         image: null,
-        subjects: []
+        subjects: [],
+        discount_category: '',
+        is_staff_child: false,
+        staff_parent_id: ''
     });
 
     useEffect(() => {
@@ -47,6 +51,7 @@ const EditStudent = () => {
         fetchStudent();
         fetchClasses();
         fetchSubjects();
+        fetchStaffMembers();
     }, [id, user]);
 
     const fetchStudent = async () => {
@@ -85,7 +90,10 @@ const EditStudent = () => {
                 image: null,
                 subjects: student.enrolled_subjects
                     ?.filter(es => es && es.subject_id && es.subject_id._id) // Filter out null/undefined
-                    ?.map(es => es.subject_id._id) || []
+                    ?.map(es => es.subject_id._id) || [],
+                discount_category: student.discount_category || '',
+                is_staff_child: student.is_staff_child || false,
+                staff_parent_id: student.staff_parent_id || ''
             });
             setLoading(false);
         } catch (error) {
@@ -114,6 +122,23 @@ const EditStudent = () => {
             setSubjects(response.data);
         } catch (error) {
             console.error('Error fetching subjects:', error);
+        }
+    };
+
+    const fetchStaffMembers = async () => {
+        try {
+            // Fetch users with role that includes 'teacher' or 'staff'
+            const response = await axios.get(`${API_URL}/api/users`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            // Filter for staff/teacher roles
+            const staff = response.data.filter(u =>
+                u.role && (u.role.toLowerCase().includes('teacher') || u.role.toLowerCase().includes('staff'))
+            );
+            setStaffMembers(staff);
+        } catch (error) {
+            console.error('Error fetching staff members:', error);
+            setStaffMembers([]);
         }
     };
 
@@ -593,6 +618,79 @@ const EditStudent = () => {
                                         Remove selected photo
                                     </button>
                                 )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Discount Information */}
+                    <div>
+                        <h2 className="text-xl font-bold text-orange-700 mb-4">Discount Information</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {/* Discount Category */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Discount Category</label>
+                                <select
+                                    name="discount_category"
+                                    value={formData.discount_category}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded"
+                                >
+                                    <option value="">No Discount</option>
+                                    <option value="Staff Child">Staff Child</option>
+                                    <option value="Sibling">Sibling</option>
+                                    <option value="Merit">Merit</option>
+                                    <option value="Financial Aid">Financial Aid</option>
+                                </select>
+                                <p className="text-xs text-gray-500 mt-1">Select applicable discount type</p>
+                            </div>
+
+                            {/* Staff Child Checkbox */}
+                            <div className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    name="is_staff_child"
+                                    checked={formData.is_staff_child}
+                                    onChange={(e) => setFormData({
+                                        ...formData,
+                                        is_staff_child: e.target.checked,
+                                        discount_category: e.target.checked ? 'Staff Child' : formData.discount_category
+                                    })}
+                                    className="w-4 h-4 mr-2"
+                                />
+                                <label className="text-sm font-semibold text-gray-700">
+                                    Is Staff Child?
+                                </label>
+                            </div>
+
+                            {/* Staff Parent Selection (conditional) */}
+                            {formData.is_staff_child && (
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">Select Staff Parent</label>
+                                    <select
+                                        name="staff_parent_id"
+                                        value={formData.staff_parent_id}
+                                        onChange={handleChange}
+                                        className="w-full p-2 border rounded"
+                                    >
+                                        <option value="">Select Staff Member</option>
+                                        {staffMembers.map(staff => (
+                                            <option key={staff._id} value={staff._id}>
+                                                {staff.full_name} ({staff.role})
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        {staffMembers.length === 0 ? 'No staff members found' : `${staffMembers.length} staff member(s) available`}
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Info Box */}
+                            <div className="md:col-span-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                                <p className="text-sm text-blue-800">
+                                    💡 <strong>Tip:</strong> Discount policies are automatically applied based on category.
+                                    Staff Child (25%), Sibling (10-20%), Merit (30%), Financial Aid (50%)
+                                </p>
                             </div>
                         </div>
                     </div>
