@@ -86,6 +86,12 @@ const Reports = () => {
                     if (filters.end_date) queryParams.append('end_date', filters.end_date);
                     if (filters.class_id) queryParams.append('class_id', filters.class_id);
                     if (filters.section_id) queryParams.append('section_id', filters.section_id);
+                    console.log('📊 Fetching attendance with params:', {
+                        start_date: filters.start_date,
+                        end_date: filters.end_date,
+                        class_id: filters.class_id,
+                        section_id: filters.section_id
+                    });
                     break;
                 case 'performance':
                     if (!filters.exam_id) {
@@ -105,13 +111,15 @@ const Reports = () => {
             }
 
             const url = `${API_URL}${endpoint}${queryParams.toString() ? '?' + queryParams.toString() : ''} `;
+            console.log('🔍 Fetching from:', url);
             const res = await fetch(url, {
                 headers: { Authorization: `Bearer ${user.token} ` }
             });
             const result = await res.json();
+            console.log('✅ Data received:', result);
             setData(result);
         } catch (error) {
-            console.error(error);
+            console.error('❌ Error fetching data:', error);
         } finally {
             setLoading(false);
         }
@@ -418,7 +426,9 @@ const ShortageReport = ({ data, sendWhatsApp }) => {
 
 
 const AttendanceReport = ({ data, sendWhatsApp, consecutiveAbsences = [] }) => {
-    if (!data.report || data.report.length === 0) {
+    console.log('📊 AttendanceReport data:', data);
+
+    if (!data || !data.report || data.report.length === 0) {
         return <EmptyState type="attendance" title="No data" description="No attendance records found for the selected period." />;
     }
 
@@ -426,12 +436,23 @@ const AttendanceReport = ({ data, sendWhatsApp, consecutiveAbsences = [] }) => {
         return consecutiveAbsences.find(s => s.student_id.toString() === studentId.toString());
     };
 
+    // Safe date formatting
+    const formatDateSafe = (dateStr) => {
+        try {
+            if (!dateStr) return 'N/A';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString();
+        } catch (e) {
+            return 'N/A';
+        }
+    };
+
     return (
         <div>
             <div className="p-4 bg-blue-50 border-b">
-                <p className="text-sm text-gray-600">Total Students: <span className="font-bold">{data.total_students}</span></p>
+                <p className="text-sm text-gray-600">Total Students: <span className="font-bold">{data.total_students || 0}</span></p>
                 <p className="text-xs text-gray-500">
-                    Period: {formatDate(data.start_date, dateFormat)} - {formatDate(data.end_date, dateFormat)}
+                    Period: {formatDateSafe(data.start_date)} - {formatDateSafe(data.end_date)}
                 </p>
                 {consecutiveAbsences.length > 0 && (
                     <p className="text-sm text-red-600 font-semibold mt-2">
