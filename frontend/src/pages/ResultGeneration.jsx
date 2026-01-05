@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext, useRef } from 'react';
-import { Printer, MessageCircle, User, Download, ImageIcon } from 'lucide-react';
+import { Printer, MessageCircle, User, Download, FileText } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import API_URL from '../config';
-import html2canvas from 'html2canvas';
+import html2pdf from 'html2pdf.js';
 
 const ResultGeneration = () => {
     const { user } = useContext(AuthContext);
@@ -82,7 +82,88 @@ const ResultGeneration = () => {
         sendWhatsApp(mobile, msg);
     };
 
-    // NEW: Capture result card as image and send via WhatsApp
+    // Generate PDF and send via WhatsApp
+    const sendResultAsPDF = async (result, studentId) => {
+        console.log('📄 Starting PDF generation for student:', studentId);
+
+        try {
+            const cardElement = document.getElementById(`result-card-${studentId}`);
+
+            if (!cardElement) {
+                alert('Result card element not found! Please try again.');
+                return;
+            }
+
+            // Show loading
+            alert('📄 Generating PDF... Please wait.');
+            console.log('📝 Element found, generating PDF...');
+
+            // PDF options
+            const opt = {
+                margin: 0,
+                filename: `Result_${result.student_id.roll_no}_${result.student_id.full_name.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                }
+            };
+
+            // Generate PDF
+            const pdfBlob = await html2pdf()
+                .set(opt)
+                .from(cardElement)
+                .outputPdf('blob');
+
+            console.log('✅ PDF generated, size:', pdfBlob.size);
+
+            // Create download link
+            const url = URL.createObjectURL(pdfBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = opt.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            console.log('⬇️ PDF download initiated');
+
+            // Clean up
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 100);
+
+            // Open WhatsApp
+            setTimeout(() => {
+                const mobile = result.student_id.father_mobile;
+                if (!mobile) {
+                    alert('✅ PDF downloaded!\n\n⚠️ Father Mobile Number not found. Please manually share the PDF.');
+                    return;
+                }
+
+                let num = mobile.replace(/\D/g, '');
+                if (num.length === 11 && num.startsWith('0')) {
+                    num = '92' + num.substring(1);
+                }
+
+                const message = `Dear Parent,\n\n📋 Result Card for ${result.student_id.full_name}\n📚 Exam: ${result.exam_id.title}\n📊 Percentage: ${result.percentage}%\n🎓 Grade: ${result.grade}\n\nPDF downloaded to your device. Please attach and send.\n\n- ${schoolInfo?.name || 'School'}`;
+
+                alert('✅ PDF downloaded successfully!\n\n📱 Opening WhatsApp now. Please attach the downloaded PDF manually.');
+                window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, '_blank');
+            }, 1000);
+
+        } catch (error) {
+            console.error('❌ Error generating PDF:', error);
+            alert(`Failed to generate PDF:\n${error.message}\n\nPlease try the Print button instead.`);
+        }
+    };
     const sendResultAsImage = async (result, studentId) => {
         console.log('🎯 Starting image capture for student:', studentId);
 
@@ -292,12 +373,12 @@ const ResultGeneration = () => {
                             {/* Action Buttons (No Print) */}
                             <div className="absolute top-4 right-4 no-print flex gap-2">
                                 <button
-                                    onClick={() => sendResultAsImage(result, result.student_id._id)}
-                                    className="text-blue-600 hover:bg-blue-50 p-2 rounded border border-blue-200 flex items-center gap-1"
-                                    title="Send Result Card as Image via WhatsApp"
+                                    onClick={() => sendResultAsPDF(result, result.student_id._id)}
+                                    className="text-red-600 hover:bg-red-50 p-2 rounded border border-red-200 flex items-center gap-1"
+                                    title="Download Result Card as PDF and Send via WhatsApp"
                                 >
-                                    <ImageIcon size={20} />
-                                    <span className="text-xs">Image</span>
+                                    <FileText size={20} />
+                                    <span className="text-xs">PDF</span>
                                 </button>
                                 <button
                                     onClick={() => sendResult(result)}
