@@ -384,22 +384,15 @@ const ResultGeneration = () => {
                     filteredResults.map((result) => (
                         <div key={result._id} id={`result-card-${result.student_id._id}`} className="result-card bg-white border-4 border-black p-4 min-h-[297mm] w-[210mm] mx-auto break-after-page relative">
 
-                            {/* Action Buttons (No Print) */}
-                            <div className="absolute top-4 right-4 no-print flex gap-2">
-                                <button
-                                    onClick={() => sendResultAsPDF(result, result.student_id._id)}
-                                    className="text-red-600 hover:bg-red-50 p-2 rounded border border-red-200 flex items-center gap-1"
-                                    title="Download Result Card as PDF and Send via WhatsApp"
-                                >
-                                    <FileText size={20} />
-                                    <span className="text-xs">PDF</span>
-                                </button>
+                            {/* WhatsApp Button (No Print) */}
+                            <div className="absolute top-4 right-4 no-print">
                                 <button
                                     onClick={() => sendResult(result)}
-                                    className="text-green-600 hover:bg-green-50 p-2 rounded border border-green-200"
-                                    title="Send Result as Text via WhatsApp"
+                                    className="text-green-600 hover:bg-green-50 p-2 rounded border border-green-200 flex items-center gap-1"
+                                    title="Send Result Summary via WhatsApp"
                                 >
                                     <MessageCircle size={20} />
+                                    <span className="text-xs font-semibold">WhatsApp</span>
                                 </button>
                             </div>
 
