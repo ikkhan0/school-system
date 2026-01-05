@@ -83,65 +83,86 @@ const ResultGeneration = () => {
 
     // NEW: Capture result card as image and send via WhatsApp
     const sendResultAsImage = async (result, studentId) => {
+        console.log('🎯 Starting image capture for student:', studentId);
+
         try {
             const cardElement = document.getElementById(`result-card-${studentId}`);
+            console.log('📄 Card element found:', cardElement);
+
             if (!cardElement) {
-                alert('Result card not found!');
+                alert('Result card element not found! Please try again.');
                 return;
             }
 
-            // Show loading indicator
-            const btn = document.activeElement;
-            if (btn) btn.innerHTML = '📸 Capturing...';
+            // Show loading
+            alert('📸 Capturing result card as image... Please wait.');
 
-            // Capture the card as canvas
+            // Capture with html2canvas
+            console.log('🖼️ Calling html2canvas...');
             const canvas = await html2canvas(cardElement, {
-                scale: 2, // Higher quality
-                useCORS: true, // Allow cross-origin images
-                logging: false,
-                backgroundColor: '#ffffff'
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                logging: true,
+                backgroundColor: '#ffffff',
+                windowWidth: cardElement.scrollWidth,
+                windowHeight: cardElement.scrollHeight
             });
 
-            // Convert canvas to blob
-            canvas.toBlob(async (blob) => {
-                try {
-                    // Create download link
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `Result_${result.student_id.roll_no}_${result.student_id.full_name}.png`;
-                    link.click();
-                    URL.revokeObjectURL(url);
+            console.log('✅ Canvas created:', canvas.width, 'x', canvas.height);
 
-                    // After download, open WhatsApp
-                    setTimeout(() => {
-                        const mobile = result.student_id.father_mobile;
-                        if (!mobile) {
-                            alert('Father Mobile Number not found!');
-                            return;
-                        }
-
-                        let num = mobile.replace(/\D/g, '');
-                        if (num.length === 11 && num.startsWith('0')) {
-                            num = '92' + num.substring(1);
-                        }
-
-                        const message = `Dear Parent,\n\n📋 Result Card for ${result.student_id.full_name}\n📚 Exam: ${result.exam_id.title}\n\nPlease see the attached image downloaded to your device.\n\n- ${schoolInfo?.name || 'School'}`;
-                        window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, '_blank');
-                    }, 500);
-
-                    // Reset button
-                    if (btn) btn.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
-                    alert('✅ Result card image downloaded! Now opening WhatsApp to send...');
-                } catch (error) {
-                    console.error('Error processing image:', error);
-                    alert('Failed to process image');
-                    if (btn) btn.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
+            // Convert to blob
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    alert('Failed to create image blob');
+                    return;
                 }
-            }, 'image/png');
+
+                console.log('💾 Blob created, size:', blob.size);
+
+                // Create download URL
+                const url = URL.createObjectURL(blob);
+                const fileName = `Result_${result.student_id.roll_no}_${result.student_id.full_name.replace(/\s+/g, '_')}.png`;
+
+                // Download the image
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                console.log('⬇️ Download initiated');
+
+                // Clean up
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                }, 100);
+
+                // Open WhatsApp
+                setTimeout(() => {
+                    const mobile = result.student_id.father_mobile;
+                    if (!mobile) {
+                        alert('✅ Image downloaded!\n\n⚠️ Father Mobile Number not found. Please manually share the image.');
+                        return;
+                    }
+
+                    let num = mobile.replace(/\D/g, '');
+                    if (num.length === 11 && num.startsWith('0')) {
+                        num = '92' + num.substring(1);
+                    }
+
+                    const message = `Dear Parent,\n\n📋 Result Card for ${result.student_id.full_name}\n📚 Exam: ${result.exam_id.title}\n📊 Percentage: ${result.percentage}%\n🎓 Grade: ${result.grade}\n\nImage downloaded to your device. Please attach and send.\n\n- ${schoolInfo?.name || 'School'}`;
+
+                    alert('✅ Image downloaded successfully!\n\n📱 Opening WhatsApp now. Please attach the downloaded image manually.');
+                    window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, '_blank');
+                }, 1000);
+
+            }, 'image/png', 0.95);
+
         } catch (error) {
-            console.error('Error capturing result card:', error);
-            alert('Failed to capture result card as image');
+            console.error('❌ Error capturing image:', error);
+            alert(`Failed to capture result card:\n${error.message}\n\nPlease try again or use the Print button instead.`);
         }
     };
 
