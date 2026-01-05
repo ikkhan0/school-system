@@ -44,8 +44,8 @@ const Reports = () => {
 
     const fetchClasses = async () => {
         try {
-            const res = await fetch(`${API_URL} /api/classes`, {
-                headers: { Authorization: `Bearer ${user.token} ` }
+            const res = await fetch(`${API_URL}/api/classes`, {
+                headers: { Authorization: `Bearer ${user.token}` }
             });
             const result = await res.json();
             setClasses(result);
@@ -56,8 +56,8 @@ const Reports = () => {
 
     const fetchExams = async () => {
         try {
-            const res = await fetch(`${API_URL} /api/exams`, {
-                headers: { Authorization: `Bearer ${user.token} ` }
+            const res = await fetch(`${API_URL}/api/exams`, {
+                headers: { Authorization: `Bearer ${user.token}` }
             });
             const result = await res.json();
             setExams(result);
@@ -110,10 +110,10 @@ const Reports = () => {
                     endpoint = '/api/reports/defaulters';
             }
 
-            const url = `${API_URL}${endpoint}${queryParams.toString() ? '?' + queryParams.toString() : ''} `;
+            const url = `${API_URL}${endpoint}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
             console.log('🔍 Fetching from:', url);
             const res = await fetch(url, {
-                headers: { Authorization: `Bearer ${user.token} ` }
+                headers: { Authorization: `Bearer ${user.token}` }
             });
             const result = await res.json();
             console.log('✅ Data received:', result);
@@ -127,8 +127,8 @@ const Reports = () => {
 
     const fetchConsecutiveAbsences = async () => {
         try {
-            const res = await fetch(`${API_URL} /api/reports / consecutive - absences`, {
-                headers: { Authorization: `Bearer ${user.token} ` }
+            const res = await fetch(`${API_URL}/api/reports/consecutive-absences`, {
+                headers: { Authorization: `Bearer ${user.token}` }
             });
             const result = await res.json();
             setConsecutiveAbsences(result.students || []);
