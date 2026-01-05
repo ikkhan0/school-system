@@ -28,12 +28,16 @@ const DiscountPolicies = () => {
 
     const fetchPolicies = async () => {
         try {
+            console.log('🔍 Fetching discount policies...');
             const response = await axios.get(`${API_URL}/api/discounts/policies`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
+            console.log('✅ Policies received:', response.data.length, 'policies');
+            console.log('📋 Policies data:', response.data);
             setPolicies(response.data);
         } catch (error) {
-            console.error('Error fetching policies:', error);
+            console.error('❌ Error fetching policies:', error);
+            console.error('Response:', error.response?.data);
         }
     };
 
