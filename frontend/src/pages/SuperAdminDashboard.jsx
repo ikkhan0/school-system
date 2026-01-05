@@ -67,9 +67,16 @@ const SuperAdminDashboard = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            // Store impersonation token and user
+            // CRITICAL: Store token INSIDE user object to match normal login behavior
+            // Dashboard and other components expect user.token to exist
+            const impersonatedUser = {
+                ...response.data.user,
+                token: response.data.token  // Add token to user object
+            };
+
+            // Store both separately and together for compatibility
             localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+            localStorage.setItem('user', JSON.stringify(impersonatedUser));
             localStorage.setItem('impersonating', 'true');
 
             // IMPORTANT: Force page reload to re-initialize AuthContext with new user
