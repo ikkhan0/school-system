@@ -98,16 +98,50 @@ const ResultGeneration = () => {
             // Show loading
             alert('📸 Capturing result card as image... Please wait.');
 
+            // WORKAROUND: Replace oklch colors with compatible colors
+            // html2canvas doesn't support modern oklch() color function
+            const allElements = cardElement.querySelectorAll('*');
+            const originalStyles = [];
+
+            allElements.forEach((el, index) => {
+                const computedStyle = window.getComputedStyle(el);
+                originalStyles[index] = {
+                    color: el.style.color,
+                    backgroundColor: el.style.backgroundColor,
+                    borderColor: el.style.borderColor
+                };
+
+                // Replace oklch colors with computed RGB values
+                if (computedStyle.color && computedStyle.color !== 'rgba(0, 0, 0, 0)') {
+                    el.style.color = computedStyle.color;
+                }
+                if (computedStyle.backgroundColor && computedStyle.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+                    el.style.backgroundColor = computedStyle.backgroundColor;
+                }
+                if (computedStyle.borderColor && computedStyle.borderColor !== 'rgba(0, 0, 0, 0)') {
+                    el.style.borderColor = computedStyle.borderColor;
+                }
+            });
+
             // Capture with html2canvas
             console.log('🖼️ Calling html2canvas...');
             const canvas = await html2canvas(cardElement, {
                 scale: 2,
                 useCORS: true,
                 allowTaint: true,
-                logging: true,
+                logging: false,
                 backgroundColor: '#ffffff',
                 windowWidth: cardElement.scrollWidth,
                 windowHeight: cardElement.scrollHeight
+            });
+
+            // Restore original styles
+            allElements.forEach((el, index) => {
+                if (originalStyles[index]) {
+                    el.style.color = originalStyles[index].color;
+                    el.style.backgroundColor = originalStyles[index].backgroundColor;
+                    el.style.borderColor = originalStyles[index].borderColor;
+                }
             });
 
             console.log('✅ Canvas created:', canvas.width, 'x', canvas.height);
@@ -512,6 +546,4 @@ const ResultGeneration = () => {
 };
 
 export default ResultGeneration;
-};
 
-export default ResultGeneration;
