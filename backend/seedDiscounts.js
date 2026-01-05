@@ -38,7 +38,8 @@ const seedDiscountPolicies = async () => {
                     discount_percentage: 25,
                     discount_amount: 0,
                     is_active: true,
-                    school_id: school._id
+                    school_id: school._id,
+                    tenant_id: school._id
                 },
                 {
                     policy_name: 'Sibling Discount - 2nd Child',
@@ -51,7 +52,8 @@ const seedDiscountPolicies = async () => {
                     conditions: {
                         sibling_position: 2
                     },
-                    school_id: school._id
+                    school_id: school._id,
+                    tenant_id: school._id
                 },
                 {
                     policy_name: 'Sibling Discount - 3rd Child',
@@ -64,7 +66,8 @@ const seedDiscountPolicies = async () => {
                     conditions: {
                         sibling_position: 3
                     },
-                    school_id: school._id
+                    school_id: school._id,
+                    tenant_id: school._id
                 },
                 {
                     policy_name: 'Sibling Discount - 4th+ Child',
@@ -77,7 +80,8 @@ const seedDiscountPolicies = async () => {
                     conditions: {
                         sibling_position: 4
                     },
-                    school_id: school._id
+                    school_id: school._id,
+                    tenant_id: school._id
                 },
                 {
                     policy_name: 'Merit Scholarship',
@@ -87,7 +91,8 @@ const seedDiscountPolicies = async () => {
                     discount_percentage: 30,
                     discount_amount: 0,
                     is_active: true,
-                    school_id: school._id
+                    school_id: school._id,
+                    tenant_id: school._id
                 },
                 {
                     policy_name: 'Financial Aid',
@@ -97,7 +102,8 @@ const seedDiscountPolicies = async () => {
                     discount_percentage: 50,
                     discount_amount: 0,
                     is_active: true,
-                    school_id: school._id
+                    school_id: school._id,
+                    tenant_id: school._id
                 }
             ];
 
@@ -105,7 +111,7 @@ const seedDiscountPolicies = async () => {
             console.log(`  ✅ Created ${created.length} discount policies`);
 
             created.forEach(policy => {
-                console.log(`     - ${policy.name} (${policy.discount_percentage}%)`);
+                console.log(`     - ${policy.policy_name} (${policy.discount_percentage}%)`);
             });
         }
 
