@@ -70,19 +70,36 @@ router.get('/shortage', protect, checkPermission('reports.view'), async (req, re
 // @route   GET /api/reports/attendance-summary?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD&class_id=X&section_id=Y
 router.get('/attendance-summary', protect, async (req, res) => {
     try {
+        console.log('📊 Attendance Summary Request:', req.query);
         const { start_date, end_date, class_id, section_id } = req.query;
 
+        // Default to current month if no dates provided
         const startDate = start_date ? new Date(start_date) : new Date(new Date().setDate(1));
         const endDate = end_date ? new Date(end_date) : new Date();
 
         startDate.setHours(0, 0, 0, 0);
         endDate.setHours(23, 59, 59, 999);
 
+        console.log('📅 Date Range:', { startDate, endDate });
+
         let studentQuery = { tenant_id: req.tenant_id, is_active: true };
         if (class_id) studentQuery.class_id = class_id;
         if (section_id) studentQuery.section_id = section_id;
 
+        console.log('🔍 Student Query:', studentQuery);
+
         const students = await Student.find(studentQuery).populate('family_id');
+        console.log(`👥 Found ${students.length} students`);
+
+        if (students.length === 0) {
+            return res.json({
+                start_date: startDate,
+                end_date: endDate,
+                total_students: 0,
+                report: []
+            });
+        }
+
         const studentIds = students.map(s => s._id);
 
         const logs = await DailyLog.find({
@@ -90,6 +107,8 @@ router.get('/attendance-summary', protect, async (req, res) => {
             date: { $gte: startDate, $lte: endDate },
             tenant_id: req.tenant_id
         });
+
+        console.log(`📝 Found ${logs.length} attendance logs`);
 
         const report = students.map(student => {
             const studentLogs = logs.filter(log => log.student_id.toString() === student._id.toString());
@@ -111,9 +130,11 @@ router.get('/attendance-summary', protect, async (req, res) => {
                 absent,
                 leave,
                 total,
-                percentage
+                percentage: parseFloat(percentage)
             };
         });
+
+        console.log(`✅ Attendance summary generated for ${report.length} students`);
 
         res.json({
             start_date: startDate,
@@ -122,6 +143,151 @@ router.get('/attendance-summary', protect, async (req, res) => {
             report
         });
     } catch (error) {
+        console.error('❌ Error in attendance-summary:', error);
+        res.status(500).json({ message: error.message, error: error.stack });
+    }
+});
+
+// @desc    Get Detailed Day-wise Attendance Report
+// @route   GET /api/reports/attendance-detailed?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD&class_id=X&section_id=Y
+router.get('/attendance-detailed', protect, async (req, res) => {
+    try {
+        console.log('📊 Detailed Attendance Request:', req.query);
+        const { start_date, end_date, class_id, section_id } = req.query;
+
+        const startDate = start_date ? new Date(start_date) : new Date(new Date().setDate(1));
+        const endDate = end_date ? new Date(end_date) : new Date();
+
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+
+        let studentQuery = { tenant_id: req.tenant_id, is_active: true };
+        if (class_id) studentQuery.class_id = class_id;
+        if (section_id) studentQuery.section_id = section_id;
+
+        const students = await Student.find(studentQuery).populate('family_id');
+
+        if (students.length === 0) {
+            return res.json({
+                start_date: startDate,
+                end_date: endDate,
+                logs: []
+            });
+        }
+
+        const studentIds = students.map(s => s._id);
+
+        // Fetch all logs for the period
+        const logs = await DailyLog.find({
+            student_id: { $in: studentIds },
+            date: { $gte: startDate, $lte: endDate },
+            tenant_id: req.tenant_id
+        }).populate('student_id').sort({ date: -1, class_id: 1, section_id: 1 });
+
+        // Format logs with student details
+        const formattedLogs = logs.map(log => ({
+            date: log.date,
+            student_id: log.student_id._id,
+            roll_no: log.student_id.roll_no,
+            name: log.student_id.full_name,
+            class_id: log.student_id.class_id,
+            section_id: log.student_id.section_id,
+            father_name: log.student_id.family_id?.father_name || log.student_id.father_name,
+            father_mobile: log.student_id.family_id?.father_mobile || log.student_id.father_mobile,
+            status: log.status,
+            remarks: log.remarks || ''
+        }));
+
+        console.log(`✅ Found ${formattedLogs.length} detailed attendance records`);
+
+        res.json({
+            start_date: startDate,
+            end_date: endDate,
+            total_records: formattedLogs.length,
+            logs: formattedLogs
+        });
+    } catch (error) {
+        console.error('❌ Error in attendance-detailed:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @desc    Get Staff Attendance Report
+// @route   GET /api/reports/staff-attendance?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD
+router.get('/staff-attendance', protect, async (req, res) => {
+    try {
+        console.log('👔 Staff Attendance Request:', req.query);
+        const { start_date, end_date, department, role } = req.query;
+        const StaffAttendance = require('../models/StaffAttendance');
+        const User = require('../models/User');
+
+        const startDate = start_date ? new Date(start_date) : new Date(new Date().setDate(1));
+        const endDate = end_date ? new Date(end_date) : new Date();
+
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+
+        // Get all staff members
+        let staffQuery = { school_id: req.tenant_id, role: { $in: ['Teacher', 'Staff', 'Admin'] } };
+        if (role) staffQuery.role = role;
+
+        const staffMembers = await User.find(staffQuery);
+        const staffIds = staffMembers.map(s => s._id);
+
+        // Get attendance logs
+        const logs = await StaffAttendance.find({
+            staff_id: { $in: staffIds },
+            date: { $gte: startDate, $lte: endDate },
+            school_id: req.tenant_id
+        }).populate('staff_id');
+
+        // Calculate summary for each staff member
+        const report = staffMembers.map(staff => {
+            const staffLogs = logs.filter(log => log.staff_id && log.staff_id._id.toString() === staff._id.toString());
+            const present = staffLogs.filter(log => log.status === 'Present').length;
+            const absent = staffLogs.filter(log => log.status === 'Absent').length;
+            const leave = staffLogs.filter(log => log.status === 'Leave').length;
+            const halfDay = staffLogs.filter(log => log.status === 'Half Day').length;
+            const total = staffLogs.length;
+            const percentage = total > 0 ? ((present + halfDay * 0.5) / total * 100).toFixed(1) : 0;
+
+            return {
+                staff_id: staff._id,
+                name: staff.full_name,
+                role: staff.role,
+                mobile: staff.mobile,
+                present,
+                absent,
+                leave,
+                half_day: halfDay,
+                total,
+                percentage: parseFloat(percentage)
+            };
+        });
+
+        // Also provide day-by-day logs
+        const detailedLogs = logs.map(log => ({
+            date: log.date,
+            staff_id: log.staff_id._id,
+            name: log.staff_id.full_name,
+            role: log.staff_id.role,
+            status: log.status,
+            check_in: log.check_in,
+            check_out: log.check_out,
+            remarks: log.remarks || ''
+        }));
+
+        console.log(`✅ Staff attendance summary generated for ${report.length} staff members`);
+
+        res.json({
+            start_date: startDate,
+            end_date: endDate,
+            total_staff: staffMembers.length,
+            summary: report,
+            detailed_logs: detailedLogs
+        });
+    } catch (error) {
+        console.error('❌ Error in staff-attendance:', error);
         res.status(500).json({ message: error.message });
     }
 });
