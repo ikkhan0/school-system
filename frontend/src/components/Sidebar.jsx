@@ -128,11 +128,14 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             titleKey: 'navigation.reports',
             icon: BarChart,
             type: 'group',
-            paths: ['/reports', '/advanced-reports'],
+            paths: ['/reports', '/advanced-reports', '/attendance-report', '/staff-attendance-report', '/monthly-attendance-sheet'],
             permissions: ['reports.view', 'reports.academic.view', 'reports.fee.view', 'reports.academic.export'], // Show if has ANY report permission
             items: [
                 { titleKey: 'navigation.basicReports', path: '/reports', permission: 'reports.academic.view' },
-                { titleKey: 'navigation.advancedReports', path: '/advanced-reports', permission: 'reports.academic.export' }
+                { titleKey: 'navigation.advancedReports', path: '/advanced-reports', permission: 'reports.academic.export' },
+                { title: 'Attendance Report', path: '/attendance-report', permission: 'reports.academic.view' },
+                { title: 'Monthly Attendance Sheet', path: '/monthly-attendance-sheet', permission: 'reports.academic.view' },
+                { title: 'Staff Attendance', path: '/staff-attendance-report', permission: 'reports.academic.view' }
             ]
         },
         {
@@ -291,7 +294,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                                                 }
                                                     `}
                                                         >
-                                                            {t(`common:${subItem.titleKey}`)}
+                                                            {subItem.titleKey ? t(`common:${subItem.titleKey}`) : subItem.title}
                                                         </Link>
                                                     ))}
                                             </div>

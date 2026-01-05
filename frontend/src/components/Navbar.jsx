@@ -110,10 +110,13 @@ const Navbar = () => {
             label: t('reports'),
             icon: BarChart,
             type: 'dropdown',
-            paths: ['/reports', '/advanced-reports'],
+            paths: ['/reports', '/advanced-reports', '/attendance-report', '/staff-attendance-report', '/monthly-attendance-sheet'],
             items: [
                 { path: '/reports', label: 'Basic Reports' },
                 { path: '/advanced-reports', label: 'Advanced Reports' },
+                { path: '/attendance-report', label: 'Attendance Report' },
+                { path: '/monthly-attendance-sheet', label: 'Monthly Attendance Sheet' },
+                { path: '/staff-attendance-report', label: 'Staff Attendance' },
             ]
         },
         {
