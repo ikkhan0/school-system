@@ -183,8 +183,14 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
 
                     oldFee.paid_amount += paymentForThis;
                     oldFee.balance -= paymentForThis;
-                    oldFee.status = oldFee.balance <= 0 ? 'Paid' : 'Partial';
-                    oldFee.status = oldFee.balance <= 0 ? 'Paid' : 'Partial';
+
+                    // FIXED: Set status once based on balance
+                    if (oldFee.balance <= 0) {
+                        oldFee.status = 'Paid';
+                    } else {
+                        oldFee.status = 'Partial';
+                    }
+
                     oldFee.payment_date = p.payment_date ? new Date(p.payment_date) : new Date();
 
                     await oldFee.save();
@@ -197,8 +203,15 @@ router.post('/collect', protect, checkPermission('fees.collect'), async (req, re
                     fee.balance = fee.gross_amount - fee.paid_amount;
                 }
 
-                fee.status = fee.balance <= 0 ? 'Paid' : (fee.paid_amount > 0 ? 'Partial' : 'Pending');
-                fee.status = fee.balance <= 0 ? 'Paid' : (fee.paid_amount > 0 ? 'Partial' : 'Pending');
+                // FIXED: Determine status based on balance (NOT duplicate line)
+                if (fee.balance <= 0) {
+                    fee.status = 'Paid';
+                } else if (fee.paid_amount > 0) {
+                    fee.status = 'Partial';
+                } else {
+                    fee.status = 'Pending';
+                }
+
                 fee.payment_date = p.payment_date ? new Date(p.payment_date) : new Date();
 
                 await fee.save();
