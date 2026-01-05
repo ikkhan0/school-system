@@ -38,15 +38,31 @@ router.get('/policies', protect, async (req, res) => {
     try {
         const { active_only } = req.query;
 
+        console.log('🔍 Fetching discount policies for tenant:', req.tenant_id);
+
         const query = { tenant_id: req.tenant_id };
         if (active_only === 'true') {
             query.is_active = true;
         }
 
-        const policies = await DiscountPolicy.find(query).sort({ policy_type: 1, createdAt: -1 });
+        let policies = await DiscountPolicy.find(query).sort({ policy_type: 1, createdAt: -1 });
+
+        // Fallback: If no policies found with tenant_id, try school_id (for backward compatibility)
+        if (policies.length === 0) {
+            console.log('⚠️ No policies found with tenant_id, trying school_id...');
+            const fallbackQuery = { school_id: req.tenant_id };
+            if (active_only === 'true') {
+                fallbackQuery.is_active = true;
+            }
+            policies = await DiscountPolicy.find(fallbackQuery).sort({ policy_type: 1, createdAt: -1 });
+            console.log(`✅ Found ${policies.length} policies with school_id`);
+        } else {
+            console.log(`✅ Found ${policies.length} policies with tenant_id`);
+        }
+
         res.json(policies);
     } catch (error) {
-        console.error('Error fetching discount policies:', error);
+        console.error('❌ Error fetching discount policies:', error);
         res.status(500).json({ message: 'Failed to fetch discount policies', error: error.message });
     }
 });
