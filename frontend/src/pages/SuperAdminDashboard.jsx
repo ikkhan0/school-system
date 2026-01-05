@@ -67,13 +67,14 @@ const SuperAdminDashboard = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            // Store impersonation token
+            // Store impersonation token and user
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
             localStorage.setItem('impersonating', 'true');
 
-            // Redirect to school dashboard
-            navigate('/dashboard');
+            // IMPORTANT: Force page reload to re-initialize AuthContext with new user
+            // This ensures ProtectedRoute recognizes the impersonated session
+            window.location.href = '/dashboard';
         } catch (error) {
             alert('Failed to impersonate: ' + (error.response?.data?.message || 'Unknown error'));
         }

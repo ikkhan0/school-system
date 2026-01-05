@@ -7,9 +7,6 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    // removing unused navigate here as App.jsx handles routing context typically, 
-    // or we move Router inside App to wrap this? Best practice: AuthProvider inside Router or pass navigate?
-    // Simplified: AuthProvider manages state. Login component handles navigation after success.
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
@@ -58,11 +55,23 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('impersonating');
         setUser(null);
     };
 
+    // NEW: Method to refresh user from localStorage (for impersonation)
+    const refreshUser = () => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        } else {
+            setUser(null);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, logout, loading, refreshUser }}>
             {children}
         </AuthContext.Provider>
     );
