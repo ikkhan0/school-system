@@ -20,6 +20,7 @@ const ResultGeneration = () => {
     const [showAttendance, setShowAttendance] = useState(true);
     const [showFees, setShowFees] = useState(true);
     const [showBehavior, setShowBehavior] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         if (!user) return;
@@ -168,6 +169,17 @@ const ResultGeneration = () => {
 
     const logoUrl = schoolInfo?.logo ? `${API_URL}${schoolInfo.logo}` : null;
 
+    // Filter results based on search query
+    const filteredResults = results.filter(result => {
+        if (!searchQuery.trim()) return true;
+
+        const query = searchQuery.toLowerCase();
+        const name = result.student_id.full_name?.toLowerCase() || '';
+        const rollNo = result.student_id.roll_no?.toLowerCase() || '';
+
+        return name.includes(query) || rollNo.includes(query);
+    });
+
     return (
         <div className="max-w-6xl mx-auto p-4">
             <div className="no-print mb-6 bg-white p-4 shadow rounded space-y-4">
@@ -193,11 +205,30 @@ const ResultGeneration = () => {
                     </div>
                 </div>
 
+                {/* Search Box */}
+                {results.length > 0 && (
+                    <div className="mt-4">
+                        <label className="block text-sm font-semibold mb-2">🔍 Search Student</label>
+                        <input
+                            type="text"
+                            placeholder="Search by name or roll number..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full sm:w-96 p-2 border rounded-lg text-sm"
+                        />
+                        {searchQuery && (
+                            <p className="text-xs text-gray-600 mt-1">
+                                Showing {filteredResults.length} of {results.length} result cards
+                            </p>
+                        )}
+                    </div>
+                )}
+
                 {/* Toggles */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 items-start sm:items-center border-t pt-4">
+                <div className="flex flex-wrap gap-2 sm:gap-4 items-center mt-4">
                     <label className="flex items-center gap-2 font-semibold text-xs sm:text-sm cursor-pointer">
                         <input type="checkbox" checked={showAttendance} onChange={e => setShowAttendance(e.target.checked)} className="w-4 h-4" />
-                        Attendance Report
+                        Attendance
                     </label>
                     <label className="flex items-center gap-2 font-semibold text-xs sm:text-sm cursor-pointer">
                         <input type="checkbox" checked={showFees} onChange={e => setShowFees(e.target.checked)} className="w-4 h-4" />
@@ -209,268 +240,278 @@ const ResultGeneration = () => {
                     </label>
 
                     <button onClick={() => window.print()} className="sm:ml-auto bg-gray-800 text-white px-4 py-2 rounded flex gap-2 items-center text-sm sm:text-base hover:bg-gray-900">
-                        <Printer size={16} className="sm:w-[18px] sm:h-[18px]" /> Print Cards
+                        <Printer size={16} className="sm:w-[18px] sm:h-[18px]" /> Print Cards ({filteredResults.length})
                     </button>
                 </div>
             </div>
 
             <div className="print-area space-y-8">
-                {results.map((result) => (
-                    <div key={result._id} id={`result-card-${result.student_id._id}`} className="result-card bg-white border-4 border-black p-4 min-h-[297mm] w-[210mm] mx-auto break-after-page relative">
+                {filteredResults.length === 0 && results.length > 0 ? (
+                    <div className="text-center py-12 bg-white rounded-lg border">
+                        <p className="text-gray-500 text-lg">No results match your search</p>
+                        <p className="text-gray-400 text-sm mt-2">Try searching with a different name or roll number</p>
+                    </div>
+                ) : (
+                    filteredResults.map((result) => (
+                        <div key={result._id} id={`result-card-${result.student_id._id}`} className="result-card bg-white border-4 border-black p-4 min-h-[297mm] w-[210mm] mx-auto break-after-page relative">
 
-                        {/* Action Buttons (No Print) */}
-                        <div className="absolute top-4 right-4 no-print flex gap-2">
-                            <button
-                                onClick={() => sendResultAsImage(result, result.student_id._id)}
-                                className="text-blue-600 hover:bg-blue-50 p-2 rounded border border-blue-200 flex items-center gap-1"
-                                title="Send Result Card as Image via WhatsApp"
-                            >
-                                <ImageIcon size={20} />
-                                <span className="text-xs">Image</span>
-                            </button>
-                            <button
-                                onClick={() => sendResult(result)}
-                                className="text-green-600 hover:bg-green-50 p-2 rounded border border-green-200"
-                                title="Send Result as Text via WhatsApp"
-                            >
-                                <MessageCircle size={20} />
-                            </button>
-                        </div>
+                            {/* Action Buttons (No Print) */}
+                            <div className="absolute top-4 right-4 no-print flex gap-2">
+                                <button
+                                    onClick={() => sendResultAsImage(result, result.student_id._id)}
+                                    className="text-blue-600 hover:bg-blue-50 p-2 rounded border border-blue-200 flex items-center gap-1"
+                                    title="Send Result Card as Image via WhatsApp"
+                                >
+                                    <ImageIcon size={20} />
+                                    <span className="text-xs">Image</span>
+                                </button>
+                                <button
+                                    onClick={() => sendResult(result)}
+                                    className="text-green-600 hover:bg-green-50 p-2 rounded border border-green-200"
+                                    title="Send Result as Text via WhatsApp"
+                                >
+                                    <MessageCircle size={20} />
+                                </button>
+                            </div>
 
-                        {/* Header with Logo */}
-                        <div className="flex items-center justify-between mb-3 pb-2 border-b-4 border-black">
-                            {/* Left: Logo */}
-                            {logoUrl && (
-                                <div className="w-16 h-16 flex items-center justify-center">
-                                    <img src={logoUrl} alt="School Logo" className="max-w-full max-h-full object-contain" />
+                            {/* Header with Logo */}
+                            <div className="flex items-center justify-between mb-3 pb-2 border-b-4 border-black">
+                                {/* Left: Logo */}
+                                {logoUrl && (
+                                    <div className="w-16 h-16 flex items-center justify-center">
+                                        <img src={logoUrl} alt="School Logo" className="max-w-full max-h-full object-contain" />
+                                    </div>
+                                )}
+
+                                {/* Center: School Info */}
+                                <div className="flex-1 text-center px-2">
+                                    <h1 className="text-2xl font-bold uppercase tracking-wide mb-0.5">{schoolInfo?.name || 'School Name'}</h1>
+                                    <p className="text-xs text-gray-700">{schoolInfo?.address || 'School Address'}</p>
+                                    {schoolInfo?.phone && <p className="text-xs text-gray-700">Phone: {schoolInfo.phone}</p>}
                                 </div>
-                            )}
 
-                            {/* Center: School Info */}
-                            <div className="flex-1 text-center px-2">
-                                <h1 className="text-2xl font-bold uppercase tracking-wide mb-0.5">{schoolInfo?.name || 'School Name'}</h1>
-                                <p className="text-xs text-gray-700">{schoolInfo?.address || 'School Address'}</p>
-                                {schoolInfo?.phone && <p className="text-xs text-gray-700">Phone: {schoolInfo.phone}</p>}
+                                {/* Right: Student Photo */}
+                                <div className="w-20 h-24 border-2 border-black bg-gray-100 flex items-center justify-center overflow-hidden">
+                                    {(() => {
+                                        const photo = result.student_id?.photo || result.student_id?.image;
+                                        if (photo) {
+                                            const src = (photo.startsWith('http') || photo.startsWith('data:'))
+                                                ? photo
+                                                : `${API_URL}${photo}`;
+                                            return (
+                                                <img
+                                                    src={src}
+                                                    alt="Student"
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                                />
+                                            );
+                                        }
+                                        return <User className="text-gray-400" size={40} />;
+                                    })()}
+                                </div>
                             </div>
 
-                            {/* Right: Student Photo */}
-                            <div className="w-20 h-24 border-2 border-black bg-gray-100 flex items-center justify-center overflow-hidden">
-                                {(() => {
-                                    const photo = result.student_id?.photo || result.student_id?.image;
-                                    if (photo) {
-                                        const src = (photo.startsWith('http') || photo.startsWith('data:'))
-                                            ? photo
-                                            : `${API_URL}${photo}`;
+                            {/* Result Card Title */}
+                            <div className="text-center mb-2">
+                                <div className="inline-block border-2 border-black px-4 py-1 bg-white">
+                                    <h2 className="text-lg font-bold uppercase">Result Card</h2>
+                                </div>
+                            </div>
+
+                            {/* Student Information */}
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mb-3 text-xs">
+                                <div className="flex border-b border-dotted border-gray-400 pb-0.5">
+                                    <span className="font-bold w-28">Student Name:</span>
+                                    <span className="flex-1 uppercase font-semibold">{result.student_id.full_name}</span>
+                                </div>
+                                <div className="flex border-b border-dotted border-gray-400 pb-0.5">
+                                    <span className="font-bold w-28">Roll Number:</span>
+                                    <span className="flex-1 font-semibold">{result.student_id.roll_no}</span>
+                                </div>
+                                <div className="flex border-b border-dotted border-gray-400 pb-0.5">
+                                    <span className="font-bold w-28">Father's Name:</span>
+                                    <span className="flex-1 uppercase font-semibold">{result.student_id.father_name}</span>
+                                </div>
+                                <div className="flex border-b border-dotted border-gray-400 pb-0.5">
+                                    <span className="font-bold w-28">Class/Section:</span>
+                                    <span className="flex-1 font-semibold">{result.class_id} - {result.section_id}</span>
+                                </div>
+                            </div>
+
+                            {/* Exam Title */}
+                            <div className="text-center font-bold bg-gray-800 text-white border-2 border-black mb-2 py-1 text-sm uppercase">
+                                {result.exam_id.title}
+                            </div>
+
+                            {/* Marks Table */}
+                            <table className="w-full border-collapse border-2 border-black mb-3 text-xs">
+                                <thead>
+                                    <tr className="bg-gray-200">
+                                        <th className="border-2 border-black p-1.5 text-left font-bold">SUBJECT</th>
+                                        <th className="border-2 border-black p-1.5 text-center font-bold w-16">TOTAL</th>
+                                        <th className="border-2 border-black p-1.5 text-center font-bold w-16">PASSING</th>
+                                        <th className="border-2 border-black p-1.5 text-center font-bold w-20">OBTAINED</th>
+                                        <th className="border-2 border-black p-1.5 text-center font-bold w-20">STATUS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {result.subjects.map((sub, idx) => {
+                                        // Fallback for old results without passing_marks
+                                        const passingMarks = sub.passing_marks || Math.round(sub.total_marks * 0.33);
+                                        const subjectPassed = sub.obtained_marks >= passingMarks;
+
                                         return (
-                                            <img
-                                                src={src}
-                                                alt="Student"
-                                                className="w-full h-full object-cover"
-                                                onError={(e) => { e.target.style.display = 'none'; }}
-                                            />
+                                            <tr key={idx} className="hover:bg-gray-50">
+                                                <td className="border-2 border-black p-1.5 font-semibold">{sub.subject_name}</td>
+                                                <td className="border-2 border-black p-1.5 text-center">{sub.total_marks}</td>
+                                                <td className="border-2 border-black p-1.5 text-center text-gray-600">{passingMarks}</td>
+                                                <td className="border-2 border-black p-1.5 text-center font-bold text-sm">{sub.obtained_marks}</td>
+                                                <td className={`border-2 border-black p-1.5 text-center font-bold ${subjectPassed ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-50'}`}>
+                                                    {subjectPassed ? 'PASS' : 'FAIL'}
+                                                </td>
+                                            </tr>
                                         );
-                                    }
-                                    return <User className="text-gray-400" size={40} />;
-                                })()}
-                            </div>
-                        </div>
+                                    })}
+                                    {/* Total Row */}
+                                    <tr className="font-bold bg-yellow-50 text-xs">
+                                        <td className="border-2 border-black p-1.5 text-right">TOTAL MARKS</td>
+                                        <td className="border-2 border-black p-1.5 text-center">{result.total_max}</td>
+                                        <td className="border-2 border-black p-1.5 text-center">-</td>
+                                        <td className="border-2 border-black p-1.5 text-center text-sm">{result.total_obtained}</td>
+                                        <td className="border-2 border-black p-1.5 text-center">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
 
-                        {/* Result Card Title */}
-                        <div className="text-center mb-2">
-                            <div className="inline-block border-2 border-black px-4 py-1 bg-white">
-                                <h2 className="text-lg font-bold uppercase">Result Card</h2>
-                            </div>
-                        </div>
-
-                        {/* Student Information */}
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mb-3 text-xs">
-                            <div className="flex border-b border-dotted border-gray-400 pb-0.5">
-                                <span className="font-bold w-28">Student Name:</span>
-                                <span className="flex-1 uppercase font-semibold">{result.student_id.full_name}</span>
-                            </div>
-                            <div className="flex border-b border-dotted border-gray-400 pb-0.5">
-                                <span className="font-bold w-28">Roll Number:</span>
-                                <span className="flex-1 font-semibold">{result.student_id.roll_no}</span>
-                            </div>
-                            <div className="flex border-b border-dotted border-gray-400 pb-0.5">
-                                <span className="font-bold w-28">Father's Name:</span>
-                                <span className="flex-1 uppercase font-semibold">{result.student_id.father_name}</span>
-                            </div>
-                            <div className="flex border-b border-dotted border-gray-400 pb-0.5">
-                                <span className="font-bold w-28">Class/Section:</span>
-                                <span className="flex-1 font-semibold">{result.class_id} - {result.section_id}</span>
-                            </div>
-                        </div>
-
-                        {/* Exam Title */}
-                        <div className="text-center font-bold bg-gray-800 text-white border-2 border-black mb-2 py-1 text-sm uppercase">
-                            {result.exam_id.title}
-                        </div>
-
-                        {/* Marks Table */}
-                        <table className="w-full border-collapse border-2 border-black mb-3 text-xs">
-                            <thead>
-                                <tr className="bg-gray-200">
-                                    <th className="border-2 border-black p-1.5 text-left font-bold">SUBJECT</th>
-                                    <th className="border-2 border-black p-1.5 text-center font-bold w-16">TOTAL</th>
-                                    <th className="border-2 border-black p-1.5 text-center font-bold w-16">PASSING</th>
-                                    <th className="border-2 border-black p-1.5 text-center font-bold w-20">OBTAINED</th>
-                                    <th className="border-2 border-black p-1.5 text-center font-bold w-20">STATUS</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {result.subjects.map((sub, idx) => {
-                                    // Fallback for old results without passing_marks
-                                    const passingMarks = sub.passing_marks || Math.round(sub.total_marks * 0.33);
-                                    const subjectPassed = sub.obtained_marks >= passingMarks;
-
-                                    return (
-                                        <tr key={idx} className="hover:bg-gray-50">
-                                            <td className="border-2 border-black p-1.5 font-semibold">{sub.subject_name}</td>
-                                            <td className="border-2 border-black p-1.5 text-center">{sub.total_marks}</td>
-                                            <td className="border-2 border-black p-1.5 text-center text-gray-600">{passingMarks}</td>
-                                            <td className="border-2 border-black p-1.5 text-center font-bold text-sm">{sub.obtained_marks}</td>
-                                            <td className={`border-2 border-black p-1.5 text-center font-bold ${subjectPassed ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-50'}`}>
-                                                {subjectPassed ? 'PASS' : 'FAIL'}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                                {/* Total Row */}
-                                <tr className="font-bold bg-yellow-50 text-xs">
-                                    <td className="border-2 border-black p-1.5 text-right">TOTAL MARKS</td>
-                                    <td className="border-2 border-black p-1.5 text-center">{result.total_max}</td>
-                                    <td className="border-2 border-black p-1.5 text-center">-</td>
-                                    <td className="border-2 border-black p-1.5 text-center text-sm">{result.total_obtained}</td>
-                                    <td className="border-2 border-black p-1.5 text-center">-</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        {/* Result Summary */}
-                        <div className="grid grid-cols-3 gap-2 mb-3">
-                            <div className="border-2 border-black p-2 text-center bg-blue-50">
-                                <div className="text-xs text-gray-600 mb-0.5">PERCENTAGE</div>
-                                <div className="text-2xl font-bold text-blue-700">{result.percentage.toFixed(2)}%</div>
-                            </div>
-                            <div className="border-2 border-black p-2 text-center bg-purple-50">
-                                <div className="text-xs text-gray-600 mb-0.5">GRADE</div>
-                                <div className="text-2xl font-bold text-purple-700">{result.grade}</div>
-                            </div>
-                            <div className={`border-2 border-black p-2 text-center ${(() => {
-                                // Calculate status with fallback for old results
-                                const allPassed = result.subjects.every(sub => {
-                                    const passingMarks = sub.passing_marks || Math.round(sub.total_marks * 0.33);
-                                    return sub.obtained_marks >= passingMarks;
-                                });
-                                const finalStatus = result.status || (allPassed ? 'PASS' : 'FAIL');
-                                return finalStatus === 'PASS' ? 'bg-green-100' : 'bg-red-100';
-                            })()}`}>
-                                <div className="text-xs text-gray-600 mb-0.5">RESULT</div>
-                                <div className={`text-2xl font-bold ${(() => {
+                            {/* Result Summary */}
+                            <div className="grid grid-cols-3 gap-2 mb-3">
+                                <div className="border-2 border-black p-2 text-center bg-blue-50">
+                                    <div className="text-xs text-gray-600 mb-0.5">PERCENTAGE</div>
+                                    <div className="text-2xl font-bold text-blue-700">{result.percentage.toFixed(2)}%</div>
+                                </div>
+                                <div className="border-2 border-black p-2 text-center bg-purple-50">
+                                    <div className="text-xs text-gray-600 mb-0.5">GRADE</div>
+                                    <div className="text-2xl font-bold text-purple-700">{result.grade}</div>
+                                </div>
+                                <div className={`border-2 border-black p-2 text-center ${(() => {
+                                    // Calculate status with fallback for old results
                                     const allPassed = result.subjects.every(sub => {
                                         const passingMarks = sub.passing_marks || Math.round(sub.total_marks * 0.33);
                                         return sub.obtained_marks >= passingMarks;
                                     });
                                     const finalStatus = result.status || (allPassed ? 'PASS' : 'FAIL');
-                                    return finalStatus === 'PASS' ? 'text-green-700' : 'text-red-700';
+                                    return finalStatus === 'PASS' ? 'bg-green-100' : 'bg-red-100';
                                 })()}`}>
-                                    {(() => {
+                                    <div className="text-xs text-gray-600 mb-0.5">RESULT</div>
+                                    <div className={`text-2xl font-bold ${(() => {
                                         const allPassed = result.subjects.every(sub => {
                                             const passingMarks = sub.passing_marks || Math.round(sub.total_marks * 0.33);
                                             return sub.obtained_marks >= passingMarks;
                                         });
-                                        return result.status || (allPassed ? 'PASS' : 'FAIL');
-                                    })()}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Grading Criteria */}
-                        <div className="border-2 border-black p-1.5 mb-2 bg-gray-50">
-                            <h3 className="font-bold text-xs mb-1">GRADING CRITERIA:</h3>
-                            <div className="grid grid-cols-6 gap-1 text-[10px]">
-                                <div className="text-center"><span className="font-bold">A+:</span> 90-100%</div>
-                                <div className="text-center"><span className="font-bold">A:</span> 80-89%</div>
-                                <div className="text-center"><span className="font-bold">B:</span> 70-79%</div>
-                                <div className="text-center"><span className="font-bold">C:</span> 60-69%</div>
-                                <div className="text-center"><span className="font-bold">D:</span> 50-59%</div>
-                                <div className="text-center"><span className="font-bold">F:</span> Below 50%</div>
-                            </div>
-                        </div>
-
-                        {/* Additional Stats (Optional) */}
-                        {(showAttendance || showFees || showBehavior) && result.stats && (
-                            <div className="grid grid-cols-3 gap-2 mb-2">
-                                {showAttendance && result.stats.attendance && (
-                                    <div className="border-2 border-black p-1.5">
-                                        <h4 className="font-bold text-[10px] mb-1 border-b pb-0.5">ATTENDANCE</h4>
-                                        <div className="text-[9px] space-y-0.5">
-                                            <div>Present: <span className="font-bold text-green-600">{result.stats.attendance.present}</span></div>
-                                            <div>Absent: <span className="font-bold text-red-600">{result.stats.attendance.absent}</span></div>
-                                            <div>Leave: <span className="font-bold text-yellow-600">{result.stats.attendance.leave}</span></div>
-                                        </div>
-                                    </div>
-                                )}
-                                {showFees && result.stats.fees && (
-                                    <div className="border-2 border-black p-1.5">
-                                        <h4 className="font-bold text-[10px] mb-1 border-b pb-0.5">FEE STATUS</h4>
-                                        <div className="text-[9px]">
-                                            <div>Balance: <span className={`font-bold ${result.stats.fees.balance > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                                                Rs. {result.stats.fees.balance}
-                                            </span></div>
-                                        </div>
-                                    </div>
-                                )}
-                                {showBehavior && result.stats.behavior && (
-                                    <div className="border-2 border-black p-1.5">
-                                        <h4 className="font-bold text-[10px] mb-1 border-b pb-0.5">BEHAVIOR</h4>
-                                        <div className="text-[9px] space-y-0.5">
-                                            {Object.entries(result.stats.behavior).map(([key, val]) => val > 0 && (
-                                                <div key={key}>{key}: <span className="font-bold text-red-600">{val}</span></div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Footer */}
-                        <div className="border-t-4 border-black pt-4 mt-auto">
-                            <div className="flex justify-between items-start text-xs mb-6">
-                                <div className="w-1/2">
-                                    <div className="mb-6">
-                                        <p className="font-bold mb-1">Class Teacher:</p>
-                                        <div className="border-b-2 border-black w-48 h-12"></div>
-                                    </div>
-                                    <div>
-                                        <p className="font-bold mb-1">Date:</p>
-                                        <div className="border-b-2 border-black w-32 h-8"></div>
-                                    </div>
-                                </div>
-                                <div className="w-1/2 text-right">
-                                    <div className="mb-6">
-                                        <p className="font-bold mb-1">Principal Signature:</p>
-                                        <div className="border-b-2 border-black w-48 h-12 ml-auto"></div>
-                                    </div>
-                                    <div>
-                                        <p className="font-bold mb-1">School Stamp:</p>
-                                        <div className="border-2 border-black w-24 h-24 ml-auto"></div>
+                                        const finalStatus = result.status || (allPassed ? 'PASS' : 'FAIL');
+                                        return finalStatus === 'PASS' ? 'text-green-700' : 'text-red-700';
+                                    })()}`}>
+                                        {(() => {
+                                            const allPassed = result.subjects.every(sub => {
+                                                const passingMarks = sub.passing_marks || Math.round(sub.total_marks * 0.33);
+                                                return sub.obtained_marks >= passingMarks;
+                                            });
+                                            return result.status || (allPassed ? 'PASS' : 'FAIL');
+                                        })()}
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* School Address at Bottom */}
-                        <div className="text-center text-[10px] text-gray-600 mt-2 pt-1 border-t">
-                            <p className="font-semibold">{schoolInfo?.address || 'School Address'}</p>
-                            {schoolInfo?.phone && <p>Contact: {schoolInfo.phone}</p>}
+                            {/* Grading Criteria */}
+                            <div className="border-2 border-black p-1.5 mb-2 bg-gray-50">
+                                <h3 className="font-bold text-xs mb-1">GRADING CRITERIA:</h3>
+                                <div className="grid grid-cols-6 gap-1 text-[10px]">
+                                    <div className="text-center"><span className="font-bold">A+:</span> 90-100%</div>
+                                    <div className="text-center"><span className="font-bold">A:</span> 80-89%</div>
+                                    <div className="text-center"><span className="font-bold">B:</span> 70-79%</div>
+                                    <div className="text-center"><span className="font-bold">C:</span> 60-69%</div>
+                                    <div className="text-center"><span className="font-bold">D:</span> 50-59%</div>
+                                    <div className="text-center"><span className="font-bold">F:</span> Below 50%</div>
+                                </div>
+                            </div>
+
+                            {/* Additional Stats (Optional) */}
+                            {(showAttendance || showFees || showBehavior) && result.stats && (
+                                <div className="grid grid-cols-3 gap-2 mb-2">
+                                    {showAttendance && result.stats.attendance && (
+                                        <div className="border-2 border-black p-1.5">
+                                            <h4 className="font-bold text-[10px] mb-1 border-b pb-0.5">ATTENDANCE</h4>
+                                            <div className="text-[9px] space-y-0.5">
+                                                <div>Present: <span className="font-bold text-green-600">{result.stats.attendance.present}</span></div>
+                                                <div>Absent: <span className="font-bold text-red-600">{result.stats.attendance.absent}</span></div>
+                                                <div>Leave: <span className="font-bold text-yellow-600">{result.stats.attendance.leave}</span></div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {showFees && result.stats.fees && (
+                                        <div className="border-2 border-black p-1.5">
+                                            <h4 className="font-bold text-[10px] mb-1 border-b pb-0.5">FEE STATUS</h4>
+                                            <div className="text-[9px]">
+                                                <div>Balance: <span className={`font-bold ${result.stats.fees.balance > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                                                    Rs. {result.stats.fees.balance}
+                                                </span></div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {showBehavior && result.stats.behavior && (
+                                        <div className="border-2 border-black p-1.5">
+                                            <h4 className="font-bold text-[10px] mb-1 border-b pb-0.5">BEHAVIOR</h4>
+                                            <div className="text-[9px] space-y-0.5">
+                                                {Object.entries(result.stats.behavior).map(([key, val]) => val > 0 && (
+                                                    <div key={key}>{key}: <span className="font-bold text-red-600">{val}</span></div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Footer */}
+                            <div className="border-t-4 border-black pt-4 mt-auto">
+                                <div className="flex justify-between items-start text-xs mb-6">
+                                    <div className="w-1/2">
+                                        <div className="mb-6">
+                                            <p className="font-bold mb-1">Class Teacher:</p>
+                                            <div className="border-b-2 border-black w-48 h-12"></div>
+                                        </div>
+                                        <div>
+                                            <p className="font-bold mb-1">Date:</p>
+                                            <div className="border-b-2 border-black w-32 h-8"></div>
+                                        </div>
+                                    </div>
+                                    <div className="w-1/2 text-right">
+                                        <div className="mb-6">
+                                            <p className="font-bold mb-1">Principal Signature:</p>
+                                            <div className="border-b-2 border-black w-48 h-12 ml-auto"></div>
+                                        </div>
+                                        <div>
+                                            <p className="font-bold mb-1">School Stamp:</p>
+                                            <div className="border-2 border-black w-24 h-24 ml-auto"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* School Address at Bottom */}
+                            <div className="text-center text-[10px] text-gray-600 mt-2 pt-1 border-t">
+                                <p className="font-semibold">{schoolInfo?.address || 'School Address'}</p>
+                                {schoolInfo?.phone && <p>Contact: {schoolInfo.phone}</p>}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
         </div>
     );
+};
+
+export default ResultGeneration;
 };
 
 export default ResultGeneration;
