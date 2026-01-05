@@ -354,10 +354,24 @@ const ResultGeneration = () => {
                         Evaluation Report
                     </label>
 
-                    <button onClick={() => window.print()} className="sm:ml-auto bg-gray-800 text-white px-4 py-2 rounded flex gap-2 items-center text-sm sm:text-base hover:bg-gray-900">
-                        <Printer size={16} className="sm:w-[18px] sm:h-[18px]" /> Print Cards ({filteredResults.length})
+                    <button onClick={() => window.print()} className="sm:ml-auto bg-gray-800 text-white px-4 py-2 rounded flex gap-2 items-center text-sm sm:text-base hover:bg-gray-900" title="Print cards or Save as PDF from print dialog">
+                        <Printer size={16} className="sm:w-[18px] sm:h-[18px]" /> Print / Save PDF ({filteredResults.length})
                     </button>
                 </div>
+
+                {/* PDF Instructions */}
+                {results.length > 0 && (
+                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+                        <p className="font-semibold text-blue-900">💡 To save as PDF and share via WhatsApp:</p>
+                        <ol className="list-decimal ml-5 mt-2 text-blue-800 space-y-1">
+                            <li>Click "<strong>Print / Save PDF</strong>" button above</li>
+                            <li>In print dialog, select "<strong>Save as PDF</strong>" or "<strong>Microsoft Print to PDF</strong>"</li>
+                            <li>Click Save and choose location</li>
+                            <li>Open WhatsApp and attach the saved PDF file</li>
+                        </ol>
+                        <p className="mt-2 text-xs text-blue-700">Or use the <strong>WhatsApp</strong> button on each card to send result summary as text.</p>
+                    </div>
+                )}
             </div>
 
             <div className="print-area space-y-8">
