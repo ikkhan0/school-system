@@ -63,17 +63,45 @@ const MarksEntry = () => {
             const data = await res.json();
 
             if (data.subjects && data.subjects.length > 0) {
-                // Convert exam subjects to format expected by component
-                const examSubjects = data.subjects.map(s => ({
-                    _id: s.subject_name,
-                    name: s.subject_name,
-                    total_marks: s.total_marks,
-                    passing_percentage: s.passing_percentage || 33,
-                    passing_marks: s.passing_marks
-                }));
-                setClassSubjects(examSubjects);
-                setSelectedSubject(examSubjects[0].name);
-                setTotalMarks(examSubjects[0].total_marks);
+                // Fetch all subjects once
+                const subRes = await fetch(`${API_URL}/api/subjects`, {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                });
+                const allSubjects = await subRes.json();
+
+                console.log('📚 All subjects in system:', allSubjects.map(s => `${s.name} (${s._id})`));
+                console.log('📝 Exam subjects:', data.subjects.map(s => s.subject_name));
+
+                // Map exam subjects to include actual Subject ObjectIds
+                const subjectsWithIds = data.subjects.map(examSubject => {
+                    const matchingSubject = allSubjects.find(s =>
+                        s.name.toLowerCase().trim() === examSubject.subject_name.toLowerCase().trim()
+                    );
+
+                    if (matchingSubject) {
+                        console.log(`✅ Matched "${examSubject.subject_name}" to Subject ID: ${matchingSubject._id}`);
+                        return {
+                            _id: matchingSubject._id,
+                            name: examSubject.subject_name,
+                            total_marks: examSubject.total_marks,
+                            passing_percentage: examSubject.passing_percentage || 33,
+                            passing_marks: examSubject.passing_marks
+                        };
+                    } else {
+                        console.warn(`⚠️ No matching Subject found for "${examSubject.subject_name}"! Student filtering won't work.`);
+                        return {
+                            _id: null, // No ID found - will prevent student filtering
+                            name: examSubject.subject_name,
+                            total_marks: examSubject.total_marks,
+                            passing_percentage: examSubject.passing_percentage || 33,
+                            passing_marks: examSubject.passing_marks
+                        };
+                    }
+                });
+
+                setClassSubjects(subjectsWithIds);
+                setSelectedSubject(subjectsWithIds[0].name);
+                setTotalMarks(subjectsWithIds[0].total_marks);
             } else {
                 setClassSubjects([]);
                 setSelectedSubject('');
@@ -104,27 +132,46 @@ const MarksEntry = () => {
         const classData = classes.find(c => c._id === selectedClass);
         if (!classData) return;
 
+        // Find the selected subject's ID from classSubjects
+        const subjectData = classSubjects.find(s => s.name === selectedSubject);
+        if (!subjectData) {
+            console.warn('Subject not found in classSubjects');
+            setStudents([]);
+            return;
+        }
+
+        // Validate that we have a proper Subject ObjectId
+        if (!subjectData._id || typeof subjectData._id !== 'string' || subjectData._id.length !== 24) {
+            console.error(`❌ Invalid Subject ID for "${selectedSubject}": ${subjectData._id}`);
+            console.error('⚠️ Cannot filter students without proper Subject ObjectId. Please ensure the subject exists in Subject Management.');
+            setStudents([]);
+            setLoading(false);
+            return;
+        }
+
         setLoading(true);
 
-        console.log(`📚 Fetching students for ${classData.name}-${selectedSection}`);
+        console.log(`📚 Fetching students enrolled in ${selectedSubject} (ID: ${subjectData._id}) for ${classData.name}-${selectedSection}`);
 
-        // Fetch ALL students in this class/section
-        // (Exams manage subjects at exam level, not student enrollment level)
-        fetch(`${API_URL}/api/students/list?class_id=${classData.name}&section_id=${selectedSection}`, {
+        // Use subject-filtered endpoint with actual Subject ObjectId
+        fetch(`${API_URL}/api/students/list/by-subject?class_id=${classData.name}&section_id=${selectedSection}&subject_id=${subjectData._id}`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
             .then(data => {
-                console.log(`✅ Found ${data.length} students in ${classData.name}-${selectedSection}`);
+                console.log(`✅ Found ${data.length} students enrolled in ${selectedSubject}`);
+                if (data.length === 0) {
+                    console.warn(`⚠️ No students enrolled in "${selectedSubject}". If this is unexpected, check student subject enrollments.`);
+                }
                 setStudents(data);
                 setLoading(false);
             })
             .catch(err => {
-                console.error('Error fetching students:', err);
+                console.error('Error fetching students by subject:', err);
                 setStudents([]);
                 setLoading(false);
             });
-    }, [selectedClass, selectedSection, selectedSubject, user, classes]);
+    }, [selectedClass, selectedSection, selectedSubject, user, classes, classSubjects]);
 
     // Load existing marks when exam/class/section/subject changes
     useEffect(() => {
