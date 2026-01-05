@@ -53,6 +53,7 @@ import BulkSubjectAssignment from './pages/BulkSubjectAssignment';
 import Profile from './pages/Profile';
 import AttendanceReport from './pages/AttendanceReport';
 import StaffAttendanceReport from './pages/StaffAttendanceReport';
+import MonthlyAttendanceSheet from './pages/MonthlyAttendanceSheet';
 
 import './App.css';
 
@@ -112,6 +113,7 @@ function App() {
                   <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                   <Route path="/attendance-report" element={<ProtectedRoute><AttendanceReport /></ProtectedRoute>} />
                   <Route path="/staff-attendance-report" element={<ProtectedRoute><StaffAttendanceReport /></ProtectedRoute>} />
+                  <Route path="/monthly-attendance-sheet" element={<ProtectedRoute><MonthlyAttendanceSheet /></ProtectedRoute>} />
                 </Routes>
               </Layout>
             </SessionProvider>
