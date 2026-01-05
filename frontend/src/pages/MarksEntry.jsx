@@ -104,34 +104,27 @@ const MarksEntry = () => {
         const classData = classes.find(c => c._id === selectedClass);
         if (!classData) return;
 
-        // Find the selected subject's ID from classSubjects
-        const subjectData = classSubjects.find(s => s.name === selectedSubject);
-        if (!subjectData) {
-            console.warn('Subject not found in classSubjects');
-            setStudents([]);
-            return;
-        }
-
         setLoading(true);
 
-        console.log(`📚 Fetching students enrolled in ${selectedSubject} (${subjectData._id}) for ${classData.name}-${selectedSection}`);
+        console.log(`📚 Fetching students for ${classData.name}-${selectedSection}`);
 
-        // Use the subject-filtered endpoint
-        fetch(`${API_URL}/api/students/list/by-subject?class_id=${classData.name}&section_id=${selectedSection}&subject_id=${subjectData._id}`, {
+        // Fetch ALL students in this class/section
+        // (Exams manage subjects at exam level, not student enrollment level)
+        fetch(`${API_URL}/api/students/list?class_id=${classData.name}&section_id=${selectedSection}`, {
             headers: { Authorization: `Bearer ${user.token}` }
         })
             .then(res => res.json())
             .then(data => {
-                console.log(`✅ Found ${data.length} students enrolled in ${selectedSubject}`);
+                console.log(`✅ Found ${data.length} students in ${classData.name}-${selectedSection}`);
                 setStudents(data);
                 setLoading(false);
             })
             .catch(err => {
-                console.error('Error fetching students by subject:', err);
+                console.error('Error fetching students:', err);
                 setStudents([]);
                 setLoading(false);
             });
-    }, [selectedClass, selectedSection, selectedSubject, user, classes, classSubjects]);
+    }, [selectedClass, selectedSection, selectedSubject, user, classes]);
 
     // Load existing marks when exam/class/section/subject changes
     useEffect(() => {
