@@ -51,6 +51,8 @@ import Funds from './pages/Funds';
 import WhatsappTemplates from './pages/WhatsappTemplates';
 import BulkSubjectAssignment from './pages/BulkSubjectAssignment';
 import Profile from './pages/Profile';
+import AttendanceReport from './pages/AttendanceReport';
+import StaffAttendanceReport from './pages/StaffAttendanceReport';
 
 import './App.css';
 
@@ -108,6 +110,8 @@ function App() {
                   <Route path="/funds" element={<ProtectedRoute><Funds /></ProtectedRoute>} />
                   <Route path="/whatsapp-templates" element={<ProtectedRoute><WhatsappTemplates /></ProtectedRoute>} />
                   <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                  <Route path="/attendance-report" element={<ProtectedRoute><AttendanceReport /></ProtectedRoute>} />
+                  <Route path="/staff-attendance-report" element={<ProtectedRoute><StaffAttendanceReport /></ProtectedRoute>} />
                 </Routes>
               </Layout>
             </SessionProvider>
