@@ -256,9 +256,9 @@ const Students = () => {
 
                             {/* Action Buttons */}
                             <div className="grid grid-cols-6 gap-1 sm:gap-2">
-                                {/* WhatsApp uses father's mobile number by default */}
+                                {/* WhatsApp priority: father_mobile → mother_mobile (fallback) */}
                                 <button
-                                    onClick={() => sendWhatsApp(student.family_id?.father_mobile || student.father_mobile)}
+                                    onClick={() => sendWhatsApp(student.family_id?.father_mobile || student.father_mobile || student.family_id?.mother_mobile || student.mother_mobile)}
                                     className="flex flex-col items-center justify-center p-1.5 sm:p-2 bg-green-50 text-green-600 rounded hover:bg-green-100"
                                     title="WhatsApp"
                                 >
@@ -266,7 +266,7 @@ const Students = () => {
                                     <span className="text-[10px] sm:text-xs mt-0.5 sm:mt-1">WA</span>
                                 </button>
                                 <button
-                                    onClick={() => window.location.href = `tel:${student.family_id?.father_mobile || student.father_mobile}`}
+                                    onClick={() => window.location.href = `tel:${student.family_id?.father_mobile || student.father_mobile || student.family_id?.mother_mobile || student.mother_mobile}`}
                                     className="flex flex-col items-center justify-center p-2 bg-blue-50 text-blue-600 rounded hover:bg-blue-100"
                                     title="Call"
                                 >

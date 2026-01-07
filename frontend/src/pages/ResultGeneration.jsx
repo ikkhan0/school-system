@@ -78,7 +78,8 @@ const ResultGeneration = () => {
 
     const sendResult = (result) => {
         const msg = `Dear Parent,\n\nExam Result: ${result.exam_id.title}\nStudent: ${result.student_id.full_name}\nObtained: ${result.total_obtained} / ${result.total_max}\nPercentage: ${result.percentage}%\nGrade: ${result.grade}\nStatus: ${result.status || (result.percentage >= 33 ? 'PASS' : 'FAIL')}\n\n- ${schoolInfo?.name || 'School'}`;
-        const mobile = result.student_id.father_mobile;
+        // Priority: father_mobile → mother_mobile (fallback)
+        const mobile = result.student_id.father_mobile || result.student_id.mother_mobile;
         sendWhatsApp(mobile, msg);
     };
 
@@ -142,9 +143,10 @@ const ResultGeneration = () => {
 
             // Open WhatsApp
             setTimeout(() => {
-                const mobile = result.student_id.father_mobile;
+                // Priority: father_mobile → mother_mobile (fallback)
+                const mobile = result.student_id.father_mobile || result.student_id.mother_mobile;
                 if (!mobile) {
-                    alert('✅ PDF downloaded!\n\n⚠️ Father Mobile Number not found. Please manually share the PDF.');
+                    alert('✅ PDF downloaded!\n\n⚠️ Mobile Number not found. Please manually share the PDF.');
                     return;
                 }
 
@@ -257,9 +259,10 @@ const ResultGeneration = () => {
 
                 // Open WhatsApp
                 setTimeout(() => {
-                    const mobile = result.student_id.father_mobile;
+                    // Priority: father_mobile → mother_mobile (fallback)
+                    const mobile = result.student_id.father_mobile || result.student_id.mother_mobile;
                     if (!mobile) {
-                        alert('✅ Image downloaded!\n\n⚠️ Father Mobile Number not found. Please manually share the image.');
+                        alert('✅ Image downloaded!\n\n⚠️ Mobile Number not found. Please manually share the image.');
                         return;
                     }
 

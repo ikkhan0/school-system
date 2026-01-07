@@ -342,9 +342,9 @@ const DefaultersReport = ({ data, sendWhatsApp }) => {
                                 <td className="p-3 text-right font-bold text-red-600">Rs. {item.total_due.toLocaleString()}</td>
                                 <td className="p-3 text-center">{item.pending_months}</td>
                                 <td className="p-3 text-center no-print">
-                                    {/* WhatsApp uses father's mobile number by default */}
+                                    {/* WhatsApp priority: father_mobile → mother_mobile (fallback) */}
                                     <button
-                                        onClick={() => sendWhatsApp(item.father_mobile, `Dear Parent, please clear the outstanding dues of Rs. ${item.total_due} for ${item.name}. - School Admin`)}
+                                        onClick={() => sendWhatsApp(item.father_mobile || item.mother_mobile, `Dear Parent, please clear the outstanding dues of Rs. ${item.total_due} for ${item.name}. - School Admin`)}
                                         className="text-green-600 hover:bg-green-50 p-2 rounded-lg"
                                     >
                                         <MessageCircle size={18} />
@@ -407,9 +407,9 @@ const ShortageReport = ({ data, sendWhatsApp }) => {
                                 <td className="p-3 text-right font-bold text-orange-600">{percentage}%</td>
                                 <td className="p-3 text-center">{present}/{totalDays}</td>
                                 <td className="p-3 text-center no-print">
-                                    {fatherMobile && (
+                                    {(fatherMobile || item.mother_mobile) && (
                                         <button
-                                            onClick={() => sendWhatsApp(fatherMobile, `Dear Parent, ${fullName} has low attendance (${percentage}%). Please ensure regularity. - School Admin`)}
+                                            onClick={() => sendWhatsApp(fatherMobile || item.mother_mobile, `Dear Parent, ${fullName} has low attendance (${percentage}%). Please ensure regularity. - School Admin`)}
                                             className="text-green-600 hover:bg-green-50 p-2 rounded-lg"
                                         >
                                             <MessageCircle size={18} />
@@ -505,9 +505,9 @@ const AttendanceReport = ({ data, sendWhatsApp, consecutiveAbsences = [] }) => {
                                         <button
                                             onClick={() => {
                                                 const message = consecutiveInfo
-                                                    ? `Dear ${item.father_name}, ${item.name} has been absent for ${consecutiveInfo.consecutive_days} consecutive days. Current attendance: ${item.percentage}%. Please ensure regular attendance. - School Admin`
-                                                    : `Dear ${item.father_name}, Attendance Summary for ${item.name} (${item.roll_no}):\nPresent: ${item.present}\nAbsent: ${item.absent}\nLeave: ${item.leave}\nAttendance: ${item.percentage}%\n- School Admin`;
-                                                sendWhatsApp(item.father_mobile, message);
+                                                    ? `Dear ${item.father_name || 'Parent'}, ${item.name} has been absent for ${consecutiveInfo.consecutive_days} consecutive days. Current attendance: ${item.percentage}%. Please ensure regular attendance. - School Admin`
+                                                    : `Dear ${item.father_name || 'Parent'}, Attendance Summary for ${item.name} (${item.roll_no}):\nPresent: ${item.present}\nAbsent: ${item.absent}\nLeave: ${item.leave}\nAttendance: ${item.percentage}%\n- School Admin`;
+                                                sendWhatsApp(item.father_mobile || item.mother_mobile, message);
                                             }}
                                             className="text-green-600 hover:bg-green-50 p-2 rounded-lg"
                                             title="Send WhatsApp"

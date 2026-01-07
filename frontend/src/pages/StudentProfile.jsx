@@ -129,7 +129,8 @@ const StudentProfile = () => {
     };
 
     const sendWhatsAppReport = (reportType) => {
-        const mobile = student.father_mobile || student.family_id?.father_mobile;
+        // Priority: father_mobile → mother_mobile (fallback)
+        const mobile = student.father_mobile || student.family_id?.father_mobile || student.mother_mobile || student.family_id?.mother_mobile;
         if (!mobile) return alert('No mobile number found');
 
         let num = mobile.replace(/\\D/g, '');
@@ -165,7 +166,8 @@ const StudentProfile = () => {
     };
 
     const handleShareFeeVoucher = (fee) => {
-        const mobile = student.family_id?.father_mobile || student.father_mobile;
+        // Priority: father_mobile → mother_mobile (fallback)
+        const mobile = student.family_id?.father_mobile || student.father_mobile || student.family_id?.mother_mobile || student.mother_mobile;
         const doc = generateFeeVoucherPDF(student, fee, schoolInfo || {});
         const message = `Dear Parent, please find the fee voucher for ${student.full_name} (${student.roll_no}) for ${fee.title || fee.month}. Amount: Rs. ${fee.gross_amount}.`;
         sharePDFViaWhatsApp(doc, `Fee_Voucher_${student.roll_no}_${fee.month}.pdf`, mobile, message);
@@ -177,7 +179,8 @@ const StudentProfile = () => {
     };
 
     const handleShareResultCard = (result) => {
-        const mobile = student.family_id?.father_mobile || student.father_mobile;
+        // Priority: father_mobile → mother_mobile (fallback)
+        const mobile = student.family_id?.father_mobile || student.father_mobile || student.family_id?.mother_mobile || student.mother_mobile;
         const doc = generateResultCardPDF(student, result, schoolInfo || {});
         const message = `Dear Parent, please find the result card for ${student.full_name} (${student.roll_no}) for ${result.exam_id?.name || 'Exam'}.`;
         sharePDFViaWhatsApp(doc, `Result_Card_${student.roll_no}_${result.exam_id?.name || 'Exam'}.pdf`, mobile, message);
@@ -188,7 +191,8 @@ const StudentProfile = () => {
     };
 
     const handleCall = () => {
-        const mobile = student.family_id?.father_mobile || student.father_mobile;
+        // Priority: father_mobile → mother_mobile (fallback)
+        const mobile = student.family_id?.father_mobile || student.father_mobile || student.family_id?.mother_mobile || student.mother_mobile;
         if (!mobile) return alert('No mobile number found');
         window.location.href = `tel:${mobile}`;
     };
@@ -300,7 +304,8 @@ const StudentProfile = () => {
         try {
             const voucherData = generateVoucherData();
             const currentMonth = voucherData.month;
-            const mobile = student.family_id?.father_mobile || student.father_mobile;
+            // Priority: father_mobile → mother_mobile (fallback)
+            const mobile = student.family_id?.father_mobile || student.father_mobile || student.family_id?.mother_mobile || student.mother_mobile;
 
             if (!mobile) {
                 alert('No mobile number found for this student.');

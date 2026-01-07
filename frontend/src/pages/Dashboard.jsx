@@ -474,18 +474,18 @@ const Dashboard = () => {
                                     </div>
                                     <div className="flex gap-2">
                                         <button
-                                            onClick={() => makeCall(student.father_mobile)}
+                                            onClick={() => makeCall(student.father_mobile || student.mother_mobile)}
                                             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-xl transition flex items-center gap-2"
                                             title="Call Parent"
                                         >
                                             <Phone size={20} />
                                             <span className="hidden sm:inline text-sm lg:text-base">Call</span>
                                         </button>
-                                        {/* WhatsApp uses father's mobile number by default */}
+                                        {/* WhatsApp priority: father_mobile → mother_mobile (fallback) */}
                                         <button
                                             onClick={() => sendWhatsApp(
-                                                student.father_mobile,
-                                                `Dear ${student.father_name}, your child ${student.full_name} (${student.roll_no}) is absent today. Please ensure regular attendance. - School Admin`
+                                                student.father_mobile || student.mother_mobile,
+                                                `Dear ${student.father_name || 'Parent'}, your child ${student.full_name} (${student.roll_no}) is absent today. Please ensure regular attendance. - School Admin`
                                             )}
                                             className="bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-xl transition flex items-center gap-2"
                                             title="Send WhatsApp Message"
