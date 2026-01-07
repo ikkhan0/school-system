@@ -179,11 +179,13 @@ async function linkSiblings(studentIds, familyData, tenant_id) {
                 tenant_id,
                 father_name: familyData.father_name || students[0].father_name,
                 father_mobile: familyData.father_mobile || students[0].father_mobile,
-                father_cnic: familyData.father_cnic,
+                father_cnic: familyData.father_cnic || students[0].father_cnic,
                 mother_name: familyData.mother_name || students[0].mother_name,
                 mother_mobile: familyData.mother_mobile || students[0].mother_mobile,
-                address: familyData.address || students[0].address,
+                mother_cnic: familyData.mother_cnic || students[0].mother_cnic,
+                // WhatsApp number defaults to father's mobile
                 whatsapp_number: familyData.whatsapp_number || familyData.father_mobile || students[0].father_mobile,
+                address: familyData.address || students[0].current_address,
                 total_children: students.length
             });
             await family.save();

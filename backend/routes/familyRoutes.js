@@ -256,6 +256,7 @@ router.post('/:id/whatsapp-message', protect, async (req, res) => {
         if (!message) {
             message = generateFamilyFeeMessage(family, studentsWithFees, school);
         }
+        // WhatsApp number defaults to father's mobile if not explicitly set
         const whatsappNumber = family.whatsapp_number || family.father_mobile;
         const whatsappLink = generateWhatsAppLink(whatsappNumber, message);
 

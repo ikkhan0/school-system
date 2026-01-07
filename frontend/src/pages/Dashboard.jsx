@@ -481,6 +481,7 @@ const Dashboard = () => {
                                             <Phone size={20} />
                                             <span className="hidden sm:inline text-sm lg:text-base">Call</span>
                                         </button>
+                                        {/* WhatsApp uses father's mobile number by default */}
                                         <button
                                             onClick={() => sendWhatsApp(
                                                 student.father_mobile,

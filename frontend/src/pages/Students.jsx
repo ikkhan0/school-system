@@ -256,6 +256,7 @@ const Students = () => {
 
                             {/* Action Buttons */}
                             <div className="grid grid-cols-6 gap-1 sm:gap-2">
+                                {/* WhatsApp uses father's mobile number by default */}
                                 <button
                                     onClick={() => sendWhatsApp(student.family_id?.father_mobile || student.father_mobile)}
                                     className="flex flex-col items-center justify-center p-1.5 sm:p-2 bg-green-50 text-green-600 rounded hover:bg-green-100"

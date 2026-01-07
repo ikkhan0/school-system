@@ -342,6 +342,7 @@ const DefaultersReport = ({ data, sendWhatsApp }) => {
                                 <td className="p-3 text-right font-bold text-red-600">Rs. {item.total_due.toLocaleString()}</td>
                                 <td className="p-3 text-center">{item.pending_months}</td>
                                 <td className="p-3 text-center no-print">
+                                    {/* WhatsApp uses father's mobile number by default */}
                                     <button
                                         onClick={() => sendWhatsApp(item.father_mobile, `Dear Parent, please clear the outstanding dues of Rs. ${item.total_due} for ${item.name}. - School Admin`)}
                                         className="text-green-600 hover:bg-green-50 p-2 rounded-lg"

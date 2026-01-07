@@ -241,6 +241,7 @@ function generateBulkMessages(familiesData, school) {
                 school
             );
 
+            // WhatsApp number fallback hierarchy: effective_whatsapp → whatsapp_number → father_mobile (default)
             const whatsappNumber = familyData.family.effective_whatsapp ||
                 familyData.family.whatsapp_number ||
                 familyData.family.father_mobile;
