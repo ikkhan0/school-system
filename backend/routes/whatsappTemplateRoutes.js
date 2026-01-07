@@ -51,16 +51,24 @@ router.get('/active/:type', protect, async (req, res) => {
     }
 });
 
+// Helper function to deactivate other templates of the same type
+async function deactivateOtherTemplates(tenant_id, type, currentTemplateId) {
+    await WhatsappTemplate.updateMany(
+        {
+            tenant_id,
+            type,
+            _id: { $ne: currentTemplateId },
+            isActive: true
+        },
+        { isActive: false }
+    );
+}
+
 // @desc    Create a new template
 // @route   POST /api/whatsapp-templates
 router.post('/', protect, checkPermission('settings.edit'), async (req, res) => {
     try {
-        const { name, type, content, variables } = req.body;
-
-        // If creating a new active template of a type, deactivate others of that type?
-        // User might want multiple templates for "Fee Reminder" and choose one manually?
-        // For now, let's assume one active default per type per school for automation, 
-        // but if manual, they can pick. The "active" flag might mean "Default".
+        const { name, type, content, variables, isActive } = req.body;
 
         const newTemplate = new WhatsappTemplate({
             tenant_id: req.tenant_id,
@@ -68,10 +76,16 @@ router.post('/', protect, checkPermission('settings.edit'), async (req, res) => 
             type,
             content,
             variables,
-            isActive: true
+            isActive: isActive !== undefined ? isActive : true
         });
 
         await newTemplate.save();
+
+        // If this template is active, deactivate all other templates of the same type
+        if (newTemplate.isActive) {
+            await deactivateOtherTemplates(req.tenant_id, type, newTemplate._id);
+        }
+
         res.status(201).json(newTemplate);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -84,48 +98,31 @@ router.put('/:id', protect, checkPermission('settings.edit'), async (req, res) =
     try {
         const { name, type, content, variables, isActive } = req.body;
 
-        // 1. Try to find a specific school template
-        let template = await WhatsappTemplate.findOne({
+        // Find the template by ID and ensure it belongs to this tenant
+        const template = await WhatsappTemplate.findOne({
             _id: req.params.id,
             tenant_id: req.tenant_id
         });
 
-        if (template) {
-            // Update existing school template
-            if (name) template.name = name;
-            if (type) template.type = type;
-            if (content) template.content = content;
-            if (variables) template.variables = variables;
-            if (isActive !== undefined) template.isActive = isActive;
-
-            await template.save();
-            return res.json(template);
-        }
-
-        // 2. If not found, check if it's a SYSTEM DEFAULT template
-        // We only allow "editing" a system template by CLONING it into a school template
-        template = await WhatsappTemplate.findOne({
-            _id: req.params.id,
-            tenant_id: null
-        });
-
         if (!template) {
-            return res.status(404).json({ message: 'Template not found' });
+            return res.status(404).json({ message: 'Template not found or access denied' });
         }
 
-        // Creating a new template for this school based on the system default
-        const newTemplate = new WhatsappTemplate({
-            tenant_id: req.tenant_id,
-            name: name || template.name,
-            type: template.type, // Type should usually stay same for overrides
-            content: content || template.content,
-            variables: variables || template.variables,
-            isActive: isActive !== undefined ? isActive : true
-        });
+        // Update the template fields
+        if (name !== undefined) template.name = name;
+        if (type !== undefined) template.type = type;
+        if (content !== undefined) template.content = content;
+        if (variables !== undefined) template.variables = variables;
+        if (isActive !== undefined) template.isActive = isActive;
 
-        await newTemplate.save();
-        res.status(201).json(newTemplate);
+        await template.save();
 
+        // If this template is being set to active, deactivate all other templates of the same type
+        if (template.isActive) {
+            await deactivateOtherTemplates(req.tenant_id, template.type, template._id);
+        }
+
+        res.json(template);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
