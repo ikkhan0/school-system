@@ -159,30 +159,54 @@ const WhatsappTemplates = () => {
 
             {loading ? <p>Loading...</p> : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {templates.map(tmpl => (
-                        <div key={tmpl._id} className="bg-white p-6 rounded-lg shadow-lg border border-gray-100 hover:shadow-xl transition relative group">
-                            <div className="flex justify-between items-start mb-3">
-                                <div>
-                                    <h3 className="font-bold text-lg text-gray-800">{tmpl.name}</h3>
-                                    <span className={`text-xs px-2 py-1 rounded-full font-bold ${tmpl.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                                        }`}>
-                                        {tmpl.type}
-                                    </span>
+                    {templates.map(tmpl => {
+                        const isSystemDefault = !tmpl.tenant_id; // System default if no tenant_id
+
+                        return (
+                            <div key={tmpl._id} className={`bg-white p-6 rounded-lg shadow-lg border ${isSystemDefault ? 'border-blue-300 bg-blue-50' : 'border-gray-100'} hover:shadow-xl transition relative group`}>
+                                {/* System Default Badge */}
+                                {isSystemDefault && (
+                                    <div className="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+                                        System Default
+                                    </div>
+                                )}
+
+                                <div className="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h3 className="font-bold text-lg text-gray-800">{tmpl.name}</h3>
+                                        <span className={`text-xs px-2 py-1 rounded-full font-bold ${tmpl.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                            }`}>
+                                            {tmpl.type}
+                                        </span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {isSystemDefault ? (
+                                            <div className="text-xs text-gray-500 italic">
+                                                Read-only
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <button onClick={() => handleEdit(tmpl)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-full" title="Edit template">
+                                                    <Edit size={18} />
+                                                </button>
+                                                <button onClick={() => handleDelete(tmpl._id)} className="p-2 text-red-600 hover:bg-red-50 rounded-full" title="Delete template">
+                                                    <Trash size={18} />
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="flex gap-2">
-                                    <button onClick={() => handleEdit(tmpl)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-full">
-                                        <Edit size={18} />
-                                    </button>
-                                    <button onClick={() => handleDelete(tmpl._id)} className="p-2 text-red-600 hover:bg-red-50 rounded-full">
-                                        <Trash size={18} />
-                                    </button>
+                                <div className="bg-gray-50 p-3 rounded text-sm text-gray-700 whitespace-pre-wrap h-32 overflow-y-auto border">
+                                    {tmpl.content}
                                 </div>
+                                {isSystemDefault && (
+                                    <div className="mt-2 text-xs text-blue-700 italic">
+                                        💡 Tip: Create a new template with your own content to override this default
+                                    </div>
+                                )}
                             </div>
-                            <div className="bg-gray-50 p-3 rounded text-sm text-gray-700 whitespace-pre-wrap h-32 overflow-y-auto border">
-                                {tmpl.content}
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
 

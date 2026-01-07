@@ -32,5 +32,7 @@ const whatsappTemplateSchema = new mongoose.Schema({
 });
 
 whatsappTemplateSchema.index({ tenant_id: 1, type: 1 });
+// Ensure unique template names per tenant to prevent duplicates
+whatsappTemplateSchema.index({ tenant_id: 1, name: 1 }, { unique: true });
 
 module.exports = mongoose.model('WhatsappTemplate', whatsappTemplateSchema);

@@ -278,7 +278,10 @@ router.get('/results', protect, checkPermission('exams.view'), async (req, res) 
         console.log('MongoDB query:', query);
 
         const results = await Result.find(query)
-            .populate('student_id')
+            .populate({
+                path: 'student_id',
+                select: 'full_name roll_no father_name father_mobile mother_mobile student_mobile class_id section_id photo image email'
+            })
             .populate('exam_id');
 
         console.log(`Found ${results.length} results`);

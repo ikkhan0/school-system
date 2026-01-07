@@ -108,6 +108,22 @@ router.put('/:id', protect, checkPermission('settings.edit'), async (req, res) =
         console.log('Tenant ID:', req.tenant_id);
         console.log('Request body:', { name, type, content: content?.substring(0, 50), variables, isActive });
 
+        // First, check if this template exists
+        const templateCheck = await WhatsappTemplate.findById(req.params.id);
+
+        if (!templateCheck) {
+            console.log('❌ Template not found - returning 404');
+            return res.status(404).json({ message: 'Template not found' });
+        }
+
+        // Check if it's a system default template (tenant_id: null)
+        if (!templateCheck.tenant_id) {
+            console.log('❌ Cannot edit system default template');
+            return res.status(403).json({
+                message: 'Cannot edit system default template. Please create a new template instead.'
+            });
+        }
+
         // Find the template by ID and ensure it belongs to this tenant
         const template = await WhatsappTemplate.findOne({
             _id: req.params.id,
@@ -118,7 +134,23 @@ router.put('/:id', protect, checkPermission('settings.edit'), async (req, res) =
 
         if (!template) {
             console.log('❌ Template not found - returning 404');
-            return res.status(404).json({ message: 'Template not found or access denied' });
+            return res.status(404).json({ message: 'Template not found or does not belong to your school' });
+        }
+
+        // Check if name is being changed and if new name already exists
+        if (name && name !== template.name) {
+            const existingTemplate = await WhatsappTemplate.findOne({
+                tenant_id: req.tenant_id,
+                name: name,
+                _id: { $ne: req.params.id } // Exclude current template
+            });
+
+            if (existingTemplate) {
+                console.log('❌ Template with this name already exists');
+                return res.status(400).json({
+                    message: `A template with the name "${name}" already exists. Please use a different name.`
+                });
+            }
         }
 
         // Update the template fields
@@ -139,6 +171,15 @@ router.put('/:id', protect, checkPermission('settings.edit'), async (req, res) =
 
         res.json(template);
     } catch (error) {
+        console.error('❌ Error updating template:', error);
+
+        // Handle unique constraint violations
+        if (error.code === 11000) {
+            return res.status(400).json({
+                message: 'A template with this name already exists. Please use a different name.'
+            });
+        }
+
         res.status(500).json({ message: error.message });
     }
 });
@@ -147,12 +188,34 @@ router.put('/:id', protect, checkPermission('settings.edit'), async (req, res) =
 // @route   DELETE /api/whatsapp-templates/:id
 router.delete('/:id', protect, checkPermission('settings.edit'), async (req, res) => {
     try {
-        const template = await WhatsappTemplate.findOne({ _id: req.params.id, tenant_id: req.tenant_id });
-        if (!template) {
+        // First, check if this template exists at all
+        const templateCheck = await WhatsappTemplate.findById(req.params.id);
+
+        if (!templateCheck) {
             return res.status(404).json({ message: 'Template not found' });
         }
+
+        // Check if it's a system default template (tenant_id: null)
+        if (!templateCheck.tenant_id) {
+            return res.status(403).json({
+                message: 'Cannot delete system default template. You can create your own version to override it.'
+            });
+        }
+
+        // Now check if it belongs to this tenant
+        const template = await WhatsappTemplate.findOne({
+            _id: req.params.id,
+            tenant_id: req.tenant_id
+        });
+
+        if (!template) {
+            return res.status(404).json({
+                message: 'Template not found or does not belong to your school'
+            });
+        }
+
         await template.deleteOne();
-        res.json({ message: 'Template deleted' });
+        res.json({ message: 'Template deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
