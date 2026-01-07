@@ -86,12 +86,14 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             titleKey: 'navigation.fees',
             icon: DollarSign,
             type: 'group',
-            paths: ['/fee', '/discount', '/family-messaging'],
+            paths: ['/fee', '/discount', '/family-messaging', '/student-fees', '/enrollments'],
             permissions: ['fees.view'], // Group requires fees.view
             items: [
                 { titleKey: 'navigation.feeCollection', path: '/fee-collection', permission: 'fees.collect' },
                 { titleKey: 'navigation.bulkFeeSlips', path: '/bulk-slips', permission: 'fees.view' },
                 { titleKey: 'navigation.manageFunds', path: '/funds', permission: 'fees.view' },
+                { title: 'Student Custom Fees', path: '/student-fees', permission: 'fees.create' },
+                { title: 'Student Enrollments', path: '/enrollments', permission: 'fees.create' },
                 { titleKey: 'navigation.discountPolicies', path: '/discount-policies', permission: 'fees.discount' },
                 { titleKey: 'navigation.familyMessaging', path: '/family-messaging', permission: 'fees.view' }
             ]

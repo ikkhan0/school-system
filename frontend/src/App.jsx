@@ -54,6 +54,8 @@ import Profile from './pages/Profile';
 import AttendanceReport from './pages/AttendanceReport';
 import StaffAttendanceReport from './pages/StaffAttendanceReport';
 import MonthlyAttendanceSheet from './pages/MonthlyAttendanceSheet';
+import StudentCustomFees from './pages/StudentCustomFees';
+import StudentEnrollments from './pages/StudentEnrollments';
 
 import './App.css';
 
@@ -114,6 +116,8 @@ function App() {
                   <Route path="/attendance-report" element={<ProtectedRoute><AttendanceReport /></ProtectedRoute>} />
                   <Route path="/staff-attendance-report" element={<ProtectedRoute><StaffAttendanceReport /></ProtectedRoute>} />
                   <Route path="/monthly-attendance-sheet" element={<ProtectedRoute><MonthlyAttendanceSheet /></ProtectedRoute>} />
+                  <Route path="/student-fees" element={<ProtectedRoute><StudentCustomFees /></ProtectedRoute>} />
+                  <Route path="/enrollments" element={<ProtectedRoute><StudentEnrollments /></ProtectedRoute>} />
                 </Routes>
               </Layout>
             </SessionProvider>
