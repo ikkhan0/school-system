@@ -53,7 +53,7 @@ router.get('/active/:type', protect, async (req, res) => {
 
 // Helper function to deactivate other templates of the same type
 async function deactivateOtherTemplates(tenant_id, type, currentTemplateId) {
-    await WhatsappTemplate.updateMany(
+    const result = await WhatsappTemplate.updateMany(
         {
             tenant_id,
             type,
@@ -62,6 +62,7 @@ async function deactivateOtherTemplates(tenant_id, type, currentTemplateId) {
         },
         { isActive: false }
     );
+    console.log(`🔄 Deactivated ${result.modifiedCount} other template(s) of type "${type}"`);
 }
 
 // @desc    Create a new template
@@ -69,6 +70,9 @@ async function deactivateOtherTemplates(tenant_id, type, currentTemplateId) {
 router.post('/', protect, checkPermission('settings.edit'), async (req, res) => {
     try {
         const { name, type, content, variables, isActive } = req.body;
+
+        console.log('📝 POST /api/whatsapp-templates');
+        console.log('Creating new template:', { name, type, isActive });
 
         const newTemplate = new WhatsappTemplate({
             tenant_id: req.tenant_id,
@@ -80,6 +84,7 @@ router.post('/', protect, checkPermission('settings.edit'), async (req, res) => 
         });
 
         await newTemplate.save();
+        console.log('✅ Template created:', newTemplate._id);
 
         // If this template is active, deactivate all other templates of the same type
         if (newTemplate.isActive) {
@@ -98,13 +103,21 @@ router.put('/:id', protect, checkPermission('settings.edit'), async (req, res) =
     try {
         const { name, type, content, variables, isActive } = req.body;
 
+        console.log('📝 PUT /api/whatsapp-templates/:id');
+        console.log('Template ID:', req.params.id);
+        console.log('Tenant ID:', req.tenant_id);
+        console.log('Request body:', { name, type, content: content?.substring(0, 50), variables, isActive });
+
         // Find the template by ID and ensure it belongs to this tenant
         const template = await WhatsappTemplate.findOne({
             _id: req.params.id,
             tenant_id: req.tenant_id
         });
 
+        console.log('Template found:', template ? `Yes (${template.name})` : 'No');
+
         if (!template) {
+            console.log('❌ Template not found - returning 404');
             return res.status(404).json({ message: 'Template not found or access denied' });
         }
 
@@ -116,9 +129,11 @@ router.put('/:id', protect, checkPermission('settings.edit'), async (req, res) =
         if (isActive !== undefined) template.isActive = isActive;
 
         await template.save();
+        console.log('✅ Template updated successfully:', template.name);
 
         // If this template is being set to active, deactivate all other templates of the same type
         if (template.isActive) {
+            console.log('🔄 Deactivating other templates of type:', template.type);
             await deactivateOtherTemplates(req.tenant_id, template.type, template._id);
         }
 
