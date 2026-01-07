@@ -58,11 +58,21 @@ const WhatsappTemplates = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        console.log('🔍 FRONTEND: handleSubmit called');
+        console.log('editingTemplate:', editingTemplate);
+        console.log('editingTemplate._id:', editingTemplate?._id);
+        console.log('formData:', formData);
+
         try {
             const url = editingTemplate
                 ? `${API_URL}/api/whatsapp-templates/${editingTemplate._id}`
                 : `${API_URL}/api/whatsapp-templates`;
             const method = editingTemplate ? 'PUT' : 'POST';
+
+            console.log('🌐 Request URL:', url);
+            console.log('📤 Request Method:', method);
+            console.log('📦 Request Body:', formData);
 
             const res = await fetch(url, {
                 method,
@@ -73,21 +83,33 @@ const WhatsappTemplates = () => {
                 body: JSON.stringify(formData)
             });
 
+            console.log('📥 Response Status:', res.status);
+            console.log('📥 Response OK:', res.ok);
+
             if (res.ok) {
+                const responseData = await res.json();
+                console.log('✅ Success Response:', responseData);
                 setModalOpen(false);
                 setEditingTemplate(null);
                 setFormData({ name: '', type: 'general', content: '', isActive: true });
                 fetchTemplates();
                 alert('Template saved successfully');
             } else {
-                alert('Failed to save template');
+                const errorData = await res.json();
+                console.error('❌ Error Response:', errorData);
+                alert(`Failed to save template: ${errorData.message || 'Unknown error'}`);
             }
         } catch (error) {
-            console.error(error);
+            console.error('❌ Exception:', error);
+            alert('Error saving template: ' + error.message);
         }
     };
 
     const handleEdit = (tmpl) => {
+        console.log('✏️ FRONTEND: handleEdit called');
+        console.log('Template to edit:', tmpl);
+        console.log('Template ID:', tmpl._id);
+
         setEditingTemplate(tmpl);
         setFormData({
             name: tmpl.name,
@@ -96,6 +118,8 @@ const WhatsappTemplates = () => {
             isActive: tmpl.isActive
         });
         setModalOpen(true);
+
+        console.log('✅ Edit state set');
     };
 
     const handleDelete = async (id) => {
