@@ -48,10 +48,11 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
         if (req.body.email !== undefined) updateData.email = req.body.email;
 
         // Handle settings fields
-        if (req.body.date_format || req.body.time_format) {
+        if (req.body.date_format || req.body.time_format || req.body.fee_voucher_note !== undefined) {
             updateData.settings = {};
             if (req.body.date_format) updateData.settings.date_format = req.body.date_format;
             if (req.body.time_format) updateData.settings.time_format = req.body.time_format;
+            if (req.body.fee_voucher_note !== undefined) updateData.settings.fee_voucher_note = req.body.fee_voucher_note;
         }
 
         // Upload to ImgBB if file present

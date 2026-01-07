@@ -233,6 +233,14 @@ const FeeVoucher = () => {
                     </ul>
                 </div>
 
+                {/* School Payment Note */}
+                {school?.settings?.fee_voucher_note && (
+                    <div className="border-2 border-gray-400 bg-blue-50 p-4 mb-6">
+                        <h3 className="font-bold mb-2">Payment Details:</h3>
+                        <pre className="text-sm whitespace-pre-wrap font-sans">{school.settings.fee_voucher_note}</pre>
+                    </div>
+                )}
+
                 {/* Footer */}
                 <div className="grid grid-cols-2 gap-4 border-t-2 border-black pt-4">
                     <div>

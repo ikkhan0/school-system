@@ -33,6 +33,11 @@ const schoolSchema = mongoose.Schema({
         rtl_enabled: {
             type: Boolean,
             default: false
+        },
+        // Fee voucher payment instructions
+        fee_voucher_note: {
+            type: String,
+            default: ''
         }
     }
 }, { timestamps: true });
