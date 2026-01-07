@@ -290,7 +290,7 @@ const Reports = () => {
                         {activeTab === 'shortage' && <ShortageReport data={data} sendWhatsApp={sendWhatsApp} />}
                         {activeTab === 'attendance' && <AttendanceReport data={data} sendWhatsApp={sendWhatsApp} consecutiveAbsences={consecutiveAbsences} />}
                         {activeTab === 'performance' && <PerformanceReport data={data} />}
-                        {activeTab === 'collection' && <CollectionReport data={data} />}
+                        {activeTab === 'collection' && <CollectionReport data={data} dateFormat={dateFormat} />}
                     </div>
                 )}
             </div>
@@ -599,7 +599,7 @@ const PerformanceReport = ({ data }) => {
     );
 };
 
-const CollectionReport = ({ data }) => {
+const CollectionReport = ({ data, dateFormat }) => {
     if (!data.breakdown || data.breakdown.length === 0) {
         return <EmptyState type="fees" title="No collections" description="No fee collections found for the selected date." />;
     }
