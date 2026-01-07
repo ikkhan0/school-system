@@ -21,7 +21,15 @@ router.get('/heads', protect, checkPermission('fees.view'), async (req, res) => 
 // @route   POST /api/funds/heads
 router.post('/heads', protect, checkPermission('fees.create'), async (req, res) => {
     try {
-        const { name, default_amount } = req.body;
+        const {
+            name,
+            default_amount,
+            category,
+            description,
+            is_optional,
+            requires_enrollment,
+            color
+        } = req.body;
 
         const existing = await FeeHead.findOne({ tenant_id: req.tenant_id, name });
         if (existing) return res.status(400).json({ message: 'Fund name already exists' });
@@ -29,7 +37,12 @@ router.post('/heads', protect, checkPermission('fees.create'), async (req, res) 
         const head = await FeeHead.create({
             tenant_id: req.tenant_id,
             name,
-            default_amount: default_amount || 0
+            default_amount: default_amount || 0,
+            category: category || 'other',
+            description,
+            is_optional: is_optional || false,
+            requires_enrollment: requires_enrollment || false,
+            color: color || '#3B82F6'
         });
 
         res.status(201).json(head);

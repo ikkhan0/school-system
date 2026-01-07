@@ -61,6 +61,8 @@ app.use('/api/promotions', require('./routes/promotionRoutes'));
 app.use('/api/fee-generation', require('./routes/feeGenerationRoutes'));
 app.use('/api/funds', require('./routes/fundRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/student-fees', require('./routes/studentFeeRoutes'));
+app.use('/api/enrollments', require('./routes/enrollmentRoutes'));
 
 // Health check
 app.get('/api/health', (req, res) => {
