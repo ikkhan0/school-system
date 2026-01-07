@@ -4,6 +4,9 @@ const { protect } = require('../middleware/auth');
 const checkPermission = require('../middleware/checkPermission');
 const Student = require('../models/Student');
 const Fee = require('../models/Fee');
+const StudentCustomFee = require('../models/StudentCustomFee');
+const StudentEnrollment = require('../models/StudentEnrollment');
+const FeeHead = require('../models/FeeHead');
 
 // Helper: Normalize month format (e.g. "Dec 2025" -> "Dec-2025")
 const normalizeMonth = (m) => {
@@ -90,6 +93,27 @@ router.post('/generate', protect, checkPermission('fees.create'), async (req, re
                 // Get monthly fee from student record
                 const monthlyFee = student.monthly_fee || 5000;
 
+                // Get custom fees for this month
+                const customFees = await StudentCustomFee.find({
+                    tenant_id: req.tenant_id,
+                    student_id: student._id,
+                    applied_to_month: month,
+                    status: 'Pending'
+                }).populate('fee_head_id');
+
+                const customFeesTotal = customFees.reduce((sum, cf) => sum + cf.amount, 0);
+
+                // Get enrollment fees (active enrollments)
+                const enrollments = await StudentEnrollment.find({
+                    tenant_id: req.tenant_id,
+                    student_id: student._id,
+                    is_active: true
+                }).populate('fee_head_id');
+
+                const enrollmentFeesTotal = enrollments.reduce((sum, enr) => {
+                    return sum + (enr.monthly_fee || enr.fee_head_id?.default_amount || 0);
+                }, 0);
+
                 // Calculate discount if applicable
                 let policyDiscount = 0;
                 let manualDiscount = 0;
@@ -98,7 +122,41 @@ router.post('/generate', protect, checkPermission('fees.create'), async (req, re
                 // Check for auto-discounts (sibling, merit, etc.)
                 // You can add discount logic here based on student.discount_policies
 
-                const grossAmount = monthlyFee - totalDiscount;
+                const grossAmount = monthlyFee - totalDiscount + customFeesTotal + enrollmentFeesTotal;
+
+                // Build fee breakdown
+                const fee_breakdown = [
+                    {
+                        fee_head_name: 'Tuition Fee',
+                        amount: monthlyFee,
+                        category: 'tuition'
+                    }
+                ];
+
+                // Add custom fees to breakdown
+                customFees.forEach(cf => {
+                    fee_breakdown.push({
+                        fee_head_id: cf.fee_head_id._id,
+                        fee_head_name: cf.fee_head_id.name,
+                        amount: cf.amount,
+                        category: cf.fee_head_id.category,
+                        custom_fee_id: cf._id
+                    });
+                });
+
+                // Add enrollment fees to breakdown
+                enrollments.forEach(enr => {
+                    const fee = enr.monthly_fee || enr.fee_head_id?.default_amount || 0;
+                    if (fee > 0) {
+                        fee_breakdown.push({
+                            fee_head_id: enr.fee_head_id._id,
+                            fee_head_name: enr.fee_head_id.name,
+                            amount: fee,
+                            category: enr.fee_head_id.category,
+                            enrollment_id: enr._id
+                        });
+                    }
+                });
 
                 // Create new fee record
                 const newFee = new Fee({
@@ -108,14 +166,15 @@ router.post('/generate', protect, checkPermission('fees.create'), async (req, re
                     month,
                     tuition_fee: monthlyFee,
                     concession: totalDiscount,
-                    other_charges: 0,
+                    other_charges: customFeesTotal + enrollmentFeesTotal,
                     arrears: arrears,
                     discount_applied: {
                         policy_discount: policyDiscount,
                         manual_discount: manualDiscount,
                         total_discount: totalDiscount
                     },
-                    original_amount: monthlyFee,
+                    fee_breakdown: fee_breakdown,
+                    original_amount: monthlyFee + customFeesTotal + enrollmentFeesTotal,
                     gross_amount: grossAmount,
                     final_amount: grossAmount,
                     paid_amount: 0,

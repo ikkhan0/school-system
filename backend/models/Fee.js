@@ -60,6 +60,16 @@ const feeSchema = mongoose.Schema({
     whatsapp_sent_at: { type: Date },
     family_message_id: { type: String }, // Track family-based consolidated messages
 
+    // Fee Breakdown (itemized by fee heads)
+    fee_breakdown: [{
+        fee_head_id: { type: mongoose.Schema.Types.ObjectId, ref: 'FeeHead' },
+        fee_head_name: String,
+        amount: Number,
+        category: String,
+        custom_fee_id: { type: mongoose.Schema.Types.ObjectId, ref: 'StudentCustomFee' },
+        enrollment_id: { type: mongoose.Schema.Types.ObjectId, ref: 'StudentEnrollment' }
+    }],
+
     // Fee Calculation
     original_amount: { type: Number, default: 0 }, // Before any discount - defaults to gross_amount if not set
     // Calculated: (tuition + other + arrears) - concession
