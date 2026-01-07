@@ -1,0 +1,1926 @@
+[
+  {
+    "_id": "69444cb26894e218b00abae1",
+    "exam_id": "69444cb26894e218b00abadf",
+    "student_id": "69444cb26894e218b00abadd",
+    "class_id": "1",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 100,
+        "obtained_marks": 85,
+        "_id": "69444cb26894e218b00abae2"
+      },
+      {
+        "subject_name": "English",
+        "total_marks": 100,
+        "obtained_marks": 78,
+        "_id": "69444cb26894e218b00abae3"
+      }
+    ],
+    "total_obtained": 163,
+    "total_max": 200,
+    "percentage": 81.5,
+    "grade": "A",
+    "createdAt": "2025-12-18T18:49:22.765Z",
+    "updatedAt": "2025-12-18T18:49:22.765Z",
+    "__v": 0
+  },
+  {
+    "_id": "69483c4cc44fbae2f625b9a5",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "exam_id": "6947d6d7b39ab7e47f59fc91",
+    "student_id": "6947d6d6b39ab7e47f59fc5f",
+    "class_id": "Class 1",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 100,
+        "obtained_marks": 80,
+        "_id": "69483c4cc44fbae2f625b9a6"
+      },
+      {
+        "subject_name": "English",
+        "total_marks": 100,
+        "obtained_marks": 20,
+        "_id": "69484a41f1b801ef43133556"
+      },
+      {
+        "subject_name": "Islamiat",
+        "total_marks": 50,
+        "obtained_marks": 42,
+        "_id": "694970d4f3f11390b6d88b85"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 100,
+        "obtained_marks": 60,
+        "_id": "6949712f226ee6d7cadc6f02"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 100,
+        "obtained_marks": 85,
+        "_id": "6949713ded305fc6e572831f"
+      },
+      {
+        "subject_name": "Pakistan Studies",
+        "total_marks": 50,
+        "obtained_marks": 42,
+        "_id": "694975c76c8c9a7bca75478b"
+      },
+      {
+        "subject_name": "Urdu",
+        "total_marks": 100,
+        "obtained_marks": 75,
+        "_id": "694975cf6c8c9a7bca7547a1"
+      },
+      {
+        "subject_name": "Physics",
+        "total_marks": 100,
+        "obtained_marks": 45,
+        "_id": "694975d76c8c9a7bca7547b9"
+      }
+    ],
+    "total_obtained": 449,
+    "total_max": 700,
+    "percentage": 64.14285714285714,
+    "grade": "C",
+    "createdAt": "2025-12-21T18:28:28.795Z",
+    "updatedAt": "2025-12-23T11:29:27.714Z",
+    "__v": 7
+  },
+  {
+    "_id": "69483c55c44fbae2f625b9ad",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "exam_id": "6947d6d7b39ab7e47f59fc91",
+    "student_id": "6947d6d6b39ab7e47f59fc60",
+    "class_id": "Class 1",
+    "section_id": "B",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 100,
+        "obtained_marks": 70,
+        "_id": "69483c55c44fbae2f625b9ae"
+      }
+    ],
+    "total_obtained": 70,
+    "total_max": 100,
+    "percentage": 70,
+    "grade": "B",
+    "createdAt": "2025-12-21T18:28:37.817Z",
+    "updatedAt": "2025-12-21T18:28:37.817Z",
+    "__v": 0
+  },
+  {
+    "_id": "6948b38e209270bdd8e17508",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "exam_id": "6948b343902242154c55716b",
+    "student_id": "6947d6d6b39ab7e47f59fc5f",
+    "class_id": "6947d6d6b39ab7e47f59fc3d",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Biology",
+        "total_marks": 30,
+        "obtained_marks": 24,
+        "_id": "6948b38e209270bdd8e17509"
+      }
+    ],
+    "total_obtained": 24,
+    "total_max": 30,
+    "percentage": 80,
+    "grade": "A",
+    "createdAt": "2025-12-22T02:57:18.574Z",
+    "updatedAt": "2025-12-22T02:57:42.172Z",
+    "__v": 0
+  },
+  {
+    "_id": "69499166f197992e73add8ab",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "exam_id": "694990d2cb020a0753b9e1bb",
+    "student_id": "6949855d24f4434cee4f30cb",
+    "class_id": "Class 9",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Biology",
+        "total_marks": 30,
+        "obtained_marks": 20,
+        "_id": "69499166f197992e73add8ac"
+      },
+      {
+        "subject_name": "Computer",
+        "total_marks": 25,
+        "obtained_marks": 23,
+        "_id": "69499364cb020a0753b9e395"
+      }
+    ],
+    "total_obtained": 43,
+    "total_max": 55,
+    "percentage": 78.18181818181819,
+    "grade": "B",
+    "createdAt": "2025-12-22T18:43:50.391Z",
+    "updatedAt": "2025-12-22T18:52:20.518Z",
+    "__v": 1
+  },
+  {
+    "_id": "69499166f197992e73add8af",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "exam_id": "694990d2cb020a0753b9e1bb",
+    "student_id": "694987727eb7f214ad1cf214",
+    "class_id": "Class 9",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Biology",
+        "total_marks": 30,
+        "obtained_marks": 30,
+        "_id": "69499166f197992e73add8b0"
+      },
+      {
+        "subject_name": "Computer",
+        "total_marks": 25,
+        "obtained_marks": 21,
+        "_id": "69499364cb020a0753b9e399"
+      }
+    ],
+    "total_obtained": 51,
+    "total_max": 55,
+    "percentage": 92.72727272727272,
+    "grade": "A+",
+    "createdAt": "2025-12-22T18:43:50.779Z",
+    "updatedAt": "2025-12-22T18:52:20.905Z",
+    "__v": 1
+  },
+  {
+    "_id": "69499167f197992e73add8b3",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "exam_id": "694990d2cb020a0753b9e1bb",
+    "student_id": "69498a56f197992e73add79b",
+    "class_id": "Class 9",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Biology",
+        "total_marks": 30,
+        "obtained_marks": 25,
+        "_id": "69499167f197992e73add8b4"
+      },
+      {
+        "subject_name": "Computer",
+        "total_marks": 25,
+        "obtained_marks": 20,
+        "_id": "69499365cb020a0753b9e39d"
+      }
+    ],
+    "total_obtained": 45,
+    "total_max": 55,
+    "percentage": 81.81818181818183,
+    "grade": "A",
+    "createdAt": "2025-12-22T18:43:51.158Z",
+    "updatedAt": "2025-12-22T18:52:21.281Z",
+    "__v": 1
+  },
+  {
+    "_id": "69499167f197992e73add8b7",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "exam_id": "694990d2cb020a0753b9e1bb",
+    "student_id": "69498bb76f651d859df7e8a0",
+    "class_id": "Class 9",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Biology",
+        "total_marks": 30,
+        "obtained_marks": 20,
+        "_id": "69499167f197992e73add8b8"
+      },
+      {
+        "subject_name": "Computer",
+        "total_marks": 25,
+        "obtained_marks": 23,
+        "_id": "69499365cb020a0753b9e3a1"
+      }
+    ],
+    "total_obtained": 43,
+    "total_max": 55,
+    "percentage": 78.18181818181819,
+    "grade": "B",
+    "createdAt": "2025-12-22T18:43:51.545Z",
+    "updatedAt": "2025-12-22T18:52:21.657Z",
+    "__v": 1
+  },
+  {
+    "_id": "69499167f197992e73add8bb",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "exam_id": "694990d2cb020a0753b9e1bb",
+    "student_id": "69498cb56f651d859df7e8de",
+    "class_id": "Class 9",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Biology",
+        "total_marks": 30,
+        "obtained_marks": 9,
+        "_id": "69499167f197992e73add8bc"
+      },
+      {
+        "subject_name": "Computer",
+        "total_marks": 25,
+        "obtained_marks": 25,
+        "_id": "69499366cb020a0753b9e3a5"
+      }
+    ],
+    "total_obtained": 34,
+    "total_max": 55,
+    "percentage": 61.81818181818181,
+    "grade": "C",
+    "createdAt": "2025-12-22T18:43:51.923Z",
+    "updatedAt": "2025-12-22T18:52:22.034Z",
+    "__v": 1
+  },
+  {
+    "_id": "694bc8fb36b8b3ef0fbee36c",
+    "school_id": "694a9121904cab4730cf6116",
+    "exam_id": "6947d07f663d5499dac08116",
+    "student_id": "694961516aefdf5eee2f230a",
+    "class_id": "Class 1",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Biology",
+        "total_marks": 60,
+        "obtained_marks": 44,
+        "_id": "694bc8fb36b8b3ef0fbee36d"
+      }
+    ],
+    "total_obtained": 44,
+    "total_max": 60,
+    "percentage": 73.33333333333333,
+    "grade": "B",
+    "createdAt": "2025-12-24T11:05:31.081Z",
+    "updatedAt": "2025-12-24T11:13:59.582Z",
+    "__v": 0
+  },
+  {
+    "_id": "694bc8fb36b8b3ef0fbee370",
+    "school_id": "694a9121904cab4730cf6116",
+    "exam_id": "6947d07f663d5499dac08116",
+    "student_id": "6947d6d6b39ab7e47f59fc5f",
+    "class_id": "Class 1",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Biology",
+        "total_marks": 60,
+        "obtained_marks": 55,
+        "_id": "694bc8fb36b8b3ef0fbee371"
+      }
+    ],
+    "total_obtained": 55,
+    "total_max": 60,
+    "percentage": 91.66666666666666,
+    "grade": "A+",
+    "createdAt": "2025-12-24T11:05:31.484Z",
+    "updatedAt": "2025-12-24T11:13:59.995Z",
+    "__v": 0
+  },
+  {
+    "_id": "694bc9bf57c9cecac29c502c",
+    "school_id": "694a9121904cab4730cf6116",
+    "exam_id": "694990d2cb020a0753b9e1bb",
+    "student_id": "694961516aefdf5eee2f230a",
+    "class_id": "Class 1",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Biology",
+        "total_marks": 60,
+        "obtained_marks": 55,
+        "_id": "694bc9bf57c9cecac29c502d"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 100,
+        "obtained_marks": 0,
+        "_id": "694fae7dafcaa8d0c7850d37"
+      },
+      {
+        "subject_name": "English",
+        "total_marks": 100,
+        "obtained_marks": 0,
+        "_id": "694fae8bafcaa8d0c7850d6c"
+      },
+      {
+        "subject_name": "Islamiat",
+        "total_marks": 50,
+        "obtained_marks": 0,
+        "_id": "694fae98afcaa8d0c7850da7"
+      },
+      {
+        "subject_name": "Pakistan Studies",
+        "total_marks": 50,
+        "obtained_marks": 0,
+        "_id": "694faea9afcaa8d0c7850e12"
+      },
+      {
+        "subject_name": "Urdu",
+        "total_marks": 100,
+        "obtained_marks": 0,
+        "_id": "694faeb6afcaa8d0c7850e59"
+      },
+      {
+        "subject_name": "Physics",
+        "total_marks": 100,
+        "obtained_marks": 0,
+        "_id": "694faec6afcaa8d0c7850ea6"
+      }
+    ],
+    "total_obtained": 55,
+    "total_max": 560,
+    "percentage": 9.821428571428571,
+    "grade": "F",
+    "createdAt": "2025-12-24T11:08:47.705Z",
+    "updatedAt": "2025-12-27T10:02:46.087Z",
+    "__v": 6
+  },
+  {
+    "_id": "694bc9c057c9cecac29c5030",
+    "school_id": "694a9121904cab4730cf6116",
+    "exam_id": "694990d2cb020a0753b9e1bb",
+    "student_id": "6947d6d6b39ab7e47f59fc5f",
+    "class_id": "Class 1",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Biology",
+        "total_marks": 60,
+        "obtained_marks": 44,
+        "_id": "694bc9c057c9cecac29c5031"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 100,
+        "obtained_marks": 0,
+        "_id": "694fae7dafcaa8d0c7850d3f"
+      },
+      {
+        "subject_name": "English",
+        "total_marks": 100,
+        "obtained_marks": 0,
+        "_id": "694fae8cafcaa8d0c7850d76"
+      },
+      {
+        "subject_name": "Islamiat",
+        "total_marks": 50,
+        "obtained_marks": 0,
+        "_id": "694fae99afcaa8d0c7850db3"
+      },
+      {
+        "subject_name": "Pakistan Studies",
+        "total_marks": 50,
+        "obtained_marks": 0,
+        "_id": "694faeaaafcaa8d0c7850e20"
+      },
+      {
+        "subject_name": "Urdu",
+        "total_marks": 100,
+        "obtained_marks": 0,
+        "_id": "694faeb6afcaa8d0c7850e69"
+      },
+      {
+        "subject_name": "Physics",
+        "total_marks": 100,
+        "obtained_marks": 0,
+        "_id": "694faec6afcaa8d0c7850eb8"
+      }
+    ],
+    "total_obtained": 44,
+    "total_max": 560,
+    "percentage": 7.857142857142857,
+    "grade": "F",
+    "createdAt": "2025-12-24T11:08:48.085Z",
+    "updatedAt": "2025-12-27T10:02:46.883Z",
+    "__v": 6
+  },
+  {
+    "_id": "694fae70afcaa8d0c7850d0a",
+    "tenant_id": "694a9121904cab4730cf6116",
+    "school_id": "694a9121904cab4730cf6116",
+    "exam_id": "694990d2cb020a0753b9e1bb",
+    "student_id": "694961526aefdf5eee2f2310",
+    "class_id": "Class 1",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Biology",
+        "total_marks": 60,
+        "obtained_marks": 56,
+        "_id": "694fae70afcaa8d0c7850d0b"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 100,
+        "obtained_marks": 67,
+        "_id": "694fae7dafcaa8d0c7850d3b"
+      },
+      {
+        "subject_name": "English",
+        "total_marks": 100,
+        "obtained_marks": 89,
+        "_id": "694fae8cafcaa8d0c7850d71"
+      },
+      {
+        "subject_name": "Islamiat",
+        "total_marks": 50,
+        "obtained_marks": 45,
+        "_id": "694fae99afcaa8d0c7850dad"
+      },
+      {
+        "subject_name": "Pakistan Studies",
+        "total_marks": 50,
+        "obtained_marks": 34,
+        "_id": "694faea9afcaa8d0c7850e19"
+      },
+      {
+        "subject_name": "Urdu",
+        "total_marks": 100,
+        "obtained_marks": 78,
+        "_id": "694faeb6afcaa8d0c7850e61"
+      },
+      {
+        "subject_name": "Physics",
+        "total_marks": 100,
+        "obtained_marks": 88,
+        "_id": "694faec6afcaa8d0c7850eaf"
+      }
+    ],
+    "total_obtained": 457,
+    "total_max": 560,
+    "percentage": 81.60714285714286,
+    "grade": "A",
+    "createdAt": "2025-12-27T10:01:20.056Z",
+    "updatedAt": "2025-12-27T10:02:46.485Z",
+    "__v": 6
+  },
+  {
+    "_id": "6950c051351430b4e9f9ecbd",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49814dd6941150910d05",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 12,
+        "_id": "6950c051351430b4e9f9ecbe"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 14,
+        "_id": "6953d59e8262b0ccb75ca13b"
+      }
+    ],
+    "total_obtained": 26,
+    "total_max": 55,
+    "percentage": 47.27272727272727,
+    "grade": "F",
+    "createdAt": "2025-12-28T05:29:53.720Z",
+    "updatedAt": "2026-01-03T20:28:02.902Z",
+    "__v": 1
+  },
+  {
+    "_id": "6950c052351430b4e9f9ecc1",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49824dd6941150910d0c",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 23,
+        "_id": "6950c052351430b4e9f9ecc2"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 0,
+        "_id": "6953d59e8262b0ccb75ca13f"
+      }
+    ],
+    "total_obtained": 23,
+    "total_max": 55,
+    "percentage": 41.81818181818181,
+    "grade": "F",
+    "createdAt": "2025-12-28T05:29:54.110Z",
+    "updatedAt": "2026-01-03T20:28:03.295Z",
+    "__v": 1
+  },
+  {
+    "_id": "6950c052351430b4e9f9ecc5",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49834dd6941150910d11",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 24,
+        "_id": "6950c052351430b4e9f9ecc6"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 0,
+        "_id": "6953d59e8262b0ccb75ca143"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 20,
+        "_id": "695977f485dc0a775ea425d4"
+      }
+    ],
+    "total_obtained": 44,
+    "total_max": 75,
+    "percentage": 58.666666666666664,
+    "grade": "D",
+    "createdAt": "2025-12-28T05:29:54.487Z",
+    "updatedAt": "2026-01-03T20:28:03.674Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c052351430b4e9f9ecc9",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49844dd6941150910d1f",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 23,
+        "_id": "6950c052351430b4e9f9ecca"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 0,
+        "_id": "6953d59f8262b0ccb75ca147"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 20,
+        "_id": "695977f485dc0a775ea425dc"
+      }
+    ],
+    "total_obtained": 43,
+    "total_max": 75,
+    "percentage": 57.333333333333336,
+    "grade": "D",
+    "createdAt": "2025-12-28T05:29:54.862Z",
+    "updatedAt": "2026-01-03T20:28:04.052Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c053351430b4e9f9eccd",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49864dd6941150910d2d",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 22,
+        "_id": "6950c053351430b4e9f9ecce"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 14,
+        "_id": "6953d59f8262b0ccb75ca14b"
+      }
+    ],
+    "total_obtained": 36,
+    "total_max": 55,
+    "percentage": 65.45454545454545,
+    "grade": "C",
+    "createdAt": "2025-12-28T05:29:55.238Z",
+    "updatedAt": "2026-01-03T20:28:04.436Z",
+    "__v": 1
+  },
+  {
+    "_id": "6950c053351430b4e9f9ecd1",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49874dd6941150910d34",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 21,
+        "_id": "6950c053351430b4e9f9ecd2"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 0,
+        "_id": "6953d5a08262b0ccb75ca14f"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 20,
+        "_id": "695977f485dc0a775ea425e1"
+      }
+    ],
+    "total_obtained": 41,
+    "total_max": 75,
+    "percentage": 54.666666666666664,
+    "grade": "D",
+    "createdAt": "2025-12-28T05:29:55.615Z",
+    "updatedAt": "2026-01-03T20:28:04.814Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c053351430b4e9f9ecd5",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49874dd6941150910d3b",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 22,
+        "_id": "6950c053351430b4e9f9ecd6"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 0,
+        "_id": "6953d5a08262b0ccb75ca153"
+      }
+    ],
+    "total_obtained": 22,
+    "total_max": 55,
+    "percentage": 40,
+    "grade": "F",
+    "createdAt": "2025-12-28T05:29:55.991Z",
+    "updatedAt": "2026-01-03T20:28:05.191Z",
+    "__v": 1
+  },
+  {
+    "_id": "6950c054351430b4e9f9ecd9",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49884dd6941150910d42",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 23,
+        "_id": "6950c054351430b4e9f9ecda"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 20,
+        "_id": "6953d5a18262b0ccb75ca157"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 20,
+        "_id": "695977f585dc0a775ea425e8"
+      }
+    ],
+    "total_obtained": 63,
+    "total_max": 75,
+    "percentage": 84,
+    "grade": "A",
+    "createdAt": "2025-12-28T05:29:56.366Z",
+    "updatedAt": "2026-01-03T20:28:05.570Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c054351430b4e9f9ecdd",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49894dd6941150910d49",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 24,
+        "_id": "6950c054351430b4e9f9ecde"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 12,
+        "_id": "6953d5a18262b0ccb75ca15b"
+      }
+    ],
+    "total_obtained": 36,
+    "total_max": 55,
+    "percentage": 65.45454545454545,
+    "grade": "C",
+    "createdAt": "2025-12-28T05:29:56.743Z",
+    "updatedAt": "2026-01-03T20:28:05.948Z",
+    "__v": 1
+  },
+  {
+    "_id": "6950c055351430b4e9f9ece1",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d498a4dd6941150910d50",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 25,
+        "_id": "6950c055351430b4e9f9ece2"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 15,
+        "_id": "6953d5a18262b0ccb75ca15f"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 15,
+        "_id": "695977f585dc0a775ea425ed"
+      }
+    ],
+    "total_obtained": 55,
+    "total_max": 75,
+    "percentage": 73.33333333333333,
+    "grade": "B",
+    "createdAt": "2025-12-28T05:29:57.119Z",
+    "updatedAt": "2026-01-03T20:28:06.326Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c055351430b4e9f9ece5",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d498a4dd6941150910d57",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 23,
+        "_id": "6950c055351430b4e9f9ece6"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 12,
+        "_id": "6953d5a28262b0ccb75ca163"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 17,
+        "_id": "695977f585dc0a775ea425f2"
+      }
+    ],
+    "total_obtained": 52,
+    "total_max": 75,
+    "percentage": 69.33333333333334,
+    "grade": "C",
+    "createdAt": "2025-12-28T05:29:57.495Z",
+    "updatedAt": "2026-01-03T20:28:06.703Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c055351430b4e9f9ece9",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d498b4dd6941150910d5e",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 24,
+        "_id": "6950c055351430b4e9f9ecea"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 14,
+        "_id": "6953d5a28262b0ccb75ca167"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 17,
+        "_id": "695977f685dc0a775ea425f7"
+      }
+    ],
+    "total_obtained": 55,
+    "total_max": 75,
+    "percentage": 73.33333333333333,
+    "grade": "B",
+    "createdAt": "2025-12-28T05:29:57.870Z",
+    "updatedAt": "2026-01-03T20:28:07.082Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c056351430b4e9f9eced",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d498c4dd6941150910d65",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 23,
+        "_id": "6950c056351430b4e9f9ecee"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 16,
+        "_id": "6953d5a38262b0ccb75ca16b"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 17,
+        "_id": "695977f685dc0a775ea425fc"
+      }
+    ],
+    "total_obtained": 56,
+    "total_max": 75,
+    "percentage": 74.66666666666667,
+    "grade": "B",
+    "createdAt": "2025-12-28T05:29:58.261Z",
+    "updatedAt": "2026-01-03T20:28:07.459Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c056351430b4e9f9ecf1",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d498d4dd6941150910d6c",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 23,
+        "_id": "6950c056351430b4e9f9ecf2"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 23,
+        "_id": "6953d5a38262b0ccb75ca16f"
+      }
+    ],
+    "total_obtained": 46,
+    "total_max": 55,
+    "percentage": 83.63636363636363,
+    "grade": "A",
+    "createdAt": "2025-12-28T05:29:58.637Z",
+    "updatedAt": "2026-01-03T20:28:07.836Z",
+    "__v": 1
+  },
+  {
+    "_id": "6950c057351430b4e9f9ecf5",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d498d4dd6941150910d73",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 21,
+        "_id": "6950c057351430b4e9f9ecf6"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 24,
+        "_id": "6953d5a38262b0ccb75ca173"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 18,
+        "_id": "695977f785dc0a775ea42601"
+      }
+    ],
+    "total_obtained": 63,
+    "total_max": 75,
+    "percentage": 84,
+    "grade": "A",
+    "createdAt": "2025-12-28T05:29:59.014Z",
+    "updatedAt": "2026-01-03T20:28:08.215Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c057351430b4e9f9ecf9",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d498e4dd6941150910d7a",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 21,
+        "_id": "6950c057351430b4e9f9ecfa"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 25,
+        "_id": "6953d5a48262b0ccb75ca177"
+      }
+    ],
+    "total_obtained": 46,
+    "total_max": 55,
+    "percentage": 83.63636363636363,
+    "grade": "A",
+    "createdAt": "2025-12-28T05:29:59.390Z",
+    "updatedAt": "2026-01-03T20:28:08.592Z",
+    "__v": 1
+  },
+  {
+    "_id": "6950c057351430b4e9f9ecfd",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d498f4dd6941150910d81",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 23,
+        "_id": "6950c057351430b4e9f9ecfe"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 30,
+        "_id": "6953d5a48262b0ccb75ca17b"
+      }
+    ],
+    "total_obtained": 53,
+    "total_max": 55,
+    "percentage": 96.36363636363636,
+    "grade": "A+",
+    "createdAt": "2025-12-28T05:29:59.765Z",
+    "updatedAt": "2026-01-03T20:28:08.969Z",
+    "__v": 1
+  },
+  {
+    "_id": "6950c058351430b4e9f9ed01",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49904dd6941150910d88",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 23,
+        "_id": "6950c058351430b4e9f9ed02"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 12,
+        "_id": "6953d5a58262b0ccb75ca17f"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 18,
+        "_id": "695977f785dc0a775ea42606"
+      }
+    ],
+    "total_obtained": 53,
+    "total_max": 75,
+    "percentage": 70.66666666666667,
+    "grade": "B",
+    "createdAt": "2025-12-28T05:30:00.140Z",
+    "updatedAt": "2026-01-03T20:28:09.346Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c058351430b4e9f9ed05",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49904dd6941150910d8f",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 23,
+        "_id": "6950c058351430b4e9f9ed06"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 13,
+        "_id": "6953d5a58262b0ccb75ca183"
+      }
+    ],
+    "total_obtained": 36,
+    "total_max": 55,
+    "percentage": 65.45454545454545,
+    "grade": "C",
+    "createdAt": "2025-12-28T05:30:00.517Z",
+    "updatedAt": "2026-01-03T20:28:09.723Z",
+    "__v": 1
+  },
+  {
+    "_id": "6950c058351430b4e9f9ed09",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49914dd6941150910d96",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 21,
+        "_id": "6950c058351430b4e9f9ed0a"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 14,
+        "_id": "6953d5a58262b0ccb75ca187"
+      }
+    ],
+    "total_obtained": 35,
+    "total_max": 55,
+    "percentage": 63.63636363636363,
+    "grade": "C",
+    "createdAt": "2025-12-28T05:30:00.899Z",
+    "updatedAt": "2026-01-03T20:28:10.103Z",
+    "__v": 1
+  },
+  {
+    "_id": "6950c059351430b4e9f9ed0d",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49924dd6941150910d9d",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 22,
+        "_id": "6950c059351430b4e9f9ed0e"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 15,
+        "_id": "6953d5a68262b0ccb75ca18b"
+      }
+    ],
+    "total_obtained": 37,
+    "total_max": 55,
+    "percentage": 67.27272727272727,
+    "grade": "C",
+    "createdAt": "2025-12-28T05:30:01.275Z",
+    "updatedAt": "2026-01-03T20:28:10.480Z",
+    "__v": 1
+  },
+  {
+    "_id": "6950c059351430b4e9f9ed11",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49934dd6941150910da4",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 22,
+        "_id": "6950c059351430b4e9f9ed12"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 25,
+        "_id": "6953d5a68262b0ccb75ca18f"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 19,
+        "_id": "695977f785dc0a775ea4260b"
+      }
+    ],
+    "total_obtained": 66,
+    "total_max": 75,
+    "percentage": 88,
+    "grade": "A",
+    "createdAt": "2025-12-28T05:30:01.654Z",
+    "updatedAt": "2026-01-03T20:28:10.857Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c05a351430b4e9f9ed15",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49934dd6941150910dab",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 23,
+        "_id": "6950c05a351430b4e9f9ed16"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 26,
+        "_id": "6953d5a78262b0ccb75ca193"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 20,
+        "_id": "695977f885dc0a775ea42610"
+      }
+    ],
+    "total_obtained": 69,
+    "total_max": 75,
+    "percentage": 92,
+    "grade": "A+",
+    "createdAt": "2025-12-28T05:30:02.030Z",
+    "updatedAt": "2026-01-03T20:28:11.235Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c05a351430b4e9f9ed19",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d49944dd6941150910db2",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 25,
+        "_id": "6950c05a351430b4e9f9ed1a"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 24,
+        "_id": "6953d5a78262b0ccb75ca197"
+      }
+    ],
+    "total_obtained": 49,
+    "total_max": 55,
+    "percentage": 89.0909090909091,
+    "grade": "A",
+    "createdAt": "2025-12-28T05:30:02.404Z",
+    "updatedAt": "2026-01-03T20:28:11.612Z",
+    "__v": 1
+  },
+  {
+    "_id": "6950c05a351430b4e9f9ed1e",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d64db573907bd30198bc9",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 21,
+        "_id": "6950c05a351430b4e9f9ed1f"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 26,
+        "_id": "6953d5a78262b0ccb75ca19b"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 20,
+        "_id": "695977f885dc0a775ea42615"
+      }
+    ],
+    "total_obtained": 67,
+    "total_max": 75,
+    "percentage": 89.33333333333333,
+    "grade": "A",
+    "createdAt": "2025-12-28T05:30:02.780Z",
+    "updatedAt": "2026-01-03T20:28:11.990Z",
+    "__v": 2
+  },
+  {
+    "_id": "6950c05b351430b4e9f9ed25",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "6950bef410a4c90b426e4e3b",
+    "student_id": "694d64dc573907bd30198bd0",
+    "class_id": "Ten",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Pak Studies",
+        "total_marks": 25,
+        "obtained_marks": 24,
+        "_id": "6950c05b351430b4e9f9ed26"
+      },
+      {
+        "subject_name": "Chemistry",
+        "total_marks": 30,
+        "obtained_marks": 29,
+        "_id": "6953d5a88262b0ccb75ca19f"
+      },
+      {
+        "subject_name": "Biology",
+        "total_marks": 20,
+        "obtained_marks": 16,
+        "_id": "695977f885dc0a775ea4261a"
+      }
+    ],
+    "total_obtained": 69,
+    "total_max": 75,
+    "percentage": 92,
+    "grade": "A+",
+    "createdAt": "2025-12-28T05:30:03.160Z",
+    "updatedAt": "2026-01-03T20:28:12.366Z",
+    "__v": 2
+  },
+  {
+    "_id": "695a75ea9b94d05f1c8dfa08",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "school_id": "694aaef107661a2792c15aac",
+    "exam_id": "695a75479b94d05f1c8df9db",
+    "student_id": "6954f5436795ad93f2d3a4b4",
+    "class_id": "Nursery",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "ENG B",
+        "total_marks": 75,
+        "obtained_marks": 3,
+        "_id": "695a75ea9b94d05f1c8dfa09"
+      },
+      {
+        "subject_name": "SCI",
+        "total_marks": 75,
+        "obtained_marks": 0,
+        "_id": "695a76439b94d05f1c8dfaa1"
+      },
+      {
+        "subject_name": "URDU B",
+        "total_marks": 75,
+        "obtained_marks": 42,
+        "_id": "695a76cf9b94d05f1c8dfb64"
+      }
+    ],
+    "total_obtained": 45,
+    "total_max": 225,
+    "percentage": 20,
+    "grade": "F",
+    "createdAt": "2026-01-04T14:15:06.197Z",
+    "updatedAt": "2026-01-04T14:18:55.389Z",
+    "__v": 2
+  },
+  {
+    "_id": "695a75ea9b94d05f1c8dfa0c",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "school_id": "694aaef107661a2792c15aac",
+    "exam_id": "695a75479b94d05f1c8df9db",
+    "student_id": "695419f32a38957ac971d191",
+    "class_id": "Nursery",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "ENG B",
+        "total_marks": 75,
+        "obtained_marks": 0,
+        "_id": "695a75ea9b94d05f1c8dfa0d"
+      },
+      {
+        "subject_name": "SCI",
+        "total_marks": 75,
+        "obtained_marks": 0,
+        "_id": "695a76449b94d05f1c8dfaa5"
+      },
+      {
+        "subject_name": "URDU B",
+        "total_marks": 75,
+        "obtained_marks": 75,
+        "_id": "695a76cf9b94d05f1c8dfb69"
+      }
+    ],
+    "total_obtained": 75,
+    "total_max": 225,
+    "percentage": 33.33333333333333,
+    "grade": "F",
+    "createdAt": "2026-01-04T14:15:06.631Z",
+    "updatedAt": "2026-01-04T14:18:55.802Z",
+    "__v": 2
+  },
+  {
+    "_id": "695b82e56f42183b4bc60115",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201c5ebe992fe3f7c1f89",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 15,
+        "_id": "695b82e56f42183b4bc60116"
+      }
+    ],
+    "total_obtained": 15,
+    "total_max": 25,
+    "percentage": 60,
+    "grade": "C",
+    "createdAt": "2026-01-05T09:22:45.094Z",
+    "updatedAt": "2026-01-05T09:22:45.094Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82e56f42183b4bc60119",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201c6ebe992fe3f7c1f90",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 15,
+        "_id": "695b82e56f42183b4bc6011a"
+      }
+    ],
+    "total_obtained": 15,
+    "total_max": 25,
+    "percentage": 60,
+    "grade": "C",
+    "createdAt": "2026-01-05T09:22:45.547Z",
+    "updatedAt": "2026-01-05T09:22:45.547Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82e56f42183b4bc6011d",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201c8ebe992fe3f7c1f9e",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 14,
+        "_id": "695b82e56f42183b4bc6011e"
+      }
+    ],
+    "total_obtained": 14,
+    "total_max": 25,
+    "percentage": 56.00000000000001,
+    "grade": "D",
+    "createdAt": "2026-01-05T09:22:45.978Z",
+    "updatedAt": "2026-01-05T09:22:45.978Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82e66f42183b4bc60121",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201c8ebe992fe3f7c1fa5",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 18,
+        "_id": "695b82e66f42183b4bc60122"
+      }
+    ],
+    "total_obtained": 18,
+    "total_max": 25,
+    "percentage": 72,
+    "grade": "B",
+    "createdAt": "2026-01-05T09:22:46.408Z",
+    "updatedAt": "2026-01-05T09:22:46.408Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82e66f42183b4bc60125",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201c9ebe992fe3f7c1fac",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 15,
+        "_id": "695b82e66f42183b4bc60126"
+      }
+    ],
+    "total_obtained": 15,
+    "total_max": 25,
+    "percentage": 60,
+    "grade": "C",
+    "createdAt": "2026-01-05T09:22:46.838Z",
+    "updatedAt": "2026-01-05T09:22:46.838Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82e76f42183b4bc60129",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201caebe992fe3f7c1fb3",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 25,
+        "_id": "695b82e76f42183b4bc6012a"
+      }
+    ],
+    "total_obtained": 25,
+    "total_max": 25,
+    "percentage": 100,
+    "grade": "A+",
+    "createdAt": "2026-01-05T09:22:47.280Z",
+    "updatedAt": "2026-01-05T09:22:47.280Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82e76f42183b4bc6012d",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201cbebe992fe3f7c1fba",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 15,
+        "_id": "695b82e76f42183b4bc6012e"
+      }
+    ],
+    "total_obtained": 15,
+    "total_max": 25,
+    "percentage": 60,
+    "grade": "C",
+    "createdAt": "2026-01-05T09:22:47.710Z",
+    "updatedAt": "2026-01-05T09:22:47.710Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82e86f42183b4bc60131",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201bfebe992fe3f7c1f53",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 14,
+        "_id": "695b82e86f42183b4bc60132"
+      }
+    ],
+    "total_obtained": 14,
+    "total_max": 25,
+    "percentage": 56.00000000000001,
+    "grade": "D",
+    "createdAt": "2026-01-05T09:22:48.140Z",
+    "updatedAt": "2026-01-05T09:22:48.140Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82e86f42183b4bc60135",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201cbebe992fe3f7c1fbf",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 17,
+        "_id": "695b82e86f42183b4bc60136"
+      }
+    ],
+    "total_obtained": 17,
+    "total_max": 25,
+    "percentage": 68,
+    "grade": "C",
+    "createdAt": "2026-01-05T09:22:48.570Z",
+    "updatedAt": "2026-01-05T09:22:48.570Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82e86f42183b4bc60139",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201ccebe992fe3f7c1fc6",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 13,
+        "_id": "695b82e86f42183b4bc6013a"
+      }
+    ],
+    "total_obtained": 13,
+    "total_max": 25,
+    "percentage": 52,
+    "grade": "D",
+    "createdAt": "2026-01-05T09:22:49.000Z",
+    "updatedAt": "2026-01-05T09:22:49.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82e96f42183b4bc6013d",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201cdebe992fe3f7c1fcd",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 15,
+        "_id": "695b82e96f42183b4bc6013e"
+      }
+    ],
+    "total_obtained": 15,
+    "total_max": 25,
+    "percentage": 60,
+    "grade": "C",
+    "createdAt": "2026-01-05T09:22:49.430Z",
+    "updatedAt": "2026-01-05T09:22:49.430Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82e96f42183b4bc60141",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695289f2b4295ce60e7a325f",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 16,
+        "_id": "695b82e96f42183b4bc60142"
+      }
+    ],
+    "total_obtained": 16,
+    "total_max": 25,
+    "percentage": 64,
+    "grade": "C",
+    "createdAt": "2026-01-05T09:22:49.859Z",
+    "updatedAt": "2026-01-05T09:22:49.859Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82ea6f42183b4bc60145",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "69565e1353f5beb8c048d44b",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 25,
+        "_id": "695b82ea6f42183b4bc60146"
+      }
+    ],
+    "total_obtained": 25,
+    "total_max": 25,
+    "percentage": 100,
+    "grade": "A+",
+    "createdAt": "2026-01-05T09:22:50.289Z",
+    "updatedAt": "2026-01-05T09:22:50.289Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82ea6f42183b4bc60149",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "6957b516f86bb97016cd1400",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 15,
+        "_id": "695b82ea6f42183b4bc6014a"
+      }
+    ],
+    "total_obtained": 15,
+    "total_max": 25,
+    "percentage": 60,
+    "grade": "C",
+    "createdAt": "2026-01-05T09:22:50.720Z",
+    "updatedAt": "2026-01-05T09:22:50.720Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82eb6f42183b4bc6014d",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201c0ebe992fe3f7c1f5a",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 14,
+        "_id": "695b82eb6f42183b4bc6014e"
+      }
+    ],
+    "total_obtained": 14,
+    "total_max": 25,
+    "percentage": 56.00000000000001,
+    "grade": "D",
+    "createdAt": "2026-01-05T09:22:51.150Z",
+    "updatedAt": "2026-01-05T09:22:51.150Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82eb6f42183b4bc60151",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201c1ebe992fe3f7c1f61",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 15,
+        "_id": "695b82eb6f42183b4bc60152"
+      }
+    ],
+    "total_obtained": 15,
+    "total_max": 25,
+    "percentage": 60,
+    "grade": "C",
+    "createdAt": "2026-01-05T09:22:51.580Z",
+    "updatedAt": "2026-01-05T09:22:51.580Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82ec6f42183b4bc60155",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201c2ebe992fe3f7c1f68",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 15,
+        "_id": "695b82ec6f42183b4bc60156"
+      }
+    ],
+    "total_obtained": 15,
+    "total_max": 25,
+    "percentage": 60,
+    "grade": "C",
+    "createdAt": "2026-01-05T09:22:52.015Z",
+    "updatedAt": "2026-01-05T09:22:52.015Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82ec6f42183b4bc60159",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201c2ebe992fe3f7c1f6f",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 15,
+        "_id": "695b82ec6f42183b4bc6015a"
+      }
+    ],
+    "total_obtained": 15,
+    "total_max": 25,
+    "percentage": 60,
+    "grade": "C",
+    "createdAt": "2026-01-05T09:22:52.457Z",
+    "updatedAt": "2026-01-05T09:22:52.457Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82ec6f42183b4bc6015d",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201c3ebe992fe3f7c1f76",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 14,
+        "_id": "695b82ec6f42183b4bc6015e"
+      }
+    ],
+    "total_obtained": 14,
+    "total_max": 25,
+    "percentage": 56.00000000000001,
+    "grade": "D",
+    "createdAt": "2026-01-05T09:22:52.888Z",
+    "updatedAt": "2026-01-05T09:22:52.888Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b82ed6f42183b4bc60161",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "school_id": "694ba63963993262417a8ef1",
+    "exam_id": "695b43de93cc97402d625d61",
+    "student_id": "695201c4ebe992fe3f7c1f7b",
+    "class_id": "Eleven",
+    "section_id": "A",
+    "subjects": [
+      {
+        "subject_name": "Math",
+        "total_marks": 25,
+        "obtained_marks": 12,
+        "_id": "695b82ed6f42183b4bc60162"
+      }
+    ],
+    "total_obtained": 12,
+    "total_max": 25,
+    "percentage": 48,
+    "grade": "F",
+    "createdAt": "2026-01-05T09:22:53.318Z",
+    "updatedAt": "2026-01-05T09:22:53.318Z",
+    "__v": 0
+  }
+]

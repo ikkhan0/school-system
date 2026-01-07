@@ -1,0 +1,688 @@
+[
+  {
+    "_id": "6947d6d6b39ab7e47f59fc3d",
+    "name": "Class 1",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "sections": [
+      "A",
+      "B"
+    ],
+    "__v": 2,
+    "createdAt": "2025-12-21T11:15:34.205Z",
+    "updatedAt": "2025-12-28T09:53:53.738Z",
+    "subjects": [
+      "69485715b434df69261e0f2a",
+      "69485716b434df69261e0f30",
+      "69485713b434df69261e0f1e",
+      "69485714b434df69261e0f24",
+      "69485715b434df69261e0f27",
+      "69485714b434df69261e0f21",
+      "69485715b434df69261e0f2d",
+      "6949903ccb020a0753b9e1a1"
+    ],
+    "tenant_id": "694a9121904cab4730cf6116"
+  },
+  {
+    "_id": "6947d6d6b39ab7e47f59fc3e",
+    "name": "Class 2",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "sections": [
+      "A",
+      "B"
+    ],
+    "__v": 1,
+    "createdAt": "2025-12-21T11:15:34.205Z",
+    "updatedAt": "2025-12-25T10:57:16.194Z",
+    "tenant_id": "694a9121904cab4730cf6116",
+    "subjects": [
+      "69485714b434df69261e0f24",
+      "69485716b434df69261e0f33",
+      "69485715b434df69261e0f27",
+      "69485715b434df69261e0f2d",
+      "6949903ccb020a0753b9e1a1",
+      "69485713b434df69261e0f1e",
+      "69485714b434df69261e0f21"
+    ]
+  },
+  {
+    "_id": "6947d6d6b39ab7e47f59fc3f",
+    "name": "Class 3",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "sections": [
+      "A",
+      "B"
+    ],
+    "__v": 1,
+    "createdAt": "2025-12-21T11:15:34.205Z",
+    "updatedAt": "2025-12-25T11:02:36.825Z",
+    "tenant_id": "694a9121904cab4730cf6116",
+    "subjects": [
+      "69485715b434df69261e0f2a",
+      "69485716b434df69261e0f30",
+      "69485713b434df69261e0f1e",
+      "69485714b434df69261e0f24",
+      "69485716b434df69261e0f33",
+      "69485714b434df69261e0f21"
+    ]
+  },
+  {
+    "_id": "6947d6d6b39ab7e47f59fc40",
+    "name": "Class 4",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "sections": [
+      "A",
+      "B"
+    ],
+    "__v": 1,
+    "createdAt": "2025-12-21T11:15:34.205Z",
+    "updatedAt": "2025-12-28T09:54:23.983Z",
+    "tenant_id": "694a9121904cab4730cf6116",
+    "subjects": [
+      "69485715b434df69261e0f2a",
+      "69485716b434df69261e0f30",
+      "6949903ccb020a0753b9e1a1",
+      "69485713b434df69261e0f1e",
+      "69485714b434df69261e0f24",
+      "69485716b434df69261e0f33",
+      "69485715b434df69261e0f27",
+      "69485715b434df69261e0f2d",
+      "69485714b434df69261e0f21"
+    ]
+  },
+  {
+    "_id": "6947d6d6b39ab7e47f59fc41",
+    "name": "Class 5",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "sections": [
+      "A",
+      "B"
+    ],
+    "__v": 0,
+    "createdAt": "2025-12-21T11:15:34.205Z",
+    "updatedAt": "2025-12-21T11:15:34.205Z",
+    "tenant_id": "694a9121904cab4730cf6116"
+  },
+  {
+    "_id": "6947d6d6b39ab7e47f59fc42",
+    "name": "Class 6",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "sections": [
+      "A",
+      "B"
+    ],
+    "__v": 0,
+    "createdAt": "2025-12-21T11:15:34.205Z",
+    "updatedAt": "2025-12-21T11:15:34.205Z",
+    "tenant_id": "694a9121904cab4730cf6116"
+  },
+  {
+    "_id": "6947d6d6b39ab7e47f59fc43",
+    "name": "Class 7",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "sections": [
+      "A",
+      "B"
+    ],
+    "__v": 0,
+    "createdAt": "2025-12-21T11:15:34.205Z",
+    "updatedAt": "2025-12-21T11:15:34.205Z",
+    "tenant_id": "694a9121904cab4730cf6116"
+  },
+  {
+    "_id": "6947d6d6b39ab7e47f59fc44",
+    "name": "Class 8",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "sections": [
+      "A",
+      "B"
+    ],
+    "__v": 0,
+    "createdAt": "2025-12-21T11:15:34.206Z",
+    "updatedAt": "2025-12-21T11:15:34.206Z",
+    "tenant_id": "694a9121904cab4730cf6116"
+  },
+  {
+    "_id": "6947d6d6b39ab7e47f59fc45",
+    "name": "Class 9",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "sections": [
+      "A",
+      "B"
+    ],
+    "__v": 1,
+    "createdAt": "2025-12-21T11:15:34.206Z",
+    "updatedAt": "2025-12-22T18:40:21.698Z",
+    "subjects": [
+      "6949903ccb020a0753b9e1a1",
+      "69485715b434df69261e0f2a",
+      "69485716b434df69261e0f30",
+      "69485713b434df69261e0f1e",
+      "69485714b434df69261e0f24",
+      "69485716b434df69261e0f33",
+      "69485715b434df69261e0f2d",
+      "69485714b434df69261e0f21"
+    ],
+    "tenant_id": "694a9121904cab4730cf6116"
+  },
+  {
+    "_id": "6947d6d6b39ab7e47f59fc46",
+    "name": "Class 10",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "sections": [
+      "A",
+      "B"
+    ],
+    "__v": 0,
+    "createdAt": "2025-12-21T11:15:34.206Z",
+    "updatedAt": "2025-12-21T11:15:34.206Z",
+    "tenant_id": "694a9121904cab4730cf6116"
+  },
+  {
+    "_id": "694c27ecafd3b18368f6f5d5",
+    "tenant_id": "694a9121904cab4730cf6116",
+    "name": "O1",
+    "sections": [
+      "1",
+      "2"
+    ],
+    "subjects": [],
+    "createdAt": "2025-12-24T17:50:36.744Z",
+    "updatedAt": "2025-12-24T17:50:36.744Z",
+    "__v": 0
+  },
+  {
+    "_id": "694c2899aa626f35d1dc0713",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "name": "Nine",
+    "sections": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "subjects": [
+      "694d6fe39a1ca88d4557e133",
+      "694d6f7f2b170fa1d1afa6fc",
+      "694d70377b9e60b64d5fcc03",
+      "694d6f999a1ca88d4557e07c",
+      "694d70097b9e60b64d5fcba4",
+      "694d704cf4c075402120138e",
+      "694d6faa9a1ca88d4557e085",
+      "694d6fc19a1ca88d4557e08e",
+      "694d7082f4c0754021201397"
+    ],
+    "createdAt": "2025-12-24T17:53:29.301Z",
+    "updatedAt": "2025-12-29T10:41:03.773Z",
+    "__v": 6
+  },
+  {
+    "_id": "694c28b5defb2b716556804b",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "name": "Ten",
+    "sections": [
+      "A",
+      "B",
+      "C"
+    ],
+    "subjects": [
+      "694d6f999a1ca88d4557e07c",
+      "694d70097b9e60b64d5fcba4",
+      "694d6faa9a1ca88d4557e085",
+      "694d717a373860d105526701",
+      "694d6fc19a1ca88d4557e08e",
+      "694d7082f4c0754021201397",
+      "694d6fe39a1ca88d4557e133",
+      "694d6f7f2b170fa1d1afa6fc",
+      "694d70377b9e60b64d5fcc03"
+    ],
+    "createdAt": "2025-12-24T17:53:57.212Z",
+    "updatedAt": "2025-12-28T05:22:57.615Z",
+    "__v": 4
+  },
+  {
+    "_id": "694c28c0defb2b7165568054",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "name": "Six",
+    "sections": [
+      "A"
+    ],
+    "subjects": [],
+    "createdAt": "2025-12-24T17:54:08.710Z",
+    "updatedAt": "2025-12-24T17:54:08.710Z",
+    "__v": 0
+  },
+  {
+    "_id": "694c28cddefb2b716556805d",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "name": "Seven",
+    "sections": [
+      "A"
+    ],
+    "subjects": [],
+    "createdAt": "2025-12-24T17:54:21.588Z",
+    "updatedAt": "2025-12-24T17:54:21.588Z",
+    "__v": 0
+  },
+  {
+    "_id": "694c28efdefb2b7165568066",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "name": "Eight",
+    "sections": [
+      "A"
+    ],
+    "subjects": [],
+    "createdAt": "2025-12-24T17:54:55.904Z",
+    "updatedAt": "2025-12-24T17:54:55.904Z",
+    "__v": 0
+  },
+  {
+    "_id": "694cbe8bf7499c625175eabb",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "name": "Eleven",
+    "sections": [
+      "A",
+      "B",
+      "C"
+    ],
+    "subjects": [
+      "694d6f7f2b170fa1d1afa6fc",
+      "694d6f999a1ca88d4557e07c",
+      "694d70377b9e60b64d5fcc03",
+      "694d70097b9e60b64d5fcba4",
+      "694d6fc19a1ca88d4557e08e",
+      "694d6faa9a1ca88d4557e085",
+      "694d6fe39a1ca88d4557e133"
+    ],
+    "createdAt": "2025-12-25T04:33:15.138Z",
+    "updatedAt": "2026-01-01T11:21:43.794Z",
+    "__v": 1
+  },
+  {
+    "_id": "695209cfb5e3832269235ede",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "name": "Twelve",
+    "sections": [
+      "A",
+      "B",
+      "C"
+    ],
+    "subjects": [
+      "694d6faa9a1ca88d4557e085",
+      "694d6fc19a1ca88d4557e08e",
+      "694d6fe39a1ca88d4557e133",
+      "694d70097b9e60b64d5fcba4",
+      "694d70377b9e60b64d5fcc03",
+      "694d6f999a1ca88d4557e07c",
+      "694d6f7f2b170fa1d1afa6fc"
+    ],
+    "createdAt": "2025-12-29T04:55:43.253Z",
+    "updatedAt": "2026-01-01T11:22:40.284Z",
+    "__v": 1
+  },
+  {
+    "_id": "6952681c4e0639e01d6cf392",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "name": "Junior",
+    "sections": [
+      "A",
+      "B"
+    ],
+    "subjects": [],
+    "createdAt": "2025-12-29T11:38:04.541Z",
+    "updatedAt": "2025-12-29T11:38:04.541Z",
+    "__v": 0
+  },
+  {
+    "_id": "6952a9067d63406881cd78ca",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "name": "Play Group",
+    "sections": [
+      "A"
+    ],
+    "subjects": [
+      "695a76ff9b94d05f1c8dfb8b",
+      "695a77019b94d05f1c8dfb94",
+      "695a758a255ad7fff81058cc",
+      "695a7598255ad7fff81058d1"
+    ],
+    "createdAt": "2025-12-29T16:15:02.882Z",
+    "updatedAt": "2026-01-04T14:19:58.307Z",
+    "__v": 1
+  },
+  {
+    "_id": "6952a9177d63406881cd78cf",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "name": "Nursery",
+    "sections": [
+      "A"
+    ],
+    "subjects": [
+      "695a758a255ad7fff81058cc",
+      "695a7598255ad7fff81058d1",
+      "695a75aa255ad7fff81058d6",
+      "695a7565255ad7fff81058c2",
+      "695a7575255ad7fff81058c7"
+    ],
+    "createdAt": "2025-12-29T16:15:19.869Z",
+    "updatedAt": "2026-01-04T14:14:15.404Z",
+    "__v": 1
+  },
+  {
+    "_id": "695a791c9b94d05f1c8dfc42",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "name": "8TH",
+    "sections": [
+      "BLUE"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-04T14:28:44.514Z",
+    "updatedAt": "2026-01-04T14:28:44.514Z",
+    "__v": 0
+  },
+  {
+    "_id": "695a792f9b94d05f1c8dfc47",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "name": "5TH ",
+    "sections": [
+      "BLUE"
+    ],
+    "subjects": [
+      "695a75aa255ad7fff81058d6",
+      "695a77009b94d05f1c8dfb8e",
+      "695a77009b94d05f1c8dfb91",
+      "695a7565255ad7fff81058c2",
+      "695a7575255ad7fff81058c7"
+    ],
+    "createdAt": "2026-01-04T14:29:03.854Z",
+    "updatedAt": "2026-01-04T14:32:17.613Z",
+    "__v": 1
+  },
+  {
+    "_id": "695bbcb5326d954a64b86a41",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "Play ",
+    "sections": [
+      "J.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:29:25.998Z",
+    "updatedAt": "2026-01-05T13:29:25.998Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbccf326d954a64b86a46",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "Play",
+    "sections": [
+      "IQ.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:29:51.083Z",
+    "updatedAt": "2026-01-05T13:29:51.083Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbce1326d954a64b86a4b",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "KG-I",
+    "sections": [
+      "IQ.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:30:09.457Z",
+    "updatedAt": "2026-01-05T13:31:49.014Z",
+    "__v": 1
+  },
+  {
+    "_id": "695bbd1c326d954a64b86a5f",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "KG-II",
+    "sections": [
+      "IQ.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:31:08.337Z",
+    "updatedAt": "2026-01-05T13:37:33.071Z",
+    "__v": 1
+  },
+  {
+    "_id": "695bbe8e2821d8376f7c1c91",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "KG-1",
+    "sections": [
+      "J.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:37:18.640Z",
+    "updatedAt": "2026-01-05T13:37:18.640Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbeaf2821d8376f7c1c9b",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "KG-2",
+    "sections": [
+      "J.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:37:51.300Z",
+    "updatedAt": "2026-01-05T13:37:51.300Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbec32821d8376f7c1ca0",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "One",
+    "sections": [
+      "IQ.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:38:11.053Z",
+    "updatedAt": "2026-01-05T13:38:56.957Z",
+    "__v": 1
+  },
+  {
+    "_id": "695bbee52821d8376f7c1ca8",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "1",
+    "sections": [
+      "J.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:38:45.934Z",
+    "updatedAt": "2026-01-05T13:38:45.934Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbef92821d8376f7c1cb2",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "2",
+    "sections": [
+      "J.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:39:05.403Z",
+    "updatedAt": "2026-01-05T13:39:05.403Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbefe2821d8376f7c1cb7",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "3",
+    "sections": [
+      "J.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:39:10.482Z",
+    "updatedAt": "2026-01-05T13:39:10.482Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbf042821d8376f7c1cbc",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "4",
+    "sections": [
+      "J.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:39:16.398Z",
+    "updatedAt": "2026-01-05T13:39:16.398Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbf0a2821d8376f7c1cc1",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "5",
+    "sections": [
+      "J.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:39:22.171Z",
+    "updatedAt": "2026-01-05T13:39:22.171Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbf0f2821d8376f7c1cc6",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "6",
+    "sections": [
+      "J.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:39:27.367Z",
+    "updatedAt": "2026-01-05T13:39:27.367Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbf152821d8376f7c1ccb",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "7",
+    "sections": [
+      "J.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:39:33.568Z",
+    "updatedAt": "2026-01-05T13:39:33.568Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbf202821d8376f7c1cd0",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "8",
+    "sections": [
+      "J.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:39:44.425Z",
+    "updatedAt": "2026-01-05T13:39:44.425Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbf292821d8376f7c1cd5",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "9",
+    "sections": [
+      "J.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:39:53.108Z",
+    "updatedAt": "2026-01-05T13:39:53.108Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbf3e2821d8376f7c1cda",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "Two",
+    "sections": [
+      "IQ.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:40:14.566Z",
+    "updatedAt": "2026-01-05T13:40:14.566Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbf4b2821d8376f7c1cdf",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "Three",
+    "sections": [
+      "IQ.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:40:27.963Z",
+    "updatedAt": "2026-01-05T13:40:27.963Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbf562821d8376f7c1ce4",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "Four",
+    "sections": [
+      "IQ.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:40:38.490Z",
+    "updatedAt": "2026-01-05T13:40:38.490Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbf682821d8376f7c1ce9",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "Five",
+    "sections": [
+      "IQ.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:40:56.489Z",
+    "updatedAt": "2026-01-05T13:40:56.489Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbf922821d8376f7c1cfa",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "SIX",
+    "sections": [
+      "IQ.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:41:38.104Z",
+    "updatedAt": "2026-01-05T13:41:38.104Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbfac2821d8376f7c1d02",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "SEVEN ",
+    "sections": [
+      "IQ.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:42:04.666Z",
+    "updatedAt": "2026-01-05T13:42:04.666Z",
+    "__v": 0
+  },
+  {
+    "_id": "695bbfb92821d8376f7c1d07",
+    "tenant_id": "695b84c942183b9ddca6b9f9",
+    "name": "EIGHT",
+    "sections": [
+      "IQ.C"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T13:42:17.525Z",
+    "updatedAt": "2026-01-05T13:42:17.525Z",
+    "__v": 0
+  },
+  {
+    "_id": "695c0768d2aa5eb9da02c032",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "name": "Prep",
+    "sections": [
+      "A"
+    ],
+    "subjects": [],
+    "createdAt": "2026-01-05T18:48:08.693Z",
+    "updatedAt": "2026-01-05T18:48:08.693Z",
+    "__v": 0
+  }
+]

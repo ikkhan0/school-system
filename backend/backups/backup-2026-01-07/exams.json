@@ -1,0 +1,933 @@
+[
+  {
+    "_id": "69444cb26894e218b00abadf",
+    "title": "Final Term 2025",
+    "start_date": "2025-12-18T18:49:22.575Z",
+    "is_active": true,
+    "createdAt": "2025-12-18T18:49:22.576Z",
+    "updatedAt": "2025-12-18T18:49:22.576Z",
+    "__v": 0,
+    "tenant_id": "694a9121904cab4730cf6116"
+  },
+  {
+    "_id": "6947d07f663d5499dac08116",
+    "school_id": "6947d07d663d5499dac080be",
+    "title": "Mid Term 2025",
+    "start_date": "2025-03-01T00:00:00.000Z",
+    "end_date": "2025-03-15T00:00:00.000Z",
+    "is_active": true,
+    "createdAt": "2025-12-21T10:48:31.569Z",
+    "updatedAt": "2025-12-28T09:52:36.086Z",
+    "__v": 2,
+    "tenant_id": "694a9121904cab4730cf6116",
+    "exam_type": "Mid-Term",
+    "subjects": [
+      {
+        "class_id": "Class 1",
+        "subject_list": [
+          {
+            "subject_name": "Biology",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "694bc3bca8c3e359ea82b7dd"
+          },
+          {
+            "subject_name": "Physics",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "694bc3bca8c3e359ea82b7de"
+          },
+          {
+            "subject_name": "Computer",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "6950fde4a2c384b80a211e1e"
+          },
+          {
+            "subject_name": "Biology",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "6950fde4a2c384b80a211e1f"
+          },
+          {
+            "subject_name": "Urdu",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "6950fde4a2c384b80a211e20"
+          },
+          {
+            "subject_name": "English",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "6950fde4a2c384b80a211e21"
+          },
+          {
+            "subject_name": "Chemistry",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "6950fde4a2c384b80a211e22"
+          }
+        ],
+        "_id": "694bc3bca8c3e359ea82b7dc"
+      }
+    ]
+  },
+  {
+    "_id": "69485a803170153b11c152ff",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "title": "Send Up ",
+    "start_date": "2025-12-01T00:00:00.000Z",
+    "end_date": "2025-12-24T00:00:00.000Z",
+    "is_active": true,
+    "subjects": [
+      {
+        "class_id": "Class 1",
+        "sections": [
+          "A",
+          "B"
+        ],
+        "subject_list": [
+          {
+            "subject_name": "Biology",
+            "total_marks": 60,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925117b"
+          },
+          {
+            "subject_name": "Chemistry",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925117c"
+          },
+          {
+            "subject_name": "English",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925117d"
+          },
+          {
+            "subject_name": "Islamiat",
+            "total_marks": 50,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925117e"
+          },
+          {
+            "subject_name": "Pakistan Studies",
+            "total_marks": 50,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925117f"
+          },
+          {
+            "subject_name": "Urdu",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251180"
+          },
+          {
+            "subject_name": "Physics",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251181"
+          },
+          {
+            "subject_name": "Computer",
+            "total_marks": 60,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251182"
+          }
+        ],
+        "_id": "695b763f155109a71925117a"
+      },
+      {
+        "class_id": "Class 2",
+        "sections": [
+          "A",
+          "B"
+        ],
+        "subject_list": [
+          {
+            "subject_name": "Islamiat",
+            "total_marks": 50,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251184"
+          },
+          {
+            "subject_name": "Mathematics",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251185"
+          },
+          {
+            "subject_name": "Pakistan Studies",
+            "total_marks": 50,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251186"
+          },
+          {
+            "subject_name": "Physics",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251187"
+          },
+          {
+            "subject_name": "Computer",
+            "total_marks": 60,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251188"
+          },
+          {
+            "subject_name": "English",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251189"
+          },
+          {
+            "subject_name": "Urdu",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925118a"
+          }
+        ],
+        "_id": "695b763f155109a719251183"
+      },
+      {
+        "class_id": "Class 3",
+        "sections": [
+          "A",
+          "B"
+        ],
+        "subject_list": [
+          {
+            "subject_name": "Biology",
+            "total_marks": 60,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925118c"
+          },
+          {
+            "subject_name": "Chemistry",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925118d"
+          },
+          {
+            "subject_name": "English",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925118e"
+          },
+          {
+            "subject_name": "Islamiat",
+            "total_marks": 50,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925118f"
+          },
+          {
+            "subject_name": "Mathematics",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251190"
+          },
+          {
+            "subject_name": "Urdu",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251191"
+          }
+        ],
+        "_id": "695b763f155109a71925118b"
+      },
+      {
+        "class_id": "Class 1",
+        "sections": [
+          "A",
+          "B"
+        ],
+        "subject_list": [
+          {
+            "subject_name": "Biology",
+            "total_marks": 60,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251193"
+          },
+          {
+            "subject_name": "Chemistry",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251194"
+          },
+          {
+            "subject_name": "English",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251195"
+          },
+          {
+            "subject_name": "Islamiat",
+            "total_marks": 50,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251196"
+          },
+          {
+            "subject_name": "Pakistan Studies",
+            "total_marks": 50,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251197"
+          },
+          {
+            "subject_name": "Urdu",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251198"
+          },
+          {
+            "subject_name": "Physics",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a719251199"
+          },
+          {
+            "subject_name": "Computer",
+            "total_marks": 60,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925119a"
+          }
+        ],
+        "_id": "695b763f155109a719251192"
+      },
+      {
+        "class_id": "Class 2",
+        "sections": [
+          "A",
+          "B"
+        ],
+        "subject_list": [
+          {
+            "subject_name": "Islamiat",
+            "total_marks": 50,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925119c"
+          },
+          {
+            "subject_name": "Mathematics",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925119d"
+          },
+          {
+            "subject_name": "Pakistan Studies",
+            "total_marks": 50,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925119e"
+          },
+          {
+            "subject_name": "Physics",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a71925119f"
+          },
+          {
+            "subject_name": "Computer",
+            "total_marks": 60,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a7192511a0"
+          },
+          {
+            "subject_name": "English",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a7192511a1"
+          },
+          {
+            "subject_name": "Urdu",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a7192511a2"
+          }
+        ],
+        "_id": "695b763f155109a71925119b"
+      },
+      {
+        "class_id": "Class 3",
+        "sections": [
+          "A",
+          "B"
+        ],
+        "subject_list": [
+          {
+            "subject_name": "Biology",
+            "total_marks": 60,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a7192511a4"
+          },
+          {
+            "subject_name": "Chemistry",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a7192511a5"
+          },
+          {
+            "subject_name": "English",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a7192511a6"
+          },
+          {
+            "subject_name": "Islamiat",
+            "total_marks": 50,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a7192511a7"
+          },
+          {
+            "subject_name": "Mathematics",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a7192511a8"
+          },
+          {
+            "subject_name": "Urdu",
+            "total_marks": 100,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b763f155109a7192511a9"
+          }
+        ],
+        "_id": "695b763f155109a7192511a3"
+      }
+    ],
+    "createdAt": "2025-12-21T20:37:20.488Z",
+    "updatedAt": "2026-01-05T08:28:47.984Z",
+    "__v": 2,
+    "tenant_id": "694a9121904cab4730cf6116",
+    "exam_type": "Mid-Term"
+  },
+  {
+    "_id": "6948b343902242154c55716b",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "title": "RTS week # 02",
+    "start_date": "2025-12-15T00:00:00.000Z",
+    "end_date": "2025-12-27T00:00:00.000Z",
+    "is_active": true,
+    "subjects": [],
+    "createdAt": "2025-12-22T02:56:03.180Z",
+    "updatedAt": "2025-12-22T02:56:03.180Z",
+    "__v": 0,
+    "tenant_id": "694a9121904cab4730cf6116"
+  },
+  {
+    "_id": "694990d2cb020a0753b9e1bb",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "title": "RTS Phase 05",
+    "start_date": "2025-12-22T00:00:00.000Z",
+    "end_date": "2025-12-27T00:00:00.000Z",
+    "is_active": true,
+    "exam_type": "Mid-Term",
+    "subjects": [],
+    "createdAt": "2025-12-22T18:41:22.255Z",
+    "updatedAt": "2025-12-22T18:41:22.255Z",
+    "__v": 0,
+    "tenant_id": "694a9121904cab4730cf6116"
+  },
+  {
+    "_id": "6950bef410a4c90b426e4e3b",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "title": "Matric RTS(2) Phase 1",
+    "start_date": "2026-01-05T00:00:00.000Z",
+    "end_date": "2026-01-10T00:00:00.000Z",
+    "is_active": true,
+    "exam_type": "Other",
+    "subjects": [
+      {
+        "class_id": "Nine",
+        "sections": [
+          "A",
+          "C"
+        ],
+        "subject_list": [
+          {
+            "subject_name": "Urdu",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a36178"
+          },
+          {
+            "subject_name": "Biology",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a36179"
+          },
+          {
+            "subject_name": "Computer",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a3617a"
+          },
+          {
+            "subject_name": "Chemistry",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a3617b"
+          },
+          {
+            "subject_name": "English",
+            "total_marks": 45,
+            "passing_marks": 15,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a3617c"
+          },
+          {
+            "subject_name": "Islamiat",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a3617d"
+          },
+          {
+            "subject_name": "Math",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a3617e"
+          },
+          {
+            "subject_name": "Physics",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a3617f"
+          }
+        ],
+        "_id": "695b7ac0d56e536536a36177"
+      },
+      {
+        "class_id": "Ten",
+        "sections": [
+          "A",
+          "B",
+          "C"
+        ],
+        "subject_list": [
+          {
+            "subject_name": "Math",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a36184"
+          },
+          {
+            "subject_name": "Physics",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a36185"
+          },
+          {
+            "subject_name": "Chemistry",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a36186"
+          },
+          {
+            "subject_name": "Urdu",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a36187"
+          },
+          {
+            "subject_name": "Biology",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a36188"
+          },
+          {
+            "subject_name": "Computer",
+            "total_marks": 50,
+            "passing_marks": 33,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a36189"
+          },
+          {
+            "subject_name": "English",
+            "total_marks": 45,
+            "passing_marks": 15,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a3618a"
+          },
+          {
+            "subject_name": "Pak Studies",
+            "total_marks": 30,
+            "passing_marks": 10,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7ac0d56e536536a3618b"
+          }
+        ],
+        "_id": "695b7ac0d56e536536a36183"
+      }
+    ],
+    "createdAt": "2025-12-28T05:24:04.699Z",
+    "updatedAt": "2026-01-06T06:43:54.919Z",
+    "__v": 2
+  },
+  {
+    "_id": "695a75479b94d05f1c8df9db",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "title": "1ST TERM 2026",
+    "start_date": "2026-09-04T00:00:00.000Z",
+    "end_date": "2026-12-04T00:00:00.000Z",
+    "is_active": true,
+    "exam_type": "Mid-Term",
+    "subjects": [],
+    "createdAt": "2026-01-04T14:12:23.565Z",
+    "updatedAt": "2026-01-04T14:12:23.565Z",
+    "__v": 0
+  },
+  {
+    "_id": "695b43de93cc97402d625d61",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "title": " FSc RTS Phase 1",
+    "start_date": "2026-01-05T00:00:00.000Z",
+    "end_date": "2026-01-07T00:00:00.000Z",
+    "is_active": true,
+    "exam_type": "Mid-Term",
+    "subjects": [
+      {
+        "class_id": "Eleven",
+        "sections": [
+          "A",
+          "B"
+        ],
+        "subject_list": [
+          {
+            "subject_name": "Math",
+            "total_marks": 25,
+            "passing_marks": 10,
+            "passing_percentage": 40,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7377d78d754b6af2b950"
+          },
+          {
+            "subject_name": "Biology",
+            "total_marks": 25,
+            "passing_marks": 10,
+            "passing_percentage": 40,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7377d78d754b6af2b951"
+          },
+          {
+            "subject_name": "Computer",
+            "total_marks": 25,
+            "passing_marks": 10,
+            "passing_percentage": 40,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7377d78d754b6af2b952"
+          },
+          {
+            "subject_name": "Physics",
+            "total_marks": 25,
+            "passing_marks": 10,
+            "passing_percentage": 40,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7377d78d754b6af2b953"
+          },
+          {
+            "subject_name": "English",
+            "total_marks": 25,
+            "passing_marks": 10,
+            "passing_percentage": 40,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695b7377d78d754b6af2b954"
+          }
+        ],
+        "_id": "695b7377d78d754b6af2b94e"
+      },
+      {
+        "class_id": "Twelve",
+        "sections": [
+          "A",
+          "B"
+        ],
+        "subject_list": [
+          {
+            "subject_name": "Biology",
+            "total_marks": 25,
+            "passing_marks": 8,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695cab9e82c2576bd05be8f6"
+          },
+          {
+            "subject_name": "Chemistry",
+            "total_marks": 25,
+            "passing_marks": 8,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695cab9e82c2576bd05be8f7"
+          },
+          {
+            "subject_name": "Physics",
+            "total_marks": 25,
+            "passing_marks": 8,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695cab9e82c2576bd05be8f8"
+          },
+          {
+            "subject_name": "Computer",
+            "total_marks": 25,
+            "passing_marks": 8,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695cab9e82c2576bd05be8f9"
+          },
+          {
+            "subject_name": "English",
+            "total_marks": 25,
+            "passing_marks": 8,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695cab9e82c2576bd05be8fa"
+          },
+          {
+            "subject_name": "Math",
+            "total_marks": 25,
+            "passing_marks": 8,
+            "passing_percentage": 33,
+            "theory_marks": 0,
+            "practical_marks": 0,
+            "_id": "695cab9e82c2576bd05be8fb"
+          }
+        ],
+        "_id": "695b7377d78d754b6af2b955"
+      }
+    ],
+    "createdAt": "2026-01-05T04:53:50.664Z",
+    "updatedAt": "2026-01-06T06:28:46.455Z",
+    "__v": 4
+  },
+  {
+    "_id": "695c0895d710f68e85fca1dc",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "title": "First Term Exam",
+    "start_date": "2025-10-01T00:00:00.000Z",
+    "end_date": "2025-10-15T00:00:00.000Z",
+    "is_active": true,
+    "exam_type": "Mid-Term",
+    "subjects": [],
+    "createdAt": "2026-01-05T18:53:09.049Z",
+    "updatedAt": "2026-01-05T18:53:09.049Z",
+    "__v": 0
+  },
+  {
+    "_id": "695c0895d710f68e85fca1de",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "title": "Mid Term Exam",
+    "start_date": "2025-12-01T00:00:00.000Z",
+    "end_date": "2025-12-15T00:00:00.000Z",
+    "is_active": true,
+    "exam_type": "Mid-Term",
+    "subjects": [],
+    "createdAt": "2026-01-05T18:53:09.229Z",
+    "updatedAt": "2026-01-05T18:53:09.229Z",
+    "__v": 0
+  },
+  {
+    "_id": "695c0895d710f68e85fca1e0",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "title": "Final Term Exam",
+    "start_date": "2026-03-01T00:00:00.000Z",
+    "end_date": "2026-03-15T00:00:00.000Z",
+    "is_active": true,
+    "exam_type": "Mid-Term",
+    "subjects": [],
+    "createdAt": "2026-01-05T18:53:09.400Z",
+    "updatedAt": "2026-01-05T18:53:09.400Z",
+    "__v": 0
+  }
+]

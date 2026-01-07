@@ -1,0 +1,52 @@
+[
+  {
+    "_id": "695ca09addafc1f43524fe89",
+    "name": "Teacher Advance",
+    "description": "If any Teacher Takes some advance",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "is_active": true,
+    "createdAt": "2026-01-06T05:41:46.264Z",
+    "updatedAt": "2026-01-06T05:41:46.264Z",
+    "__v": 0
+  },
+  {
+    "_id": "695ca0edecf90743d5c5127a",
+    "name": "Electricity Bill",
+    "description": "Electricity Bill Fesco",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "is_active": true,
+    "createdAt": "2026-01-06T05:43:09.165Z",
+    "updatedAt": "2026-01-06T05:43:09.165Z",
+    "__v": 0
+  },
+  {
+    "_id": "695ca10becf90743d5c5127f",
+    "name": "Stationary",
+    "description": "If I bought any stationary from any Shop",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "is_active": true,
+    "createdAt": "2026-01-06T05:43:39.354Z",
+    "updatedAt": "2026-01-06T05:43:39.354Z",
+    "__v": 0
+  },
+  {
+    "_id": "695ca138ecf90743d5c51284",
+    "name": "Repairing Purpose",
+    "description": "If I spent some amount on Repairing of any thing like tables, Chairs etc",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "is_active": true,
+    "createdAt": "2026-01-06T05:44:24.897Z",
+    "updatedAt": "2026-01-06T05:44:24.897Z",
+    "__v": 0
+  },
+  {
+    "_id": "695ca151ecf90743d5c51289",
+    "name": "Academy Rent Provided",
+    "description": "Building Rent Given",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "is_active": true,
+    "createdAt": "2026-01-06T05:44:49.769Z",
+    "updatedAt": "2026-01-06T05:44:49.769Z",
+    "__v": 0
+  }
+]

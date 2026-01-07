@@ -1,0 +1,32 @@
+[
+  {
+    "_id": "694aab3a230dfe27b87fb0b5",
+    "name": "Super Administrator",
+    "email": "admin@isoft.com.pk",
+    "password": "$2b$10$st.UYq0CghDZksNAN1UdeOI0dGYTbEjK/3PNopLCGCUmR0FSYj4eO",
+    "role": "super_admin",
+    "phone": "+923001234567",
+    "is_active": true,
+    "permissions": [
+      "*"
+    ],
+    "createdAt": "2025-12-23T14:46:18.750Z",
+    "updatedAt": "2025-12-23T20:34:19.085Z",
+    "last_login": "2025-12-23T20:34:19.084Z"
+  },
+  {
+    "_id": "694af29c6d691dc96f006ee8",
+    "name": "Super Administrator",
+    "email": "admin@school.com",
+    "password": "$2b$10$3sHvavr2x0vLh3eSE.WeI.76IL5AEZ1d8Ptzj0BVVk112l8aGCchW",
+    "role": "super_admin",
+    "phone": "",
+    "is_active": true,
+    "permissions": [
+      "*"
+    ],
+    "createdAt": "2025-12-23T19:50:52.994Z",
+    "updatedAt": "2026-01-07T04:55:16.303Z",
+    "last_login": "2026-01-07T04:55:16.303Z"
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "_id": "694e770ac0fdea90112b74be",
+    "school_id": null,
+    "name": "Standard Fee Ledger",
+    "type": "fee_ledger",
+    "content": "*Fee Ledger for {student_name}*\nRoll No: {roll_no}\nClass: {class_section}\n\n{history_summary}\n\n*Total Pending Due: {total_due}*\nPlease clear dues immediately.\n- {school_name}",
+    "variables": [
+      "{student_name}",
+      "{roll_no}",
+      "{class_section}",
+      "{history_summary}",
+      "{total_due}",
+      "{school_name}"
+    ],
+    "isActive": true,
+    "createdAt": "2025-12-26T11:52:42.074Z",
+    "updatedAt": "2025-12-26T11:52:42.074Z",
+    "__v": 0
+  },
+  {
+    "_id": "694e770fc0fdea90112b74c2",
+    "school_id": null,
+    "name": "Daily Report - Absent",
+    "type": "attendance_absent",
+    "content": "Dear Parent,\n\nDaily Report for {student_name} ({date}):\nStatus: Absent\n\nYour child is absent from school today. Please ensure regular attendance.\n\n- {school_name}",
+    "variables": [
+      "{student_name}",
+      "{date}",
+      "{school_name}"
+    ],
+    "isActive": true,
+    "createdAt": "2025-12-26T11:52:47.883Z",
+    "updatedAt": "2025-12-26T11:52:47.883Z",
+    "__v": 0
+  },
+  {
+    "_id": "694e7717c0fdea90112b74c5",
+    "school_id": null,
+    "name": "Daily Report - Late",
+    "type": "attendance_late",
+    "content": "Dear Parent,\n\nDaily Report for {student_name} ({date}):\nStatus: Late\n\nYour child arrived late to school today. Please ensure punctuality.\n\n- {school_name}",
+    "variables": [
+      "{student_name}",
+      "{date}",
+      "{school_name}"
+    ],
+    "isActive": true,
+    "createdAt": "2025-12-26T11:52:55.439Z",
+    "updatedAt": "2025-12-26T11:52:55.439Z",
+    "__v": 0
+  },
+  {
+    "_id": "694e771cc0fdea90112b74c8",
+    "school_id": null,
+    "name": "Daily Report - Violation",
+    "type": "violation",
+    "content": "Dear Parent,\n\nDaily Report for {student_name} ({date}):\nStatus: {status}\n\nIssues Reported: {violation_type}\nRemarks: {remarks}\n\nPlease discuss this with your child to improve compliance.\n\n- {school_name}",
+    "variables": [
+      "{student_name}",
+      "{date}",
+      "{status}",
+      "{violation_type}",
+      "{remarks}",
+      "{school_name}"
+    ],
+    "isActive": true,
+    "createdAt": "2025-12-26T11:53:00.402Z",
+    "updatedAt": "2025-12-26T11:53:00.402Z",
+    "__v": 0
+  },
+  {
+    "_id": "694e771fc0fdea90112b74cb",
+    "school_id": null,
+    "name": "Family Fee Reminder",
+    "type": "family_fee",
+    "content": "Assalam-o-Alaikum (Dear {father_name}),\n\nFee Reminder for {month}\n----------------------------------------\n\n{children_list}\n\n----------------------------------------\n*Total Balance: {total_due}*\n----------------------------------------\n\nPlease clear the dues as soon as possible.\n\nRegards,\n{school_name}",
+    "variables": [
+      "{father_name}",
+      "{month}",
+      "{children_list}",
+      "{total_due}",
+      "{school_name}"
+    ],
+    "isActive": true,
+    "createdAt": "2025-12-26T11:53:03.033Z",
+    "updatedAt": "2025-12-26T11:53:03.033Z",
+    "__v": 0
+  },
+  {
+    "_id": "695c059c360952860381186a",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "name": "Daily Report - Absent",
+    "type": "attendance_absent",
+    "content": "Dear Parent,\n\nDaily Report for {student_name} ({date}):\nStatus: Absent\n\nYour child is absent from school today. Please Give us Reason and Make him/her regular.\n\n- Raza Academy Jhang City",
+    "variables": [
+      "{student_name}",
+      "{date}",
+      "{school_name}"
+    ],
+    "isActive": true,
+    "createdAt": "2026-01-05T18:40:28.427Z",
+    "updatedAt": "2026-01-05T18:40:28.427Z",
+    "__v": 0
+  },
+  {
+    "_id": "695e2c66350b35fece4ebb30",
+    "tenant_id": "694a9121904cab4730cf6116",
+    "name": "Daily Report - Absent",
+    "type": "attendance_absent",
+    "content": "Dear Parent,\n\nDaily Report for {student_name} ({date}):\nStatus: Absent\n\nYour child is absent from school today. Please give reason\n\n- {school_name}",
+    "variables": [
+      "{student_name}",
+      "{date}",
+      "{school_name}"
+    ],
+    "isActive": true,
+    "createdAt": "2026-01-07T09:50:30.101Z",
+    "updatedAt": "2026-01-07T10:12:00.185Z",
+    "__v": 0
+  }
+]

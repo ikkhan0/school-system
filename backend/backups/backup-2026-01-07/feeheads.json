@@ -1,0 +1,32 @@
+[
+  {
+    "_id": "694d8db06c4a40b9dd0e0360",
+    "tenant_id": "694a9121904cab4730cf6116",
+    "name": "Examination Fund",
+    "default_amount": 200,
+    "is_active": true,
+    "createdAt": "2025-12-25T19:17:04.981Z",
+    "updatedAt": "2025-12-25T19:17:04.981Z",
+    "__v": 0
+  },
+  {
+    "_id": "6957b08bc1455ef7199e701f",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "name": "Development Cess",
+    "default_amount": 100,
+    "is_active": true,
+    "createdAt": "2026-01-02T11:48:27.163Z",
+    "updatedAt": "2026-01-02T11:48:27.163Z",
+    "__v": 0
+  },
+  {
+    "_id": "6957c8fca9e7cb6f21a5ac3c",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "name": "Academy Development Fund",
+    "default_amount": 100,
+    "is_active": true,
+    "createdAt": "2026-01-02T13:32:44.788Z",
+    "updatedAt": "2026-01-02T13:32:44.788Z",
+    "__v": 0
+  }
+]

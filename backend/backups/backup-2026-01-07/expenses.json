@@ -1,0 +1,30 @@
+[
+  {
+    "_id": "695ca0cdecf90743d5c51270",
+    "expense_head_id": "695ca09addafc1f43524fe89",
+    "name": "Ali Rizwan",
+    "description": "He took Advance and Give it to Ibraheem Yousif",
+    "invoice_number": "1",
+    "date": "2026-01-03T00:00:00.000Z",
+    "amount": 1000,
+    "attachment": null,
+    "tenant_id": "694ba63963993262417a8ef1",
+    "createdAt": "2026-01-06T05:42:37.317Z",
+    "updatedAt": "2026-01-06T05:42:37.317Z",
+    "__v": 0
+  },
+  {
+    "_id": "695d03e13573d778bca66479",
+    "expense_head_id": "695ca138ecf90743d5c51284",
+    "name": "Bulb",
+    "description": "",
+    "invoice_number": "2",
+    "date": "2026-01-06T00:00:00.000Z",
+    "amount": 150,
+    "attachment": null,
+    "tenant_id": "694ba63963993262417a8ef1",
+    "createdAt": "2026-01-06T12:45:21.148Z",
+    "updatedAt": "2026-01-06T12:45:21.148Z",
+    "__v": 0
+  }
+]

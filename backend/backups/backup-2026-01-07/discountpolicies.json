@@ -1,0 +1,544 @@
+[
+  {
+    "_id": "695bcd25b2c760619c522fc7",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "policy_name": "Staff Child Discount",
+    "policy_type": "Staff Child",
+    "discount_percentage": 25,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Discount for children of staff members",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:33.710Z",
+    "updatedAt": "2026-01-05T14:39:33.710Z"
+  },
+  {
+    "_id": "695bcd25b2c760619c522fc8",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "policy_name": "Sibling Discount - 2nd Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 10,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 2,
+      "staff_designations": []
+    },
+    "description": "10% discount for second child in family",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:33.710Z",
+    "updatedAt": "2026-01-05T14:39:33.710Z"
+  },
+  {
+    "_id": "695bcd25b2c760619c522fc9",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "policy_name": "Sibling Discount - 3rd Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 15,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 3,
+      "staff_designations": []
+    },
+    "description": "15% discount for third child in family",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:33.710Z",
+    "updatedAt": "2026-01-05T14:39:33.710Z"
+  },
+  {
+    "_id": "695bcd25b2c760619c522fca",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "policy_name": "Sibling Discount - 4th+ Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 20,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 4,
+      "staff_designations": []
+    },
+    "description": "20% discount for fourth child and beyond",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:33.710Z",
+    "updatedAt": "2026-01-05T14:39:33.710Z"
+  },
+  {
+    "_id": "695bcd25b2c760619c522fcb",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "policy_name": "Merit Scholarship",
+    "policy_type": "Merit",
+    "discount_percentage": 30,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Merit-based scholarship for top performers",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:33.710Z",
+    "updatedAt": "2026-01-05T14:39:33.710Z"
+  },
+  {
+    "_id": "695bcd25b2c760619c522fcc",
+    "school_id": "6947d6d5b39ab7e47f59fc39",
+    "policy_name": "Financial Aid",
+    "policy_type": "Financial Aid",
+    "discount_percentage": 50,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Need-based financial assistance",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:33.710Z",
+    "updatedAt": "2026-01-05T14:39:33.710Z"
+  },
+  {
+    "_id": "695bcd26b2c760619c522fcf",
+    "school_id": "694ba63963993262417a8ef1",
+    "policy_name": "Staff Child Discount",
+    "policy_type": "Staff Child",
+    "discount_percentage": 25,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Discount for children of staff members",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:34.344Z",
+    "updatedAt": "2026-01-05T14:39:34.344Z"
+  },
+  {
+    "_id": "695bcd26b2c760619c522fd0",
+    "school_id": "694ba63963993262417a8ef1",
+    "policy_name": "Sibling Discount - 2nd Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 10,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 2,
+      "staff_designations": []
+    },
+    "description": "10% discount for second child in family",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:34.344Z",
+    "updatedAt": "2026-01-05T14:39:34.344Z"
+  },
+  {
+    "_id": "695bcd26b2c760619c522fd1",
+    "school_id": "694ba63963993262417a8ef1",
+    "policy_name": "Sibling Discount - 3rd Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 15,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 3,
+      "staff_designations": []
+    },
+    "description": "15% discount for third child in family",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:34.344Z",
+    "updatedAt": "2026-01-05T14:39:34.344Z"
+  },
+  {
+    "_id": "695bcd26b2c760619c522fd2",
+    "school_id": "694ba63963993262417a8ef1",
+    "policy_name": "Sibling Discount - 4th+ Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 20,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 4,
+      "staff_designations": []
+    },
+    "description": "20% discount for fourth child and beyond",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:34.344Z",
+    "updatedAt": "2026-01-05T14:39:34.344Z"
+  },
+  {
+    "_id": "695bcd26b2c760619c522fd3",
+    "school_id": "694ba63963993262417a8ef1",
+    "policy_name": "Merit Scholarship",
+    "policy_type": "Merit",
+    "discount_percentage": 30,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Merit-based scholarship for top performers",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:34.344Z",
+    "updatedAt": "2026-01-05T14:39:34.344Z"
+  },
+  {
+    "_id": "695bcd26b2c760619c522fd4",
+    "school_id": "694ba63963993262417a8ef1",
+    "policy_name": "Financial Aid",
+    "policy_type": "Financial Aid",
+    "discount_percentage": 50,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Need-based financial assistance",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:34.344Z",
+    "updatedAt": "2026-01-05T14:39:34.344Z"
+  },
+  {
+    "_id": "695bcd26b2c760619c522fd7",
+    "school_id": "694a9121904cab4730cf6116",
+    "policy_name": "Staff Child Discount",
+    "policy_type": "Staff Child",
+    "discount_percentage": 25,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Discount for children of staff members",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:34.966Z",
+    "updatedAt": "2026-01-05T14:39:34.966Z"
+  },
+  {
+    "_id": "695bcd26b2c760619c522fd8",
+    "school_id": "694a9121904cab4730cf6116",
+    "policy_name": "Sibling Discount - 2nd Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 10,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 2,
+      "staff_designations": []
+    },
+    "description": "10% discount for second child in family",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:34.966Z",
+    "updatedAt": "2026-01-05T14:39:34.966Z"
+  },
+  {
+    "_id": "695bcd26b2c760619c522fd9",
+    "school_id": "694a9121904cab4730cf6116",
+    "policy_name": "Sibling Discount - 3rd Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 15,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 3,
+      "staff_designations": []
+    },
+    "description": "15% discount for third child in family",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:34.966Z",
+    "updatedAt": "2026-01-05T14:39:34.966Z"
+  },
+  {
+    "_id": "695bcd26b2c760619c522fda",
+    "school_id": "694a9121904cab4730cf6116",
+    "policy_name": "Sibling Discount - 4th+ Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 20,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 4,
+      "staff_designations": []
+    },
+    "description": "20% discount for fourth child and beyond",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:34.966Z",
+    "updatedAt": "2026-01-05T14:39:34.966Z"
+  },
+  {
+    "_id": "695bcd26b2c760619c522fdb",
+    "school_id": "694a9121904cab4730cf6116",
+    "policy_name": "Merit Scholarship",
+    "policy_type": "Merit",
+    "discount_percentage": 30,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Merit-based scholarship for top performers",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:34.966Z",
+    "updatedAt": "2026-01-05T14:39:34.966Z"
+  },
+  {
+    "_id": "695bcd26b2c760619c522fdc",
+    "school_id": "694a9121904cab4730cf6116",
+    "policy_name": "Financial Aid",
+    "policy_type": "Financial Aid",
+    "discount_percentage": 50,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Need-based financial assistance",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:34.966Z",
+    "updatedAt": "2026-01-05T14:39:34.966Z"
+  },
+  {
+    "_id": "695bcd27b2c760619c522fdf",
+    "school_id": "694aaef107661a2792c15aac",
+    "policy_name": "Staff Child Discount",
+    "policy_type": "Staff Child",
+    "discount_percentage": 25,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Discount for children of staff members",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:35.549Z",
+    "updatedAt": "2026-01-05T14:39:35.549Z"
+  },
+  {
+    "_id": "695bcd27b2c760619c522fe0",
+    "school_id": "694aaef107661a2792c15aac",
+    "policy_name": "Sibling Discount - 2nd Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 10,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 2,
+      "staff_designations": []
+    },
+    "description": "10% discount for second child in family",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:35.549Z",
+    "updatedAt": "2026-01-05T14:39:35.549Z"
+  },
+  {
+    "_id": "695bcd27b2c760619c522fe1",
+    "school_id": "694aaef107661a2792c15aac",
+    "policy_name": "Sibling Discount - 3rd Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 15,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 3,
+      "staff_designations": []
+    },
+    "description": "15% discount for third child in family",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:35.549Z",
+    "updatedAt": "2026-01-05T14:39:35.549Z"
+  },
+  {
+    "_id": "695bcd27b2c760619c522fe2",
+    "school_id": "694aaef107661a2792c15aac",
+    "policy_name": "Sibling Discount - 4th+ Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 20,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 4,
+      "staff_designations": []
+    },
+    "description": "20% discount for fourth child and beyond",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:35.549Z",
+    "updatedAt": "2026-01-05T14:39:35.549Z"
+  },
+  {
+    "_id": "695bcd27b2c760619c522fe3",
+    "school_id": "694aaef107661a2792c15aac",
+    "policy_name": "Merit Scholarship",
+    "policy_type": "Merit",
+    "discount_percentage": 30,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Merit-based scholarship for top performers",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:35.549Z",
+    "updatedAt": "2026-01-05T14:39:35.549Z"
+  },
+  {
+    "_id": "695bcd27b2c760619c522fe4",
+    "school_id": "694aaef107661a2792c15aac",
+    "policy_name": "Financial Aid",
+    "policy_type": "Financial Aid",
+    "discount_percentage": 50,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Need-based financial assistance",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:35.549Z",
+    "updatedAt": "2026-01-05T14:39:35.549Z"
+  },
+  {
+    "_id": "695bcd28b2c760619c522fe7",
+    "school_id": "695b84c942183b9ddca6b9f9",
+    "policy_name": "Staff Child Discount",
+    "policy_type": "Staff Child",
+    "discount_percentage": 25,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Discount for children of staff members",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:36.094Z",
+    "updatedAt": "2026-01-05T14:39:36.094Z"
+  },
+  {
+    "_id": "695bcd28b2c760619c522fe8",
+    "school_id": "695b84c942183b9ddca6b9f9",
+    "policy_name": "Sibling Discount - 2nd Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 10,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 2,
+      "staff_designations": []
+    },
+    "description": "10% discount for second child in family",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:36.094Z",
+    "updatedAt": "2026-01-05T14:39:36.094Z"
+  },
+  {
+    "_id": "695bcd28b2c760619c522fe9",
+    "school_id": "695b84c942183b9ddca6b9f9",
+    "policy_name": "Sibling Discount - 3rd Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 15,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 3,
+      "staff_designations": []
+    },
+    "description": "15% discount for third child in family",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:36.094Z",
+    "updatedAt": "2026-01-05T14:39:36.094Z"
+  },
+  {
+    "_id": "695bcd28b2c760619c522fea",
+    "school_id": "695b84c942183b9ddca6b9f9",
+    "policy_name": "Sibling Discount - 4th+ Child",
+    "policy_type": "Sibling",
+    "discount_percentage": 20,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "sibling_position": 4,
+      "staff_designations": []
+    },
+    "description": "20% discount for fourth child and beyond",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:36.095Z",
+    "updatedAt": "2026-01-05T14:39:36.095Z"
+  },
+  {
+    "_id": "695bcd28b2c760619c522feb",
+    "school_id": "695b84c942183b9ddca6b9f9",
+    "policy_name": "Merit Scholarship",
+    "policy_type": "Merit",
+    "discount_percentage": 30,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Merit-based scholarship for top performers",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:36.095Z",
+    "updatedAt": "2026-01-05T14:39:36.095Z"
+  },
+  {
+    "_id": "695bcd28b2c760619c522fec",
+    "school_id": "695b84c942183b9ddca6b9f9",
+    "policy_name": "Financial Aid",
+    "policy_type": "Financial Aid",
+    "discount_percentage": 50,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "Need-based financial assistance",
+    "__v": 0,
+    "createdAt": "2026-01-05T14:39:36.095Z",
+    "updatedAt": "2026-01-05T14:39:36.095Z"
+  },
+  {
+    "_id": "695bce93a4ddf36ed4a66d99",
+    "policy_name": "Staff Child",
+    "policy_type": "Staff Child",
+    "discount_percentage": 30,
+    "discount_amount": 0,
+    "discount_mode": "Percentage",
+    "is_active": true,
+    "conditions": {
+      "staff_designations": []
+    },
+    "description": "",
+    "created_by": "6947d6d6b39ab7e47f59fc3b",
+    "createdAt": "2026-01-05T14:45:39.191Z",
+    "updatedAt": "2026-01-05T14:45:39.191Z",
+    "__v": 0
+  }
+]

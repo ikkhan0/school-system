@@ -1,0 +1,29 @@
+{
+  "date": "2026-01-07T14:06:33.102Z",
+  "collections": 22,
+  "totalDocuments": 4413,
+  "collections_list": [
+    "results",
+    "students",
+    "staffs",
+    "superadmins",
+    "fees",
+    "classes",
+    "discountpolicies",
+    "salaries",
+    "feeheads",
+    "schools",
+    "whatsapptemplates",
+    "tenants",
+    "dailylogs",
+    "expenses",
+    "users",
+    "families",
+    "expenseheads",
+    "staffattendances",
+    "academicsessions",
+    "exams",
+    "subjects",
+    "examresults"
+  ]
+}

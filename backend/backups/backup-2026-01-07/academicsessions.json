@@ -1,0 +1,82 @@
+[
+  {
+    "_id": "694d6ea764e34bcc08190ff8",
+    "tenant_id": "694a9121904cab4730cf6116",
+    "session_name": "2024-2025",
+    "start_date": "2024-04-01T00:00:00.000Z",
+    "end_date": "2025-03-31T00:00:00.000Z",
+    "is_active": true,
+    "is_current": true,
+    "is_locked": false,
+    "locked_modules": {
+      "attendance": false,
+      "fees": false,
+      "marks": false,
+      "admissions": false
+    },
+    "notes": "Auto-created by migration",
+    "createdAt": "2025-12-25T17:04:39.393Z",
+    "updatedAt": "2025-12-25T17:04:39.393Z",
+    "__v": 0
+  },
+  {
+    "_id": "694d6ea864e34bcc08190ffb",
+    "tenant_id": "694ba63963993262417a8ef1",
+    "session_name": "2025-2026",
+    "start_date": "2025-04-01T00:00:00.000Z",
+    "end_date": "2026-03-31T00:00:00.000Z",
+    "is_active": true,
+    "is_current": true,
+    "is_locked": false,
+    "locked_modules": {
+      "attendance": false,
+      "fees": false,
+      "marks": false,
+      "admissions": false
+    },
+    "notes": "Auto-created by migration",
+    "createdAt": "2025-12-25T17:04:40.216Z",
+    "updatedAt": "2025-12-25T17:25:42.842Z",
+    "__v": 0
+  },
+  {
+    "_id": "694d71ae74fc4c176b50c6f0",
+    "tenant_id": "694a9121904cab4730cf6116",
+    "session_name": "2025-2026",
+    "start_date": "2026-03-01T00:00:00.000Z",
+    "end_date": "2027-03-31T00:00:00.000Z",
+    "is_active": true,
+    "is_current": false,
+    "is_locked": false,
+    "locked_modules": {
+      "attendance": false,
+      "fees": false,
+      "marks": false,
+      "admissions": false
+    },
+    "created_by": "6947d6d6b39ab7e47f59fc3b",
+    "notes": "",
+    "createdAt": "2025-12-25T17:17:34.471Z",
+    "updatedAt": "2025-12-25T17:17:34.471Z",
+    "__v": 0
+  },
+  {
+    "_id": "695c0768d2aa5eb9da02c02e",
+    "tenant_id": "694aaef107661a2792c15aac",
+    "session_name": "2025-2026",
+    "start_date": "2025-04-01T00:00:00.000Z",
+    "end_date": "2026-03-31T00:00:00.000Z",
+    "is_active": true,
+    "is_current": false,
+    "is_locked": false,
+    "locked_modules": {
+      "attendance": false,
+      "fees": false,
+      "marks": false,
+      "admissions": false
+    },
+    "createdAt": "2026-01-05T18:48:08.190Z",
+    "updatedAt": "2026-01-05T18:48:08.190Z",
+    "__v": 0
+  }
+]
