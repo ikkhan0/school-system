@@ -592,51 +592,26 @@ const MarksEntry = () => {
                             </div>
                         </div>
 
-                        {/* Two Column Layout */}
+                        {/* Two Column Layout - Newspaper Style */}
                         <div className="two-column-layout">
-                            {/* Column 1 */}
-                            <div className="column">
-                                <table className="award-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Roll No</th>
-                                            <th>Student Name</th>
-                                            <th>Marks</th>
+                            <table className="award-table">
+                                <thead>
+                                    <tr>
+                                        <th>Roll No</th>
+                                        <th>Student Name</th>
+                                        <th>Marks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {sortedStudents.map((student) => (
+                                        <tr key={student._id}>
+                                            <td>{student.roll_no}</td>
+                                            <td>{student.full_name}</td>
+                                            <td className="marks-cell"></td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        {sortedStudents.slice(0, Math.ceil(sortedStudents.length / 2)).map((student) => (
-                                            <tr key={student._id}>
-                                                <td>{student.roll_no}</td>
-                                                <td>{student.full_name}</td>
-                                                <td className="marks-cell"></td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {/* Column 2 */}
-                            <div className="column">
-                                <table className="award-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Roll No</th>
-                                            <th>Student Name</th>
-                                            <th>Marks</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {sortedStudents.slice(Math.ceil(sortedStudents.length / 2)).map((student) => (
-                                            <tr key={student._id}>
-                                                <td>{student.roll_no}</td>
-                                                <td>{student.full_name}</td>
-                                                <td className="marks-cell"></td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 )}
@@ -718,16 +693,11 @@ const MarksEntry = () => {
                         margin: 2px 0;
                     }
 
-                    /* Two column layout */
+                    /* Two column layout - Newspaper style */
                     .two-column-layout {
-                        display: flex;
-                        gap: 20px;
-                        justify-content: space-between;
-                    }
-
-                    .column {
-                        flex: 1;
-                        width: 48%;
+                        column-count: 2;
+                        column-gap: 20px;
+                        column-fill: auto;
                     }
 
                     /* Award table styles */
@@ -735,6 +705,12 @@ const MarksEntry = () => {
                         width: 100%;
                         border-collapse: collapse;
                         font-size: 10px;
+                        break-inside: avoid;
+                    }
+
+                    .award-table thead {
+                        break-inside: avoid;
+                        break-after: avoid;
                     }
 
                     .award-table th {
