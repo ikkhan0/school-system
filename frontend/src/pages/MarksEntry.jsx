@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Save } from 'lucide-react';
+import { Save, Printer } from 'lucide-react';
+import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import API_URL from '../config';
 
@@ -20,6 +21,8 @@ const MarksEntry = () => {
     const [totalMarks, setTotalMarks] = useState(100);
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [sortBy, setSortBy] = useState('name'); // 'name' or 'id'
+    const [schoolInfo, setSchoolInfo] = useState(null);
 
     useEffect(() => {
         if (!user) return;
@@ -46,6 +49,17 @@ const MarksEntry = () => {
                     setSelectedClass(firstClass._id);
                     setSelectedSection(firstClass.sections[0] || 'A');
                 }
+            });
+
+        // Fetch School Information
+        axios.get(`${API_URL}/api/school`, {
+            headers: { Authorization: `Bearer ${user.token}` }
+        })
+            .then(response => {
+                setSchoolInfo(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching school info:', error);
             });
     }, [user]);
 
@@ -351,13 +365,30 @@ const MarksEntry = () => {
         }
     };
 
+    // Sort students based on selected sort order
+    const sortedStudents = [...students].sort((a, b) => {
+        if (sortBy === 'name') {
+            return a.full_name.localeCompare(b.full_name);
+        } else {
+            // Sort by roll number (ID)
+            const rollA = parseInt(a.roll_no) || 0;
+            const rollB = parseInt(b.roll_no) || 0;
+            return rollA - rollB;
+        }
+    });
+
+    // Handle print blank award list
+    const handlePrintBlankList = () => {
+        window.print();
+    };
+
     return (
         <div className="max-w-6xl mx-auto p-3 sm:p-4">
             <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">{t('exams:marks.title')}</h1>
 
             {/* Selection Controls */}
             <div className="bg-white p-4 sm:p-6 rounded shadow mb-4 sm:mb-6 space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4">
                     <div>
                         <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">{t('exams:marks.examLabel')}</label>
                         <select
@@ -441,9 +472,29 @@ const MarksEntry = () => {
                             className="w-full border p-2 rounded text-sm sm:text-base"
                         />
                     </div>
+
+                    <div>
+                        <label className="block text-xs sm:text-sm font-bold mb-1 sm:mb-2">Sort By</label>
+                        <select
+                            value={sortBy}
+                            onChange={e => setSortBy(e.target.value)}
+                            className="w-full border p-2 rounded text-sm sm:text-base"
+                        >
+                            <option value="name">Name</option>
+                            <option value="id">Roll Number</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div className="flex justify-end mt-4">
+                <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 mt-4">
+                    <button
+                        onClick={handlePrintBlankList}
+                        disabled={loading || students.length === 0}
+                        className="bg-green-600 text-white px-4 py-2 sm:px-6 sm:py-2 rounded flex items-center gap-2 hover:bg-green-700 disabled:bg-gray-400 text-sm sm:text-base w-full sm:w-auto justify-center"
+                    >
+                        <Printer size={16} className="sm:w-[18px] sm:h-[18px]" />
+                        Print Blank List
+                    </button>
                     <button
                         onClick={handleSave}
                         disabled={saving || loading}
@@ -476,7 +527,7 @@ const MarksEntry = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {students.map((student, index) => (
+                            {sortedStudents.map((student, index) => (
                                 <tr key={student._id} className="border-t hover:bg-gray-50">
                                     <td className="p-2 sm:p-3 text-xs sm:text-sm">{index + 1}</td>
                                     <td className="p-2 sm:p-3 font-semibold text-xs sm:text-sm">{student.roll_no}</td>
@@ -527,6 +578,70 @@ const MarksEntry = () => {
                 </div>
             )}
 
+            {/* Blank Award List - Print Only */}
+            <div className="print-only">
+                {!loading && sortedStudents.length > 0 && (
+                    <div className="print-container">
+                        {/* Header */}
+                        <div className="print-header">
+                            <h1 className="school-name">{schoolInfo?.name || 'School Name'}</h1>
+                            <div className="exam-details">
+                                <p><strong>Class:</strong> {classes.find(c => c._id === selectedClass)?.name} - {selectedSection}</p>
+                                <p><strong>Subject:</strong> {selectedSubject}</p>
+                                <p><strong>Total Marks:</strong> {totalMarks}</p>
+                            </div>
+                        </div>
+
+                        {/* Two Column Layout */}
+                        <div className="two-column-layout">
+                            {/* Column 1 */}
+                            <div className="column">
+                                <table className="award-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Roll No</th>
+                                            <th>Student Name</th>
+                                            <th>Marks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {sortedStudents.slice(0, Math.ceil(sortedStudents.length / 2)).map((student) => (
+                                            <tr key={student._id}>
+                                                <td>{student.roll_no}</td>
+                                                <td>{student.full_name}</td>
+                                                <td className="marks-cell"></td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Column 2 */}
+                            <div className="column">
+                                <table className="award-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Roll No</th>
+                                            <th>Student Name</th>
+                                            <th>Marks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {sortedStudents.slice(Math.ceil(sortedStudents.length / 2)).map((student) => (
+                                            <tr key={student._id}>
+                                                <td>{student.roll_no}</td>
+                                                <td>{student.full_name}</td>
+                                                <td className="marks-cell"></td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
             {/* Instructions */}
             <div className="mt-4 sm:mt-6 bg-blue-50 p-3 sm:p-4 rounded border border-blue-200">
                 <h3 className="font-bold text-blue-800 mb-2 text-sm sm:text-base">Instructions:</h3>
@@ -538,6 +653,123 @@ const MarksEntry = () => {
                     <li>You can edit and re-save marks anytime</li>
                 </ul>
             </div>
+
+            {/* Print Styles */}
+            <style>{`
+                /* Hide print-only content on screen */
+                .print-only {
+                    display: none;
+                }
+
+                @media print {
+                    /* Hide everything except print content */
+                    body * {
+                        visibility: hidden;
+                    }
+
+                    .print-only,
+                    .print-only * {
+                        visibility: visible;
+                    }
+
+                    .print-only {
+                        display: block;
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                    }
+
+                    /* Page setup */
+                    @page {
+                        size: A4 portrait;
+                        margin: 15mm;
+                    }
+
+                    /* Print container */
+                    .print-container {
+                        width: 100%;
+                        font-family: Arial, sans-serif;
+                    }
+
+                    /* Header styles */
+                    .print-header {
+                        text-align: center;
+                        margin-bottom: 20px;
+                        border-bottom: 2px solid #000;
+                        padding-bottom: 10px;
+                    }
+
+                    .school-name {
+                        font-size: 24px;
+                        font-weight: bold;
+                        margin: 0 0 10px 0;
+                        text-transform: uppercase;
+                    }
+
+                    .exam-details {
+                        display: flex;
+                        justify-content: center;
+                        gap: 20px;
+                        font-size: 12px;
+                    }
+
+                    .exam-details p {
+                        margin: 2px 0;
+                    }
+
+                    /* Two column layout */
+                    .two-column-layout {
+                        display: flex;
+                        gap: 20px;
+                        justify-content: space-between;
+                    }
+
+                    .column {
+                        flex: 1;
+                        width: 48%;
+                    }
+
+                    /* Award table styles */
+                    .award-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-size: 10px;
+                    }
+
+                    .award-table th {
+                        background-color: #f0f0f0;
+                        border: 1px solid #000;
+                        padding: 6px 4px;
+                        font-weight: bold;
+                        text-align: left;
+                    }
+
+                    .award-table td {
+                        border: 1px solid #000;
+                        padding: 8px 4px;
+                        text-align: left;
+                    }
+
+                    .award-table th:first-child,
+                    .award-table td:first-child {
+                        width: 60px;
+                        text-align: center;
+                    }
+
+                    .award-table th:last-child,
+                    .award-table td:last-child {
+                        width: 60px;
+                        text-align: center;
+                    }
+
+                    /* Extra space for manual writing */
+                    .marks-cell {
+                        height: 25px;
+                        background-color: #fff;
+                    }
+                }
+            `}</style>
         </div>
     );
 };
