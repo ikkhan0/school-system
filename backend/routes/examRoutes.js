@@ -199,12 +199,17 @@ router.post('/marks', protect, checkPermission('exams.results'), async (req, res
 
             // Update or Add Subject
             const subIndex = result.subjects.findIndex(s => s.subject_name === subject);
+            const status = data.status || 'Present';
+            // If student is not present, obtained marks should be treated as 0 effectively, 
+            // but we store the value sent (which should be 0 from frontend if not present)
+
             if (subIndex > -1) {
                 console.log(`Updating existing subject ${subject} at index ${subIndex}`);
                 result.subjects[subIndex].obtained_marks = data.obtained_marks;
                 result.subjects[subIndex].total_marks = data.total_marks;
                 result.subjects[subIndex].passing_marks = passing_marks;
                 result.subjects[subIndex].passing_percentage = passing_percentage;
+                result.subjects[subIndex].status = status;
             } else {
                 console.log(`Adding new subject ${subject}`);
                 result.subjects.push({
@@ -212,7 +217,8 @@ router.post('/marks', protect, checkPermission('exams.results'), async (req, res
                     obtained_marks: data.obtained_marks,
                     total_marks: data.total_marks,
                     passing_marks: passing_marks,
-                    passing_percentage: passing_percentage
+                    passing_percentage: passing_percentage,
+                    status: status
                 });
             }
 

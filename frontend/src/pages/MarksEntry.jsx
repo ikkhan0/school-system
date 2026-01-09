@@ -18,6 +18,7 @@ const MarksEntry = () => {
 
     const [students, setStudents] = useState([]);
     const [marks, setMarks] = useState({}); // { studentId: obtainedMarks }
+    const [statuses, setStatuses] = useState({}); // { studentId: 'Present' | 'Absent' | 'Leave' | 'Sick' }
     const [totalMarks, setTotalMarks] = useState(100);
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -212,6 +213,7 @@ const MarksEntry = () => {
 
                 // Extract marks for the selected subject
                 const existingMarks = {};
+                const existingStatuses = {};
 
                 results.forEach(result => {
                     console.log('Processing result for student:', result.student_id);
@@ -221,8 +223,9 @@ const MarksEntry = () => {
                         // Handle both populated and non-populated student_id
                         const studentId = result.student_id._id || result.student_id;
                         existingMarks[studentId] = subjectData.obtained_marks;
+                        existingStatuses[studentId] = subjectData.status || 'Present';
 
-                        console.log(`Found marks for student ${studentId}:`, subjectData.obtained_marks);
+                        console.log(`Found marks for student ${studentId}:`, subjectData.obtained_marks, subjectData.status);
 
                         // Also update total marks if available
                         if (subjectData.total_marks) {
@@ -233,11 +236,13 @@ const MarksEntry = () => {
 
                 console.log('Setting marks:', existingMarks);
                 setMarks(existingMarks);
+                setStatuses(existingStatuses);
                 setLoading(false);
             })
             .catch(err => {
                 console.error('Error loading marks:', err);
                 setMarks({}); // Clear marks on error
+                setStatuses({});
                 setLoading(false);
             });
     }, [examId, selectedClass, selectedSection, selectedSubject, students, user, classes]);
@@ -317,6 +322,7 @@ const MarksEntry = () => {
         const marksData = students.map(s => ({
             student_id: s._id,
             obtained_marks: Number(marks[s._id] || 0),
+            status: statuses[s._id] || 'Present',
             total_marks: Number(totalMarks)
         }));
 
@@ -523,6 +529,7 @@ const MarksEntry = () => {
                                 <th className="p-2 sm:p-3 text-left text-xs sm:text-sm">#</th>
                                 <th className="p-2 sm:p-3 text-left text-xs sm:text-sm">Roll No</th>
                                 <th className="p-2 sm:p-3 text-left text-xs sm:text-sm">Student Name</th>
+                                <th className="p-2 sm:p-3 text-center text-xs sm:text-sm w-32">Status</th>
                                 <th className="p-2 sm:p-3 text-center text-xs sm:text-sm">Obtained Marks (out of {totalMarks})</th>
                             </tr>
                         </thead>
@@ -533,6 +540,28 @@ const MarksEntry = () => {
                                     <td className="p-2 sm:p-3 font-semibold text-xs sm:text-sm">{student.roll_no}</td>
                                     <td className="p-2 sm:p-3 text-xs sm:text-sm">{student.full_name}</td>
                                     <td className="p-2 sm:p-3">
+                                        <select
+                                            value={statuses[student._id] || 'Present'}
+                                            onChange={e => {
+                                                const newStatus = e.target.value;
+                                                setStatuses(prev => ({ ...prev, [student._id]: newStatus }));
+                                                // If not present, set marks to 0 automatically
+                                                if (newStatus !== 'Present') {
+                                                    setMarks(prev => ({ ...prev, [student._id]: 0 }));
+                                                }
+                                            }}
+                                            className={`border p-1.5 rounded text-sm font-semibold ${(statuses[student._id] || 'Present') === 'Present' ? 'bg-green-50 text-green-700 border-green-200' :
+                                                (statuses[student._id] === 'Absent') ? 'bg-red-50 text-red-700 border-red-200' :
+                                                    'bg-yellow-50 text-yellow-700 border-yellow-200'
+                                                }`}
+                                        >
+                                            <option value="Present">Present</option>
+                                            <option value="Absent">Absent</option>
+                                            <option value="Leave">Leave</option>
+                                            <option value="Sick">Sick</option>
+                                        </select>
+                                    </td>
+                                    <td className="p-2 sm:p-3">
                                         <input
                                             id={`mark-input-${index}`}
                                             type="number"
@@ -541,7 +570,9 @@ const MarksEntry = () => {
                                             value={marks[student._id] || ''}
                                             onChange={e => handleMarkChange(student._id, e.target.value)}
                                             onKeyDown={e => handleKeyDown(e, index)}
-                                            className="w-full border p-1.5 sm:p-2 rounded text-center font-bold text-base sm:text-lg"
+                                            disabled={(statuses[student._id] || 'Present') !== 'Present'}
+                                            className={`w-full border p-1.5 sm:p-2 rounded text-center font-bold text-base sm:text-lg ${(statuses[student._id] || 'Present') !== 'Present' ? 'bg-gray-100 text-gray-400' : ''
+                                                }`}
                                             placeholder="0"
                                         />
                                     </td>

@@ -26,7 +26,12 @@ const examResultSchema = mongoose.Schema({
     subjects: [{
         subject_name: { type: String, required: true },
         total_marks: { type: Number, required: true },
-        obtained_marks: { type: Number, required: true }
+        obtained_marks: { type: Number, required: true },
+        status: {
+            type: String,
+            enum: ['Present', 'Absent', 'Leave', 'Sick'],
+            default: 'Present'
+        }
     }],
 
     total_obtained: { type: Number, required: true },

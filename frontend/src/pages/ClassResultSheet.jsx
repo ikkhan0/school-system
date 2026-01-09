@@ -142,9 +142,29 @@ const ClassResultSheet = () => {
                 'Student Name': result.student_id?.full_name || '',
             };
 
-            // Add subject-wise marks
-            result.subjects.forEach(sub => {
-                row[`${sub.subject_name} (${sub.total_marks})`] = sub.obtained_marks;
+            // Collect all unique subjects first (same logic as table)
+            const allSubjectsMap = new Map();
+            results.forEach(r => {
+                r.subjects.forEach(s => {
+                    if (!allSubjectsMap.has(s.subject_name)) {
+                        allSubjectsMap.set(s.subject_name, s.total_marks);
+                    }
+                });
+            });
+            const uniqueSubjects = Array.from(allSubjectsMap.keys());
+
+            // Add subject-wise marks aligned
+            uniqueSubjects.forEach(subjectName => {
+                const sub = result.subjects.find(s => s.subject_name === subjectName);
+                if (sub) {
+                    if (sub.status && sub.status !== 'Present') {
+                        row[`${subjectName} (${allSubjectsMap.get(subjectName)})`] = sub.status; // Export 'Absent', 'Leave', etc.
+                    } else {
+                        row[`${subjectName} (${allSubjectsMap.get(subjectName)})`] = sub.obtained_marks;
+                    }
+                } else {
+                    row[`${subjectName} (${allSubjectsMap.get(subjectName)})`] = '-';
+                }
             });
 
             row['Total Obtained'] = result.total_obtained;
@@ -238,12 +258,21 @@ const ClassResultSheet = () => {
         // Prepare table data
         const headers = ['Pos', 'Roll No', 'Student Name'];
 
-        // Add subject headers
-        if (sortedResults.length > 0) {
-            sortedResults[0].subjects.forEach(sub => {
-                headers.push(`${sub.subject_name}\n(${sub.total_marks})`);
+        // Collect all unique subjects
+        const allSubjectsMap = new Map();
+        sortedResults.forEach(r => {
+            r.subjects.forEach(s => {
+                if (!allSubjectsMap.has(s.subject_name)) {
+                    allSubjectsMap.set(s.subject_name, s.total_marks);
+                }
             });
-        }
+        });
+        const uniqueSubjects = Array.from(allSubjectsMap.keys());
+
+        // Add subject headers aligned
+        uniqueSubjects.forEach(subjectName => {
+            headers.push(`${subjectName}\n(${allSubjectsMap.get(subjectName)})`);
+        });
 
         headers.push('Total', '%', 'Grade');
 
@@ -254,9 +283,18 @@ const ClassResultSheet = () => {
                 result.student_id?.full_name || '',
             ];
 
-            // Add subject marks
-            result.subjects.forEach(sub => {
-                row.push(sub.obtained_marks);
+            // Add subject marks aligned
+            uniqueSubjects.forEach(subjectName => {
+                const sub = result.subjects.find(s => s.subject_name === subjectName);
+                if (sub) {
+                    if (sub.status && sub.status !== 'Present') {
+                        row.push(sub.status.charAt(0)); // A, L, S
+                    } else {
+                        row.push(sub.obtained_marks);
+                    }
+                } else {
+                    row.push('-');
+                }
             });
 
             row.push(result.total_obtained);
@@ -445,43 +483,90 @@ const ClassResultSheet = () => {
                                             <SortIcon column="name" />
                                         </div>
                                     </th>
-                                    {results[0]?.subjects.map((sub, idx) => (
-                                        <th key={idx} className="p-3 text-center">
-                                            {sub.subject_name}
-                                            <br />
-                                            <span className="text-xs text-gray-500">({sub.total_marks})</span>
-                                        </th>
-                                    ))}
+                                    {/* Dynamic Subject Headers - Get unique subjects from all results */}
+                                    {(() => {
+                                        // Collect all unique subjects from all students to ensure header is complete
+                                        const allSubjectsMap = new Map();
+                                        results.forEach(r => {
+                                            r.subjects.forEach(s => {
+                                                if (!allSubjectsMap.has(s.subject_name)) {
+                                                    allSubjectsMap.set(s.subject_name, s.total_marks);
+                                                }
+                                            });
+                                        });
+                                        const uniqueSubjects = Array.from(allSubjectsMap.keys());
+
+                                        return uniqueSubjects.map((subjectName, idx) => (
+                                            <th key={idx} className="p-3 text-center">
+                                                {subjectName}
+                                                <br />
+                                                <span className="text-xs text-gray-500">({allSubjectsMap.get(subjectName)})</span>
+                                            </th>
+                                        ));
+                                    })()}
                                     <th className="p-3 text-center">Total</th>
                                     <th className="p-3 text-center">%</th>
                                     <th className="p-3 text-center">Grade</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {getSortedResults().map((result, index) => (
-                                    <tr key={result._id} className={`border - t ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover: bg - blue - 50`}>
-                                        <td className="p-3 font-bold text-blue-600">{result.position}</td>
-                                        <td className="p-3">{result.student_id?.roll_no}</td>
-                                        <td className="p-3 font-semibold">{result.student_id?.full_name}</td>
-                                        {result.subjects.map((sub, idx) => (
-                                            <td key={idx} className="p-3 text-center">
-                                                {sub.obtained_marks}
+                                {getSortedResults().map((result, index) => {
+                                    // Calculate unique subjects again for the row rendering order
+                                    const allSubjectsMap = new Map();
+                                    results.forEach(r => {
+                                        r.subjects.forEach(s => {
+                                            if (!allSubjectsMap.has(s.subject_name)) {
+                                                allSubjectsMap.set(s.subject_name, s.total_marks);
+                                            }
+                                        });
+                                    });
+                                    const uniqueSubjects = Array.from(allSubjectsMap.keys());
+
+                                    return (
+                                        <tr key={result._id} className={`border-t ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50`}>
+                                            <td className="p-3 font-bold text-blue-600">{result.position}</td>
+                                            <td className="p-3">{result.student_id?.roll_no}</td>
+                                            <td className="p-3 font-semibold">{result.student_id?.full_name}</td>
+
+                                            {/* Render marks aligned with headers */}
+                                            {uniqueSubjects.map((subjectName, idx) => {
+                                                const subjectData = result.subjects.find(s => s.subject_name === subjectName);
+                                                // Determine what to display: Marks, Status Code, or '-'
+                                                let displayValue = '-';
+                                                let cellClass = "";
+
+                                                if (subjectData) {
+                                                    if (subjectData.status && subjectData.status !== 'Present') {
+                                                        // Display status code (A, L, S) based on status
+                                                        displayValue = subjectData.status.charAt(0); // A, L, S
+                                                        cellClass = "text-red-500 font-bold";
+                                                    } else {
+                                                        displayValue = subjectData.obtained_marks;
+                                                    }
+                                                }
+
+                                                return (
+                                                    <td key={idx} className={`p-3 text-center ${cellClass}`}>
+                                                        {displayValue}
+                                                    </td>
+                                                );
+                                            })}
+
+                                            <td className="p-3 text-center font-bold">{result.total_obtained}/{result.total_max}</td>
+                                            <td className="p-3 text-center font-bold text-green-600">{result.percentage.toFixed(2)}%</td>
+                                            <td className="p-3 text-center">
+                                                <span className={`px-2 py-1 rounded font-bold ${result.grade === 'A+' || result.grade === 'A' ? 'bg-green-100 text-green-800' :
+                                                    result.grade === 'B' ? 'bg-blue-100 text-blue-800' :
+                                                        result.grade === 'C' ? 'bg-yellow-100 text-yellow-800' :
+                                                            result.grade === 'D' ? 'bg-orange-100 text-orange-800' :
+                                                                'bg-red-100 text-red-800'
+                                                    } `}>
+                                                    {result.grade}
+                                                </span>
                                             </td>
-                                        ))}
-                                        <td className="p-3 text-center font-bold">{result.total_obtained}/{result.total_max}</td>
-                                        <td className="p-3 text-center font-bold text-green-600">{result.percentage.toFixed(2)}%</td>
-                                        <td className="p-3 text-center">
-                                            <span className={`px - 2 py - 1 rounded font - bold ${result.grade === 'A+' || result.grade === 'A' ? 'bg-green-100 text-green-800' :
-                                                result.grade === 'B' ? 'bg-blue-100 text-blue-800' :
-                                                    result.grade === 'C' ? 'bg-yellow-100 text-yellow-800' :
-                                                        result.grade === 'D' ? 'bg-orange-100 text-orange-800' :
-                                                            'bg-red-100 text-red-800'
-                                                } `}>
-                                                {result.grade}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
