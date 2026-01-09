@@ -141,16 +141,14 @@ router.get('/charts', protect, checkPermission('reports.view'), async (req, res)
             },
             {
                 $group: {
-                    _id: {
-                        week: { $week: '$date' }
-                    },
+                    _id: { $week: '$date' }, // Simplified group key
                     present: {
                         $sum: { $cond: [{ $eq: ['$status', 'Present'] }, 1, 0] }
                     },
                     total: { $sum: 1 }
                 }
             },
-            { $sort: { '_id.week': 1 } }
+            { $sort: { _id: 1 } }
         ]);
 
         const attendance = attendanceData.map((item, index) => ({
