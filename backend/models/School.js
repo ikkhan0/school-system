@@ -38,6 +38,11 @@ const schoolSchema = mongoose.Schema({
         fee_voucher_note: {
             type: String,
             default: ''
+        },
+        // Module Feature Flags (SaaS Control)
+        modules: {
+            inventory: { type: Boolean, default: true }, // Default enabled for now for testing
+            accounting: { type: Boolean, default: false }
         }
     }
 }, { timestamps: true });

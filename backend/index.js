@@ -63,6 +63,7 @@ app.use('/api/funds', require('./routes/fundRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/student-fees', require('./routes/studentFeeRoutes'));
 app.use('/api/enrollments', require('./routes/enrollmentRoutes'));
+app.use('/api/inventory', require('./routes/inventoryRoutes'));
 
 // Root route
 app.get('/', (req, res) => {
