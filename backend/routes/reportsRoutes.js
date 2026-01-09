@@ -488,29 +488,41 @@ router.get('/student-profile/:student_id', protect, async (req, res) => {
     }
 });
 
-// @desc    Get Daily Collection Report
-// @route   GET /api/reports/daily-collection?date=YYYY-MM-DD
+// @desc    Get Fee Collection Report (Daily or Date Range)
+// @route   GET /api/reports/daily-collection?date=YYYY-MM-DD OR ?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD
 router.get('/daily-collection', protect, async (req, res) => {
     try {
-        const { date } = req.query;
-        const queryDate = date ? new Date(date) : new Date();
-        queryDate.setHours(0, 0, 0, 0);
+        const { date, start_date, end_date } = req.query;
+        let query = { tenant_id: req.tenant_id };
 
-        const nextDay = new Date(queryDate);
-        nextDay.setDate(nextDay.getDate() + 1);
+        if (start_date && end_date) {
+            const startDate = new Date(start_date);
+            startDate.setHours(0, 0, 0, 0);
 
-        const payments = await Fee.find({
-            tenant_id: req.tenant_id,
-            payment_date: { $gte: queryDate, $lt: nextDay }
-        }).populate('student_id');
+            const endDate = new Date(end_date);
+            endDate.setHours(23, 59, 59, 999);
+
+            query.payment_date = { $gte: startDate, $lte: endDate };
+        } else {
+            // Fallback to single date or today
+            const queryDate = date ? new Date(date) : new Date();
+            queryDate.setHours(0, 0, 0, 0);
+
+            const nextDay = new Date(queryDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+
+            query.payment_date = { $gte: queryDate, $lt: nextDay };
+        }
+
+        const payments = await Fee.find(query).populate('student_id').sort({ payment_date: -1 });
 
         const totalCollection = payments.reduce((sum, fee) => sum + fee.paid_amount, 0);
         const totalTransactions = payments.length;
 
         const breakdown = payments.map(fee => ({
-            student_name: fee.student_id?.full_name,
-            roll_no: fee.student_id?.roll_no,
-            class_id: fee.student_id?.class_id,
+            student_name: fee.student_id?.full_name || 'Deleted Student',
+            roll_no: fee.student_id?.roll_no || 'N/A',
+            class_id: fee.student_id?.class_id || '-',
             month: fee.month,
             amount: fee.paid_amount,
             status: fee.status,
@@ -518,7 +530,10 @@ router.get('/daily-collection', protect, async (req, res) => {
         }));
 
         res.json({
-            date: queryDate,
+            date: date || start_date, // For display
+            is_range: !!(start_date && end_date),
+            start_date: start_date,
+            end_date: end_date,
             total_collection: totalCollection,
             total_transactions: totalTransactions,
             breakdown

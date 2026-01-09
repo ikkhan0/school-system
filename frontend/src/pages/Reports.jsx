@@ -16,8 +16,8 @@ const Reports = () => {
     const [loading, setLoading] = useState(false);
     const [consecutiveAbsences, setConsecutiveAbsences] = useState([]);
     const [filters, setFilters] = useState({
-        start_date: '',
-        end_date: '',
+        start_date: new Date().toISOString().split('T')[0], // Default to today
+        end_date: new Date().toISOString().split('T')[0],   // Default to today
         class_id: '',
         section_id: '',
         exam_id: ''
@@ -104,7 +104,8 @@ const Reports = () => {
                     break;
                 case 'collection':
                     endpoint = '/api/reports/daily-collection';
-                    if (filters.start_date) queryParams.append('date', filters.start_date);
+                    if (filters.start_date) queryParams.append('start_date', filters.start_date);
+                    if (filters.end_date) queryParams.append('end_date', filters.end_date);
                     break;
                 default:
                     endpoint = '/api/reports/defaulters';
@@ -155,7 +156,7 @@ const Reports = () => {
         { id: 'shortage', label: 'Attendance Shortage', icon: AlertTriangle, color: 'text-orange-600' },
         { id: 'attendance', label: 'Attendance Summary', icon: Calendar, color: 'text-blue-600' },
         { id: 'performance', label: 'Class Performance', icon: TrendingUp, color: 'text-green-600' },
-        { id: 'collection', label: 'Daily Collection', icon: DollarSign, color: 'text-purple-600' }
+        { id: 'collection', label: 'Fee Collection', icon: DollarSign, color: 'text-purple-600' }
     ];
 
     return (
@@ -227,6 +228,18 @@ const Reports = () => {
                                     </div>
                                 )}
                             </>
+                        )}
+
+                        {activeTab === 'collection' && (
+                            <div>
+                                <label className="block text-sm font-medium mb-1">End Date</label>
+                                <input
+                                    type="date"
+                                    value={filters.end_date}
+                                    onChange={(e) => setFilters({ ...filters, end_date: e.target.value })}
+                                    className="w-full border rounded-lg p-2"
+                                />
+                            </div>
                         )}
 
                         {(activeTab === 'defaulters' || activeTab === 'attendance' || activeTab === 'performance') && (
@@ -607,7 +620,14 @@ const CollectionReport = ({ data, dateFormat }) => {
     return (
         <div>
             <div className="p-4 bg-purple-50 border-b">
-                <p className="text-sm text-gray-600 mb-2">Date: {formatDate(data.date, dateFormat)}</p>
+                <div className="flex justify-between items-center mb-2">
+                    <p className="text-sm text-gray-600">
+                        {data.is_range
+                            ? `Period: ${formatDate(data.start_date, dateFormat)} - ${formatDate(data.end_date, dateFormat)}`
+                            : `Date: ${formatDate(data.date, dateFormat)}`
+                        }
+                    </p>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <p className="text-sm text-gray-600">Total Collection</p>
