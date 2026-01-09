@@ -57,6 +57,15 @@ import MonthlyAttendanceSheet from './pages/MonthlyAttendanceSheet';
 import StudentCustomFees from './pages/StudentCustomFees';
 import StudentEnrollments from './pages/StudentEnrollments';
 
+// Inventory Pages
+import InventoryItems from './pages/Inventory/InventoryItems';
+import InventoryCategories from './pages/Inventory/InventoryCategories';
+import InventoryStores from './pages/Inventory/InventoryStores';
+import InventorySuppliers from './pages/Inventory/InventorySuppliers';
+import StockEntry from './pages/Inventory/StockEntry';
+import StockIssuance from './pages/Inventory/StockIssuance';
+import InventoryReports from './pages/Inventory/InventoryReports';
+
 import './App.css';
 
 function App() {
@@ -118,6 +127,15 @@ function App() {
                   <Route path="/monthly-attendance-sheet" element={<ProtectedRoute><MonthlyAttendanceSheet /></ProtectedRoute>} />
                   <Route path="/student-fees" element={<ProtectedRoute><StudentCustomFees /></ProtectedRoute>} />
                   <Route path="/enrollments" element={<ProtectedRoute><StudentEnrollments /></ProtectedRoute>} />
+
+                  {/* Inventory Routes */}
+                  <Route path="/inventory/items" element={<ProtectedRoute><InventoryItems /></ProtectedRoute>} />
+                  <Route path="/inventory/categories" element={<ProtectedRoute><InventoryCategories /></ProtectedRoute>} />
+                  <Route path="/inventory/stores" element={<ProtectedRoute><InventoryStores /></ProtectedRoute>} />
+                  <Route path="/inventory/suppliers" element={<ProtectedRoute><InventorySuppliers /></ProtectedRoute>} />
+                  <Route path="/inventory/add-stock" element={<ProtectedRoute><StockEntry /></ProtectedRoute>} />
+                  <Route path="/inventory/issue" element={<ProtectedRoute><StockIssuance /></ProtectedRoute>} />
+                  <Route path="/inventory/reports" element={<ProtectedRoute><InventoryReports /></ProtectedRoute>} />
                 </Routes>
               </Layout>
             </SessionProvider>

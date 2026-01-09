@@ -5,7 +5,7 @@ import AuthContext from '../context/AuthContext';
 import {
     Home, Users, UserCheck, DollarSign, BookOpen, FileText,
     BarChart, Shield, Settings, ChevronDown, ChevronRight,
-    Calendar, GraduationCap, Menu, X, MessageCircle, User
+    Calendar, GraduationCap, Menu, X, MessageCircle, User, Package
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -138,6 +138,22 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                 { title: 'Attendance Report', path: '/attendance-report', permission: 'reports.academic.view' },
                 { title: 'Monthly Attendance Sheet', path: '/monthly-attendance-sheet', permission: 'reports.academic.view' },
                 { title: 'Staff Attendance', path: '/staff-attendance-report', permission: 'reports.academic.view' }
+            ]
+        },
+        {
+            title: 'Inventory',
+            icon: Package,
+            type: 'group',
+            paths: ['/inventory'],
+            permissions: ['inventory.view'],
+            items: [
+                { title: 'Issue Item', path: '/inventory/issue', permission: 'inventory.issue' },
+                { title: 'Add Item Stock', path: '/inventory/add-stock', permission: 'inventory.purchase' },
+                { title: 'Add Item', path: '/inventory/items', permission: 'inventory.manage.items' },
+                { title: 'Item Category', path: '/inventory/categories', permission: 'inventory.manage.categories' },
+                { title: 'Item Store', path: '/inventory/stores', permission: 'inventory.manage.stores' },
+                { title: 'Item Supplier', path: '/inventory/suppliers', permission: 'inventory.manage.suppliers' },
+                { title: 'Inventory Reports', path: '/inventory/reports', permission: 'inventory.view.reports' }
             ]
         },
         {
