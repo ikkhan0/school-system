@@ -281,12 +281,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                     `}
                                     >
                                         <item.icon size={20} />
-                                        <span className="font-medium text-sm">{t(`common:${item.titleKey}`)}</span>
+                                        <span className="font-medium text-sm">{item.titleKey ? t(`common:${item.titleKey}`) : item.title}</span>
                                     </Link>
                                 ) : (
                                     <div>
                                         <button
-                                            onClick={() => toggleMenu(item.titleKey)}
+                                            onClick={() => toggleMenu(item.titleKey || item.title)}
                                             className={`
                                             w-full flex items-center justify-between px-3 py-2.5 rounded-lg
                                             transition-colors duration-150
@@ -298,15 +298,15 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                         >
                                             <div className="flex items-center space-x-3">
                                                 <item.icon size={20} />
-                                                <span className="font-medium text-sm">{t(`common:${item.titleKey}`)}</span>
+                                                <span className="font-medium text-sm">{item.titleKey ? t(`common:${item.titleKey}`) : item.title}</span>
                                             </div>
-                                            {expandedMenus[item.titleKey] ? (
+                                            {expandedMenus[item.titleKey || item.title] ? (
                                                 <ChevronDown size={16} />
                                             ) : (
                                                 <ChevronRight size={16} />
                                             )}
                                         </button>
-                                        {expandedMenus[item.titleKey] && (
+                                        {expandedMenus[item.titleKey || item.title] && (
                                             <div className="ml-4 mt-1 space-y-1">
                                                 {item.items
                                                     .filter(subItem => {

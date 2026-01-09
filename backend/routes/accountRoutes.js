@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/auth');
 const AccountHead = require('../models/AccountHead');
 const Voucher = require('../models/Voucher');
 const VoucherDetail = require('../models/VoucherDetail');
