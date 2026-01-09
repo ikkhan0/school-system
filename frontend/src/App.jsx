@@ -66,6 +66,13 @@ import StockEntry from './pages/Inventory/StockEntry';
 import StockIssuance from './pages/Inventory/StockIssuance';
 import InventoryReports from './pages/Inventory/InventoryReports';
 
+// Accounting Pages
+import ChartOfAccounts from './pages/Accounting/ChartOfAccounts';
+import VoucherEntry from './pages/Accounting/VoucherEntry';
+import VoucherList from './pages/Accounting/VoucherList';
+import TrialBalance from './pages/Accounting/TrialBalance';
+import GeneralLedger from './pages/Accounting/GeneralLedger';
+
 import './App.css';
 
 function App() {
@@ -136,6 +143,13 @@ function App() {
                   <Route path="/inventory/add-stock" element={<ProtectedRoute><StockEntry /></ProtectedRoute>} />
                   <Route path="/inventory/issue" element={<ProtectedRoute><StockIssuance /></ProtectedRoute>} />
                   <Route path="/inventory/reports" element={<ProtectedRoute><InventoryReports /></ProtectedRoute>} />
+
+                  {/* Accounting Routes */}
+                  <Route path="/accounting/chart-of-accounts" element={<ProtectedRoute><ChartOfAccounts /></ProtectedRoute>} />
+                  <Route path="/accounting/voucher" element={<ProtectedRoute><VoucherEntry /></ProtectedRoute>} />
+                  <Route path="/accounting/vouchers" element={<ProtectedRoute><VoucherList /></ProtectedRoute>} />
+                  <Route path="/accounting/ledger" element={<ProtectedRoute><GeneralLedger /></ProtectedRoute>} />
+                  <Route path="/accounting/trial-balance" element={<ProtectedRoute><TrialBalance /></ProtectedRoute>} />
                 </Routes>
               </Layout>
             </SessionProvider>

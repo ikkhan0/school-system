@@ -157,6 +157,20 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             ]
         },
         {
+            title: 'Accounting',
+            icon: DollarSign,
+            type: 'group',
+            paths: ['/accounting'],
+            permissions: ['accounting.view'],
+            items: [
+                { title: 'Chart of Accounts', path: '/accounting/chart-of-accounts', permission: 'accounting.manage.coa' },
+                { title: 'Voucher Entry', path: '/accounting/voucher', permission: 'accounting.manage.voucher' },
+                { title: 'Voucher List', path: '/accounting/vouchers', permission: 'accounting.view.vouchers' },
+                { title: 'General Ledger', path: '/accounting/ledger', permission: 'accounting.view.reports' },
+                { title: 'Trial Balance', path: '/accounting/trial-balance', permission: 'accounting.view.reports' }
+            ]
+        },
+        {
             titleKey: 'navigation.expenses',
             icon: DollarSign,
             type: 'group',
