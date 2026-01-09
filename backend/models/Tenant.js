@@ -65,7 +65,8 @@ const tenantSchema = mongoose.Schema({
             'hostel',      // Hostel management
             'hr',          // HR & payroll
             'attendance',  // Advanced attendance
-            'reports'      // Advanced reports
+            'reports',     // Advanced reports
+            'inventory'    // Inventory management
         ]
     }],
     settings: {

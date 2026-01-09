@@ -72,6 +72,8 @@ import VoucherEntry from './pages/Accounting/VoucherEntry';
 import VoucherList from './pages/Accounting/VoucherList';
 import TrialBalance from './pages/Accounting/TrialBalance';
 import GeneralLedger from './pages/Accounting/GeneralLedger';
+import ProfitLoss from './pages/Accounting/ProfitLoss';
+import BalanceSheet from './pages/Accounting/BalanceSheet';
 
 import './App.css';
 
@@ -149,6 +151,8 @@ function App() {
                   <Route path="/accounting/voucher" element={<ProtectedRoute><VoucherEntry /></ProtectedRoute>} />
                   <Route path="/accounting/vouchers" element={<ProtectedRoute><VoucherList /></ProtectedRoute>} />
                   <Route path="/accounting/ledger" element={<ProtectedRoute><GeneralLedger /></ProtectedRoute>} />
+                  <Route path="/accounting/profit-loss" element={<ProtectedRoute><ProfitLoss /></ProtectedRoute>} />
+                  <Route path="/accounting/balance-sheet" element={<ProtectedRoute><BalanceSheet /></ProtectedRoute>} />
                   <Route path="/accounting/trial-balance" element={<ProtectedRoute><TrialBalance /></ProtectedRoute>} />
                 </Routes>
               </Layout>

@@ -167,6 +167,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                 { title: 'Voucher Entry', path: '/accounting/voucher', permission: 'accounting.manage.voucher' },
                 { title: 'Voucher List', path: '/accounting/vouchers', permission: 'accounting.view.vouchers' },
                 { title: 'General Ledger', path: '/accounting/ledger', permission: 'accounting.view.reports' },
+                { title: 'Profit & Loss', path: '/accounting/profit-loss', permission: 'accounting.view.reports' },
+                { title: 'Balance Sheet', path: '/accounting/balance-sheet', permission: 'accounting.view.reports' },
                 { title: 'Trial Balance', path: '/accounting/trial-balance', permission: 'accounting.view.reports' }
             ]
         },

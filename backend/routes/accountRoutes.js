@@ -293,4 +293,214 @@ router.get('/reports/ledger', protect, async (req, res) => {
     }
 });
 
+// Profit & Loss Statement (Income Statement)
+router.get('/reports/profit-loss', protect, async (req, res) => {
+    try {
+        const { start_date, end_date } = req.query;
+        const tenant_id = req.tenant_id;
+
+        const start = start_date ? new Date(start_date) : new Date(0); // Default to beginning of time if not set
+        const end = end_date ? new Date(end_date) : new Date();
+        end.setHours(23, 59, 59, 999);
+
+        // Fetch Income and Expense Accounts
+        const accounts = await AccountHead.find({
+            tenant_id,
+            type: { $in: ['INCOME', 'EXPENSE'] }
+        }).lean();
+
+        const report = {
+            income: [],
+            expense: [],
+            totalIncome: 0,
+            totalExpense: 0,
+            netProfit: 0
+        };
+
+        for (const account of accounts) {
+            const result = await VoucherDetail.aggregate([
+                {
+                    $lookup: {
+                        from: 'vouchers',
+                        localField: 'voucher_id',
+                        foreignField: '_id',
+                        as: 'voucher'
+                    }
+                },
+                { $unwind: '$voucher' },
+                {
+                    $match: {
+                        tenant_id: new mongoose.Types.ObjectId(tenant_id),
+                        account_id: account._id,
+                        'voucher.date': { $gte: start, $lte: end }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalDebit: { $sum: '$debit' },
+                        totalCredit: { $sum: '$credit' }
+                    }
+                }
+            ]);
+
+            const debit = result[0]?.totalDebit || 0;
+            const credit = result[0]?.totalCredit || 0;
+
+            // Income: Credit - Debit (Normal Balance: Credit)
+            // Expense: Debit - Credit (Normal Balance: Debit)
+            let balance = 0;
+            if (account.type === 'INCOME') {
+                balance = credit - debit;
+                if (balance !== 0) {
+                    report.income.push({ ...account, balance });
+                    report.totalIncome += balance;
+                }
+            } else {
+                balance = debit - credit;
+                if (balance !== 0) {
+                    report.expense.push({ ...account, balance });
+                    report.totalExpense += balance;
+                }
+            }
+        }
+
+        report.netProfit = report.totalIncome - report.totalExpense;
+        res.json(report);
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Balance Sheet
+router.get('/reports/balance-sheet', protect, async (req, res) => {
+    try {
+        const { as_of_date } = req.query;
+        const tenant_id = req.tenant_id;
+        const asOf = as_of_date ? new Date(as_of_date) : new Date();
+        asOf.setHours(23, 59, 59, 999);
+
+        // Fetch Asset, Liability, Equity Accounts
+        const accounts = await AccountHead.find({
+            tenant_id,
+            type: { $in: ['ASSET', 'LIABILITY', 'EQUITY'] }
+        }).lean();
+
+        const report = {
+            assets: [],
+            liabilities: [],
+            equity: [],
+            totalAssets: 0,
+            totalLiabilities: 0,
+            totalEquity: 0
+        };
+
+        // Helper to calculate balance up to date
+        const getBalance = async (accountId, type) => {
+            const result = await VoucherDetail.aggregate([
+                {
+                    $lookup: {
+                        from: 'vouchers',
+                        localField: 'voucher_id',
+                        foreignField: '_id',
+                        as: 'voucher'
+                    }
+                },
+                { $unwind: '$voucher' },
+                {
+                    $match: {
+                        tenant_id: new mongoose.Types.ObjectId(tenant_id),
+                        account_id: accountId,
+                        'voucher.date': { $lte: asOf }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalDebit: { $sum: '$debit' },
+                        totalCredit: { $sum: '$credit' }
+                    }
+                }
+            ]);
+
+            const debit = result[0]?.totalDebit || 0;
+            const credit = result[0]?.totalCredit || 0;
+
+            // Asset: Dr - Cr
+            // Liability/Equity: Cr - Dr
+            if (type === 'ASSET') return debit - credit;
+            return credit - debit;
+        };
+
+        for (const account of accounts) {
+            const balance = await getBalance(account._id, account.type);
+            if (balance !== 0) {
+                if (account.type === 'ASSET') {
+                    report.assets.push({ ...account, balance });
+                    report.totalAssets += balance;
+                } else if (account.type === 'LIABILITY') {
+                    report.liabilities.push({ ...account, balance });
+                    report.totalLiabilities += balance;
+                } else {
+                    report.equity.push({ ...account, balance });
+                    report.totalEquity += balance;
+                }
+            }
+        }
+
+        // Calculate Retained Earnings (Net Profit from beginning of time up to asOf)
+        // Similar to P&L but for all time
+        const incomeExpenseAccounts = await AccountHead.find({
+            tenant_id,
+            type: { $in: ['INCOME', 'EXPENSE'] }
+        }).select('_id type');
+
+        let retainedEarnings = 0;
+        for (const account of incomeExpenseAccounts) {
+            const result = await VoucherDetail.aggregate([
+                {
+                    $lookup: {
+                        from: 'vouchers',
+                        localField: 'voucher_id',
+                        foreignField: '_id',
+                        as: 'voucher'
+                    }
+                },
+                { $unwind: '$voucher' },
+                {
+                    $match: {
+                        tenant_id: new mongoose.Types.ObjectId(tenant_id),
+                        account_id: account._id,
+                        'voucher.date': { $lte: asOf }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalDebit: { $sum: '$debit' },
+                        totalCredit: { $sum: '$credit' }
+                    }
+                }
+            ]);
+            const debit = result[0]?.totalDebit || 0;
+            const credit = result[0]?.totalCredit || 0;
+
+            if (account.type === 'INCOME') retainedEarnings += (credit - debit);
+            else retainedEarnings -= (debit - credit);
+        }
+
+        // Add Retained Earnings to Equity
+        if (retainedEarnings !== 0) {
+            report.equity.push({ name: 'Retained Earnings', code: 'RE', type: 'EQUITY', balance: retainedEarnings });
+            report.totalEquity += retainedEarnings;
+        }
+
+        res.json(report);
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

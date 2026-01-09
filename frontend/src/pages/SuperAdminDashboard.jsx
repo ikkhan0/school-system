@@ -265,6 +265,18 @@ const SuperAdminDashboard = () => {
                                             <div>
                                                 <div className="text-sm font-medium text-gray-900">{school.school_name}</div>
                                                 <div className="text-sm text-gray-500">{school.contact_info.email}</div>
+                                                <div className="flex gap-1 mt-1">
+                                                    {school.features_enabled?.includes('inventory') && (
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800" title="Inventory Enabled">
+                                                            Inv
+                                                        </span>
+                                                    )}
+                                                    {school.features_enabled?.includes('accounts') && (
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-100 text-teal-800" title="Accounting Enabled">
+                                                            Acc
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
@@ -443,7 +455,7 @@ const CreateSchoolModal = ({ onClose, onSuccess, token }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const availableFeatures = ['core', 'fees', 'exams', 'attendance', 'reports', 'sms', 'transport'];
+    const availableFeatures = ['core', 'fees', 'exams', 'attendance', 'reports', 'sms', 'transport', 'inventory', 'accounts'];
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -1307,7 +1319,9 @@ const FeatureManagementModal = ({ school, onClose, onSuccess, token }) => {
         { id: 'reports', name: 'Advanced Reports', description: 'Detailed analytics and reports' },
         { id: 'sms', name: 'SMS Notifications', description: 'Send SMS to parents' },
         { id: 'whatsapp', name: 'WhatsApp Integration', description: 'WhatsApp messaging' },
-        { id: 'analytics', name: 'Analytics Dashboard', description: 'Advanced analytics and insights' }
+        { id: 'analytics', name: 'Analytics Dashboard', description: 'Advanced analytics and insights' },
+        { id: 'inventory', name: 'Inventory Management', description: 'Manage stock, suppliers, and items' },
+        { id: 'accounts', name: 'Accounting & Finance', description: 'Double-entry accounting, vouchers, ledger' }
     ];
 
     const [features, setFeatures] = useState(school.features_enabled || ['core']);
