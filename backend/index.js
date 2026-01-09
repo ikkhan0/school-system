@@ -64,6 +64,11 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/student-fees', require('./routes/studentFeeRoutes'));
 app.use('/api/enrollments', require('./routes/enrollmentRoutes'));
 
+// Root route
+app.get('/', (req, res) => {
+    res.send('Welcome to iSoft School Management System API');
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
     res.json({
