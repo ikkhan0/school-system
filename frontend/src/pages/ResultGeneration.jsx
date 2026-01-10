@@ -75,14 +75,29 @@ const ResultGeneration = () => {
     };
 
     const getMobileNumber = (student) => {
+        if (!student) return null;
         if (student.father_mobile && student.father_mobile.trim()) return student.father_mobile;
         if (student.mother_mobile && student.mother_mobile.trim()) return student.mother_mobile;
         if (student.student_mobile && student.student_mobile.trim()) return student.student_mobile;
+
+        // Diagnostic Log: If we reach here, we found no number.
+        // Let's create a useful debug string for the user.
+        const keys = Object.keys(student).join(', ');
+        console.warn('Debugging Mobile Number for:', student.full_name);
+        console.warn('Available Keys:', keys);
+        console.warn('Values:', {
+            father: student.father_mobile,
+            mother: student.mother_mobile,
+            student: student.student_mobile
+        });
+
         return null;
     };
 
-    const sendWhatsApp = (mobile, message) => {
-        if (!mobile) return alert("No mobile number found for this student (checked Father, Mother, and Student).");
+    const sendWhatsApp = (mobile, message, studentName) => {
+        if (!mobile) {
+            return alert(`⚠️ No mobile number found for student: ${studentName || 'Unknown'}.\n\nPlease check the student profile and ensure Father, Mother, or Student mobile is listed.`);
+        }
         let num = mobile.replace(/\D/g, '');
         if (num.length === 11 && num.startsWith('0')) {
             num = '92' + num.substring(1);
@@ -131,7 +146,7 @@ Kindly encourage your child to continue working hard and maintain good performan
     const sendResult = (result) => {
         const msg = generateWhatsAppMessage(result);
         const mobile = getMobileNumber(result.student_id);
-        sendWhatsApp(mobile, msg);
+        sendWhatsApp(mobile, msg, result.student_id.full_name);
     };
 
     // Generate PDF and send via WhatsApp
@@ -609,7 +624,7 @@ Kindly encourage your child to continue working hard and maintain good performan
                             <div className="grid grid-cols-3 gap-2 mb-3">
                                 <div className="border-2 border-black p-2 text-center bg-blue-50">
                                     <div className="text-xs text-gray-600 mb-0.5">PERCENTAGE</div>
-                                    <div className="text-2xl font-bold text-blue-700">{result.percentage.toFixed(2)}%</div>
+                                    <div className="text-2xl font-bold text-blue-700">{typeof result.percentage === 'number' ? result.percentage.toFixed(2) : result.percentage}%</div>
                                 </div>
                                 <div className="border-2 border-black p-2 text-center bg-purple-50">
                                     <div className="text-xs text-gray-600 mb-0.5">GRADE</div>
