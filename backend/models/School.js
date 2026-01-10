@@ -6,6 +6,7 @@ const schoolSchema = mongoose.Schema({
     phone: { type: String },
     email: { type: String },
     logo: { type: String }, // URL to logo
+    principal_signature: { type: String }, // URL to signature image
     subscription_status: { type: String, default: 'active' }, // active, inactive
     settings: {
         currency: { type: String, default: 'PKR' },

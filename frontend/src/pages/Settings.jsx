@@ -17,9 +17,11 @@ const Settings = () => {
         logo: null, // File object
         date_format: 'DD/MM/YYYY',
         time_format: '12-hour',
-        fee_voucher_note: ''
+        fee_voucher_note: '',
+        principal_signature: null // File object
     });
     const [preview, setPreview] = useState(null);
+    const [signaturePreview, setSignaturePreview] = useState(null);
 
     useEffect(() => {
         if (user) fetchSchoolDetails();
@@ -52,6 +54,9 @@ const Settings = () => {
                 console.log('Setting logo preview');
                 setPreview(logo);
             }
+            if (res.data.principal_signature) {
+                setSignaturePreview(res.data.principal_signature);
+            }
         } catch (error) {
             console.error("Error fetching school details:", error);
             console.error("Error response:", error.response?.data);
@@ -68,6 +73,10 @@ const Settings = () => {
             const file = e.target.files[0];
             setFormData({ ...formData, logo: file });
             setPreview(URL.createObjectURL(file));
+        } else if (e.target.name === 'principal_signature') {
+            const file = e.target.files[0];
+            setFormData({ ...formData, principal_signature: file });
+            setSignaturePreview(URL.createObjectURL(file));
         } else {
             setFormData({ ...formData, [e.target.name]: e.target.value });
         }
@@ -95,6 +104,11 @@ const Settings = () => {
             if (formData.logo instanceof File) {
                 console.log('Appending logo file:', formData.logo.name);
                 data.append('logo', formData.logo);
+            }
+
+            if (formData.principal_signature instanceof File) {
+                console.log('Appending signature file:', formData.principal_signature.name);
+                data.append('principal_signature', formData.principal_signature);
             }
 
             console.log('Sending to:', `${API_URL}/api/school`);
@@ -208,6 +222,29 @@ const Settings = () => {
                             />
                             <Mail className="absolute left-2 top-3.5 text-gray-400" size={16} />
                         </div>
+                    </div>
+                </div>
+
+                {/* Principal Signature Upload */}
+                <div className="border-t pt-6 mt-6">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Principal Signature</h2>
+                    <div className="flex flex-col items-center">
+                        <div className="w-64 h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center overflow-hidden mb-2 bg-gray-50 relative">
+                            {signaturePreview ? (
+                                <img src={signaturePreview} alt="Principal Signature" className="max-w-full max-h-full object-contain" />
+                            ) : (
+                                <span className="text-gray-400 text-sm">No Signature Uploaded</span>
+                            )}
+                            <input
+                                type="file"
+                                name="principal_signature"
+                                onChange={handleChange}
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                title="Upload Principal Signature"
+                                accept="image/*"
+                            />
+                        </div>
+                        <span className="text-sm text-gray-500">Tap to Upload Signature Image</span>
                     </div>
                 </div>
 

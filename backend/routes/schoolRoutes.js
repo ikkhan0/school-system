@@ -33,11 +33,14 @@ router.get('/', protect, async (req, res) => {
 
 // @desc    Update School Details
 // @route   PUT /api/school
-router.put('/', protect, upload.single('logo'), async (req, res) => {
+router.put('/', protect, upload.fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'principal_signature', maxCount: 1 }
+]), async (req, res) => {
     try {
         console.log('=== SCHOOL UPDATE DEBUG ===');
         console.log('Body:', req.body);
-        console.log('File:', req.file ? 'File uploaded' : 'No file');
+        console.log('Files:', req.files ? Object.keys(req.files) : 'No files');
         console.log('User school_id:', req.tenant_id);
 
         // Prepare update data
@@ -55,37 +58,33 @@ router.put('/', protect, upload.single('logo'), async (req, res) => {
             if (req.body.fee_voucher_note !== undefined) updateData.settings.fee_voucher_note = req.body.fee_voucher_note;
         }
 
-        // Upload to ImgBB if file present
-        if (req.file) {
+        // Helper function to handle file upload
+        const handleFileUpload = async (file, prefix) => {
             try {
-                console.log('📤 Starting logo upload to ImgBB...');
-                console.log('File size:', req.file.size, 'bytes');
-                console.log('File mimetype:', req.file.mimetype);
-
-                // Upload new logo to ImgBB
+                console.log(`📤 Starting ${prefix} upload to ImgBB...`);
                 const result = await uploadToImgBB(
-                    req.file.buffer,
-                    `school_${req.tenant_id}_logo`
+                    file.buffer,
+                    `school_${req.tenant_id}_${prefix}`
                 );
-
-                updateData.logo = result.url;
-                console.log('✅ Logo uploaded successfully to ImgBB:', result.url);
-            } catch (uploadError) {
-                console.error('❌ ImgBB upload error:', uploadError);
-                console.error('Error details:', {
-                    message: uploadError.message,
-                    stack: uploadError.stack,
-                    name: uploadError.name
-                });
-                return res.status(500).json({
-                    message: 'Failed to upload logo to ImgBB',
-                    error: uploadError.message,
-                    details: uploadError.toString()
-                });
+                console.log(`✅ ${prefix} uploaded successfully:`, result.url);
+                return result.url;
+            } catch (error) {
+                console.error(`❌ ImgBB ${prefix} upload error:`, error);
+                throw error;
             }
+        };
+
+        // Upload Logo
+        if (req.files && req.files['logo']) {
+            updateData.logo = await handleFileUpload(req.files['logo'][0], 'logo');
         }
 
-        console.log('Update data:', { ...updateData, logo: updateData.logo ? 'ImgBB URL' : undefined });
+        // Upload Principal Signature
+        if (req.files && req.files['principal_signature']) {
+            updateData.principal_signature = await handleFileUpload(req.files['principal_signature'][0], 'signature');
+        }
+
+        console.log('Update data keys:', Object.keys(updateData));
 
         // Use findOneAndUpdate with upsert to create if doesn't exist
         const school = await School.findOneAndUpdate(

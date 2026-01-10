@@ -613,7 +613,15 @@ const ResultGeneration = () => {
                                     <div className="w-1/2 text-right">
                                         <div className="mb-6">
                                             <p className="font-bold mb-1">Principal Signature:</p>
-                                            <div className="border-b-2 border-black w-48 h-12 ml-auto"></div>
+                                            <div className="border-b-2 border-black w-48 h-12 ml-auto flex items-end justify-center relative">
+                                                {schoolInfo?.principal_signature && (
+                                                    <img
+                                                        src={schoolInfo.principal_signature}
+                                                        alt="Signature"
+                                                        className="absolute bottom-0 max-h-16 max-w-full object-contain mb-1"
+                                                    />
+                                                )}
+                                            </div>
                                         </div>
                                         <div>
                                             <p className="font-bold mb-1">School Stamp:</p>
