@@ -249,25 +249,26 @@ const BulkFeeSlips = () => {
                                 </div>
                             </div>
 
-                            <div className="mt-4 text-xs flex justify-between items-end">
-                                <div>
+                            <div className="mt-4 pt-2 flex justify-between items-end border-t border-gray-300">
+                                <div className="text-xs">
                                     <p className="font-bold text-red-600">Due Date: {slip.fee.due_date ? formatDate(slip.fee.due_date, dateFormat) : (dueDate ? formatDate(dueDate, dateFormat) : 'N/A')}</p>
-                                    <p className="text-[10px] mt-1">* Late fee of Rs. 100 will be charged after due date.</p>
+                                    <p className="text-[10px] mt-1">* Late fee of Rs. 100 after due date.</p>
                                 </div>
-                                <div className="text-center w-24">
+
+                                {/* Centered Bold Note */}
+                                {feeVoucherNote && (
+                                    <div className="flex-1 px-2 text-center">
+                                        <p className="text-[10px] font-bold font-sans leading-tight whitespace-pre-wrap">
+                                            {feeVoucherNote}
+                                        </p>
+                                    </div>
+                                )}
+
+                                <div className="text-center w-24 text-xs">
                                     <div className="border-b border-black mb-1"></div>
                                     <span>Office Sig</span>
                                 </div>
                             </div>
-
-                            {/* Payment Note Footer */}
-                            {feeVoucherNote && (
-                                <div className="mt-2 pt-2 border-t border-gray-300">
-                                    <pre className="text-[9px] whitespace-pre-wrap font-sans text-gray-700 text-center leading-tight">
-                                        {feeVoucherNote}
-                                    </pre>
-                                </div>
-                            )}
 
                             {/* Cut line for receipt format */}
                             {printFormat === 'receipt' && (
