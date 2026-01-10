@@ -285,7 +285,8 @@ router.get('/results', protect, checkPermission('exams.view'), async (req, res) 
 
         const results = await Result.find(query)
             .populate({
-                path: 'student_id'
+                path: 'student_id',
+                populate: { path: 'family_id' }
             })
             .populate('exam_id');
 

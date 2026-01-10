@@ -76,9 +76,18 @@ const ResultGeneration = () => {
 
     const getMobileNumber = (student) => {
         if (!student) return null;
+
+        // Priority 1: Direct Student Fields
         if (student.father_mobile && student.father_mobile.trim()) return student.father_mobile;
         if (student.mother_mobile && student.mother_mobile.trim()) return student.mother_mobile;
         if (student.student_mobile && student.student_mobile.trim()) return student.student_mobile;
+
+        // Priority 2: Family Record (Common for siblings)
+        if (student.family_id) {
+            if (student.family_id.father_mobile && student.family_id.father_mobile.trim()) return student.family_id.father_mobile;
+            if (student.family_id.mother_mobile && student.family_id.mother_mobile.trim()) return student.family_id.mother_mobile;
+        }
+
         if (student.emergency_contact && student.emergency_contact.trim()) return student.emergency_contact;
 
         return null;
@@ -88,7 +97,9 @@ const ResultGeneration = () => {
         if (!mobile) {
             const studentName = student?.full_name || 'Unknown';
             const keys = student ? Object.keys(student).join(', ') : 'No data';
-            return alert(`⚠️ No mobile number found for: ${studentName}\n\nChecked: Father, Mother, Student, Emergency Contact.\n\nDebug Info (Fields Present): ${keys}`);
+            const familyKeys = student?.family_id ? Object.keys(student.family_id).join(', ') : 'No Family ID';
+
+            return alert(`⚠️ No mobile number found for: ${studentName}\n\nChecked:\n- direct father/mother/student/emergency\n- family_id.father_mobile\n\nDebug Info:\nStudent Keys: ${keys}\nFamily Keys: ${familyKeys}`);
         }
         let num = mobile.replace(/\D/g, '');
         if (num.length === 11 && num.startsWith('0')) {
