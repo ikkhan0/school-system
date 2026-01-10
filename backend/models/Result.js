@@ -24,7 +24,10 @@ const resultSchema = mongoose.Schema({
     subjects: [{
         subject_name: { type: String, required: true },
         total_marks: { type: Number, required: true },
-        obtained_marks: { type: Number, required: true }
+        obtained_marks: { type: Number, required: true },
+        status: { type: String, default: 'Present' },
+        passing_marks: { type: Number },
+        passing_percentage: { type: Number }
     }],
     total_obtained: { type: Number },
     total_max: { type: Number },
