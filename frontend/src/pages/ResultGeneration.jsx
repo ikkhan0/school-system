@@ -368,11 +368,6 @@ const ResultGeneration = () => {
                         Evaluation Report
                     </label>
 
-                    <label className="flex items-center gap-2 font-semibold text-xs sm:text-sm cursor-pointer">
-                        <input type="checkbox" checked={showBehavior} onChange={e => setShowBehavior(e.target.checked)} className="w-4 h-4" />
-                        Evaluation Report
-                    </label>
-
                     <button onClick={() => window.print()} className="sm:ml-auto bg-gray-800 text-white px-4 py-2 rounded flex gap-2 items-center text-sm sm:text-base hover:bg-gray-900" title="Print cards or Save as PDF from print dialog">
                         <Printer size={16} className="sm:w-[18px] sm:h-[18px]" /> Print / Save PDF ({filteredResults.length})
                     </button>
