@@ -220,7 +220,7 @@ const BulkFeeSlips = () => {
                             <div className="flex justify-between items-end mb-2 text-sm">
                                 <div>
                                     <p><span className="font-bold w-16 inline-block">Roll No:</span> {slip.student.roll_no}</p>
-                                    <p><span className="font-bold w-16 inline-block">Name:</span> {slip.student.full_name}</p>
+                                    <p><span className="font-bold w-16 inline-block">Name:</span> <span className="font-extrabold text-lg uppercase">{slip.student.full_name}</span></p>
                                     <p className="text-xs text-gray-500">(Father: {slip.father_name})</p>
                                 </div>
                                 <div className="text-right">
