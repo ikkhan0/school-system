@@ -7,6 +7,7 @@ const schoolSchema = mongoose.Schema({
     email: { type: String },
     logo: { type: String }, // URL to logo
     principal_signature: { type: String }, // URL to signature image
+    stamp: { type: String }, // URL to stamp image
     subscription_status: { type: String, default: 'active' }, // active, inactive
     settings: {
         currency: { type: String, default: 'PKR' },

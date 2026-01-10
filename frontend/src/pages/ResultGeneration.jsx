@@ -22,6 +22,13 @@ const ResultGeneration = () => {
     const [showBehavior, setShowBehavior] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
+    // Footer Customization State
+    const [showDate, setShowDate] = useState(true);
+    const [showClassTeacher, setShowClassTeacher] = useState(true);
+    const [showStamp, setShowStamp] = useState(true);
+    const [customDate, setCustomDate] = useState('');
+    const [customClassTeacher, setCustomClassTeacher] = useState('');
+
     useEffect(() => {
         if (!user) return;
 
@@ -357,9 +364,59 @@ const ResultGeneration = () => {
                         Evaluation Report
                     </label>
 
+                    <label className="flex items-center gap-2 font-semibold text-xs sm:text-sm cursor-pointer">
+                        <input type="checkbox" checked={showBehavior} onChange={e => setShowBehavior(e.target.checked)} className="w-4 h-4" />
+                        Evaluation Report
+                    </label>
+
                     <button onClick={() => window.print()} className="sm:ml-auto bg-gray-800 text-white px-4 py-2 rounded flex gap-2 items-center text-sm sm:text-base hover:bg-gray-900" title="Print cards or Save as PDF from print dialog">
                         <Printer size={16} className="sm:w-[18px] sm:h-[18px]" /> Print / Save PDF ({filteredResults.length})
                     </button>
+                </div>
+
+                {/* Footer Customization Controls */}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                    <h3 className="font-bold text-sm mb-2">Footer Customization:</h3>
+                    <div className="flex flex-wrap gap-4 items-end">
+                        <div className="flex flex-col gap-1">
+                            <label className="flex items-center gap-2 font-semibold text-xs cursor-pointer">
+                                <input type="checkbox" checked={showDate} onChange={e => setShowDate(e.target.checked)} className="w-4 h-4" />
+                                Show Date
+                            </label>
+                            {showDate && (
+                                <input
+                                    type="text"
+                                    placeholder="Custom Date (Default: Empty)"
+                                    value={customDate}
+                                    onChange={e => setCustomDate(e.target.value)}
+                                    className="border p-1 rounded text-xs w-32"
+                                />
+                            )}
+                        </div>
+
+                        <div className="flex flex-col gap-1">
+                            <label className="flex items-center gap-2 font-semibold text-xs cursor-pointer">
+                                <input type="checkbox" checked={showClassTeacher} onChange={e => setShowClassTeacher(e.target.checked)} className="w-4 h-4" />
+                                Show Class Teacher
+                            </label>
+                            {showClassTeacher && (
+                                <input
+                                    type="text"
+                                    placeholder="Teacher Name (Default: Empty)"
+                                    value={customClassTeacher}
+                                    onChange={e => setCustomClassTeacher(e.target.value)}
+                                    className="border p-1 rounded text-xs w-32"
+                                />
+                            )}
+                        </div>
+
+                        <div className="flex flex-col gap-1">
+                            <label className="flex items-center gap-2 font-semibold text-xs cursor-pointer">
+                                <input type="checkbox" checked={showStamp} onChange={e => setShowStamp(e.target.checked)} className="w-4 h-4" />
+                                Show School Stamp
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 {/* PDF Instructions */}
@@ -601,16 +658,28 @@ const ResultGeneration = () => {
                             <div className="border-t-4 border-black pt-4 mt-auto">
                                 <div className="flex justify-between items-start text-xs mb-6">
                                     <div className="w-1/2">
-                                        <div className="mb-6">
-                                            <p className="font-bold mb-1">Class Teacher:</p>
-                                            <div className="border-b-2 border-black w-48 h-12"></div>
-                                        </div>
-                                        <div>
-                                            <p className="font-bold mb-1">Date:</p>
-                                            <div className="border-b-2 border-black w-32 h-8"></div>
-                                        </div>
+                                        {showClassTeacher && (
+                                            <div className="mb-6">
+                                                <p className="font-bold mb-1">Class Teacher:</p>
+                                                {customClassTeacher ? (
+                                                    <div className="border-b-2 border-black w-48 text-center font-serif text-sm pb-1">{customClassTeacher}</div>
+                                                ) : (
+                                                    <div className="border-b-2 border-black w-48 h-8"></div>
+                                                )}
+                                            </div>
+                                        )}
+                                        {showDate && (
+                                            <div>
+                                                <p className="font-bold mb-1">Date:</p>
+                                                {customDate ? (
+                                                    <div className="border-b-2 border-black w-32 text-center font-serif text-sm pb-1">{customDate}</div>
+                                                ) : (
+                                                    <div className="border-b-2 border-black w-32 h-8"></div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="w-1/2 text-right">
+                                    <div className="w-1/2 text-right flex flex-col items-end">
                                         <div className="mb-6">
                                             <p className="font-bold mb-1">Principal Signature:</p>
                                             <div className="border-b-2 border-black w-48 h-12 ml-auto flex items-end justify-center relative">
@@ -623,10 +692,20 @@ const ResultGeneration = () => {
                                                 )}
                                             </div>
                                         </div>
-                                        <div>
-                                            <p className="font-bold mb-1">School Stamp:</p>
-                                            <div className="border-2 border-black w-24 h-24 ml-auto"></div>
-                                        </div>
+                                        {showStamp && (
+                                            <div className="relative">
+                                                <p className="font-bold mb-1">School Stamp:</p>
+                                                <div className="border-2 border-black w-24 h-24 ml-auto flex items-center justify-center overflow-hidden bg-gray-50">
+                                                    {schoolInfo?.stamp && (
+                                                        <img
+                                                            src={schoolInfo.stamp}
+                                                            alt="Stamp"
+                                                            className="max-w-full max-h-full object-contain p-1"
+                                                        />
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

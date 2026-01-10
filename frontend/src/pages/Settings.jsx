@@ -18,10 +18,12 @@ const Settings = () => {
         date_format: 'DD/MM/YYYY',
         time_format: '12-hour',
         fee_voucher_note: '',
-        principal_signature: null // File object
+        principal_signature: null, // File object
+        stamp: null // File object
     });
     const [preview, setPreview] = useState(null);
     const [signaturePreview, setSignaturePreview] = useState(null);
+    const [stampPreview, setStampPreview] = useState(null);
 
     useEffect(() => {
         if (user) fetchSchoolDetails();
@@ -57,6 +59,9 @@ const Settings = () => {
             if (res.data.principal_signature) {
                 setSignaturePreview(res.data.principal_signature);
             }
+            if (res.data.stamp) {
+                setStampPreview(res.data.stamp);
+            }
         } catch (error) {
             console.error("Error fetching school details:", error);
             console.error("Error response:", error.response?.data);
@@ -77,6 +82,10 @@ const Settings = () => {
             const file = e.target.files[0];
             setFormData({ ...formData, principal_signature: file });
             setSignaturePreview(URL.createObjectURL(file));
+        } else if (e.target.name === 'stamp') {
+            const file = e.target.files[0];
+            setFormData({ ...formData, stamp: file });
+            setStampPreview(URL.createObjectURL(file));
         } else {
             setFormData({ ...formData, [e.target.name]: e.target.value });
         }
@@ -109,6 +118,11 @@ const Settings = () => {
             if (formData.principal_signature instanceof File) {
                 console.log('Appending signature file:', formData.principal_signature.name);
                 data.append('principal_signature', formData.principal_signature);
+            }
+
+            if (formData.stamp instanceof File) {
+                console.log('Appending stamp file:', formData.stamp.name);
+                data.append('stamp', formData.stamp);
             }
 
             console.log('Sending to:', `${API_URL}/api/school`);
@@ -245,6 +259,29 @@ const Settings = () => {
                             />
                         </div>
                         <span className="text-sm text-gray-500">Tap to Upload Signature Image</span>
+                    </div>
+                </div>
+
+                {/* Stamp Upload */}
+                <div className="border-t pt-6 mt-6">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">School Stamp</h2>
+                    <div className="flex flex-col items-center">
+                        <div className="w-48 h-48 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center overflow-hidden mb-2 bg-gray-50 relative">
+                            {stampPreview ? (
+                                <img src={stampPreview} alt="School Stamp" className="max-w-full max-h-full object-contain" />
+                            ) : (
+                                <span className="text-gray-400 text-sm">No Stamp</span>
+                            )}
+                            <input
+                                type="file"
+                                name="stamp"
+                                onChange={handleChange}
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                title="Upload School Stamp"
+                                accept="image/*"
+                            />
+                        </div>
+                        <span className="text-sm text-gray-500">Tap to Upload Stamp Image</span>
                     </div>
                 </div>
 

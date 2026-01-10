@@ -35,7 +35,8 @@ router.get('/', protect, async (req, res) => {
 // @route   PUT /api/school
 router.put('/', protect, upload.fields([
     { name: 'logo', maxCount: 1 },
-    { name: 'principal_signature', maxCount: 1 }
+    { name: 'principal_signature', maxCount: 1 },
+    { name: 'stamp', maxCount: 1 }
 ]), async (req, res) => {
     try {
         console.log('=== SCHOOL UPDATE DEBUG ===');
@@ -82,6 +83,11 @@ router.put('/', protect, upload.fields([
         // Upload Principal Signature
         if (req.files && req.files['principal_signature']) {
             updateData.principal_signature = await handleFileUpload(req.files['principal_signature'][0], 'signature');
+        }
+
+        // Upload Stamp
+        if (req.files && req.files['stamp']) {
+            updateData.stamp = await handleFileUpload(req.files['stamp'][0], 'stamp');
         }
 
         console.log('Update data keys:', Object.keys(updateData));
