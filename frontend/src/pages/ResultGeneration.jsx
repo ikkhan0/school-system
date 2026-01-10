@@ -79,24 +79,16 @@ const ResultGeneration = () => {
         if (student.father_mobile && student.father_mobile.trim()) return student.father_mobile;
         if (student.mother_mobile && student.mother_mobile.trim()) return student.mother_mobile;
         if (student.student_mobile && student.student_mobile.trim()) return student.student_mobile;
-
-        // Diagnostic Log: If we reach here, we found no number.
-        // Let's create a useful debug string for the user.
-        const keys = Object.keys(student).join(', ');
-        console.warn('Debugging Mobile Number for:', student.full_name);
-        console.warn('Available Keys:', keys);
-        console.warn('Values:', {
-            father: student.father_mobile,
-            mother: student.mother_mobile,
-            student: student.student_mobile
-        });
+        if (student.emergency_contact && student.emergency_contact.trim()) return student.emergency_contact;
 
         return null;
     };
 
-    const sendWhatsApp = (mobile, message, studentName) => {
+    const sendWhatsApp = (mobile, message, student) => {
         if (!mobile) {
-            return alert(`⚠️ No mobile number found for student: ${studentName || 'Unknown'}.\n\nPlease check the student profile and ensure Father, Mother, or Student mobile is listed.`);
+            const studentName = student?.full_name || 'Unknown';
+            const keys = student ? Object.keys(student).join(', ') : 'No data';
+            return alert(`⚠️ No mobile number found for: ${studentName}\n\nChecked: Father, Mother, Student, Emergency Contact.\n\nDebug Info (Fields Present): ${keys}`);
         }
         let num = mobile.replace(/\D/g, '');
         if (num.length === 11 && num.startsWith('0')) {
@@ -146,7 +138,7 @@ Kindly encourage your child to continue working hard and maintain good performan
     const sendResult = (result) => {
         const msg = generateWhatsAppMessage(result);
         const mobile = getMobileNumber(result.student_id);
-        sendWhatsApp(mobile, msg, result.student_id.full_name);
+        sendWhatsApp(mobile, msg, result.student_id);
     };
 
     // Generate PDF and send via WhatsApp
