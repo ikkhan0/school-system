@@ -249,24 +249,7 @@ const Settings = () => {
                     </div>
                 </div>
 
-                {/* Fee Voucher Payment Instructions */}
-                <div className="border-t pt-6 mt-6">
-                    <h2 className="text-lg font-semibold text-gray-800 mb-2">Fee Voucher Payment Instructions</h2>
-                    <p className="text-sm text-gray-600 mb-4">Add payment details that will appear on all fee vouchers (bank account, JazzCash, Easypaisa, etc.)</p>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Payment Note (Optional)</label>
-                        <textarea
-                            name="fee_voucher_note"
-                            value={formData.fee_voucher_note}
-                            onChange={handleChange}
-                            className="mt-1 block w-full border border-gray-300 rounded p-3"
-                            rows="4"
-                            placeholder="Example:&#10;Bank Account: 1234567890 (HBL)&#10;JazzCash: 03001234567&#10;Easypaisa: 03001234567&#10;&#10;Please pay fees before due date to avoid late fees."
-                        />
-                        <p className="text-xs text-gray-500 mt-2">This note will appear on all printed fee vouchers. You can include bank account numbers, mobile payment details, or any payment instructions.</p>
-                    </div>
-                </div>
+                {/* Fee Voucher Payment Instructions REMOVED - Moved to Bulk Fee Slips page */}
 
                 <button
                     type="submit"

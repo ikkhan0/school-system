@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { Printer } from 'lucide-react';
+import { Printer, Save } from 'lucide-react';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import API_URL from '../config';
@@ -16,6 +16,7 @@ const BulkFeeSlips = () => {
     const [schoolInfo, setSchoolInfo] = useState(null);
     const [printFormat, setPrintFormat] = useState('a4'); // 'a4' or 'receipt'
     const [dueDate, setDueDate] = useState('');
+    const [feeVoucherNote, setFeeVoucherNote] = useState('');
 
     useEffect(() => {
         if (!user) return;
@@ -27,6 +28,9 @@ const BulkFeeSlips = () => {
                 });
                 const data = await res.json();
                 setSchoolInfo(data);
+                if (data.settings?.fee_voucher_note) {
+                    setFeeVoucherNote(data.settings.fee_voucher_note);
+                }
             } catch (error) {
                 console.error("Error fetching school info:", error);
             }
@@ -84,6 +88,32 @@ const BulkFeeSlips = () => {
         }
     };
 
+    const saveNote = async () => {
+        try {
+            const data = new FormData();
+            data.append('fee_voucher_note', feeVoucherNote);
+
+            const res = await fetch(`${API_URL}/api/school`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${user.token}`
+                    // Content-Type not set, browser sets it to multipart/form-data with boundary
+                },
+                body: data
+            });
+
+            if (res.ok) {
+                alert('Note Saved!');
+            } else {
+                alert('Failed to save note');
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert('Error saving note');
+        }
+    };
+
     return (
         <div className="max-w-7xl mx-auto p-4">
             <div className="no-print bg-white p-4 shadow rounded mb-4">
@@ -109,31 +139,55 @@ const BulkFeeSlips = () => {
                     </button>
                 </div>
 
-                {/* Print Format Selector */}
-                <div className="flex gap-6 items-center border-t pt-4">
-                    <span className="font-semibold text-gray-700">Print Format:</span>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                            type="radio"
-                            name="printFormat"
-                            value="a4"
-                            checked={printFormat === 'a4'}
-                            onChange={(e) => setPrintFormat(e.target.value)}
-                            className="w-4 h-4"
-                        />
-                        <span>A4 Grid (3 per page)</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                            type="radio"
-                            name="printFormat"
-                            value="receipt"
-                            checked={printFormat === 'receipt'}
-                            onChange={(e) => setPrintFormat(e.target.value)}
-                            className="w-4 h-4"
-                        />
-                        <span>Receipt Printer (1 per page)</span>
-                    </label>
+                {/* Print Format Selector & Note Editor */}
+                <div className="flex flex-wrap gap-6 items-start border-t pt-4">
+                    <div>
+                        <span className="font-semibold text-gray-700 block mb-2">Print Format:</span>
+                        <div className="flex gap-4">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="printFormat"
+                                    value="a4"
+                                    checked={printFormat === 'a4'}
+                                    onChange={(e) => setPrintFormat(e.target.value)}
+                                    className="w-4 h-4"
+                                />
+                                <span>A4 Grid (3 per page)</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="printFormat"
+                                    value="receipt"
+                                    checked={printFormat === 'receipt'}
+                                    onChange={(e) => setPrintFormat(e.target.value)}
+                                    className="w-4 h-4"
+                                />
+                                <span>Receipt Printer</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 min-w-[300px]">
+                        <label className="font-semibold text-gray-700 block mb-2">Voucher Note (Appears on all slips):</label>
+                        <div className="flex gap-2">
+                            <textarea
+                                value={feeVoucherNote}
+                                onChange={(e) => setFeeVoucherNote(e.target.value)}
+                                className="border p-2 rounded w-full text-sm"
+                                rows="2"
+                                placeholder="Enter note here (Bank details etc)..."
+                            />
+                            <button
+                                onClick={saveNote}
+                                className="bg-green-600 text-white px-3 py-2 rounded self-start hover:bg-green-700"
+                                title="Save Note"
+                            >
+                                <Save size={18} />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -205,6 +259,15 @@ const BulkFeeSlips = () => {
                                     <span>Office Sig</span>
                                 </div>
                             </div>
+
+                            {/* Payment Note Footer */}
+                            {feeVoucherNote && (
+                                <div className="mt-2 pt-2 border-t border-gray-300">
+                                    <pre className="text-[9px] whitespace-pre-wrap font-sans text-gray-700 text-center leading-tight">
+                                        {feeVoucherNote}
+                                    </pre>
+                                </div>
+                            )}
 
                             {/* Cut line for receipt format */}
                             {printFormat === 'receipt' && (
