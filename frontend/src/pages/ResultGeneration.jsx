@@ -90,8 +90,46 @@ const ResultGeneration = () => {
         window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, '_blank');
     };
 
+    const generateWhatsAppMessage = (result) => {
+        const schoolName = schoolInfo?.name || 'School Name';
+        const address = schoolInfo?.address ? ` (${schoolInfo.address})` : ''; // Optional address in title line or next line
+        const examTitle = result.exam_id.title;
+        const studentName = result.student_id.full_name;
+
+        // Date Logic
+        let dateStr = '';
+        if (result.exam_id.start_date && result.exam_id.end_date) {
+            const start = new Date(result.exam_id.start_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
+            const end = new Date(result.exam_id.end_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+            dateStr = `${start} to ${end}`;
+        } else {
+            dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        // Subject Breakdown
+        // Format: Subject: Obtained/Total
+        const subjectLines = result.subjects.map(sub => {
+            return `${sub.subject_name}: ${sub.obtained_marks}/${sub.total_marks}`;
+        }).join('\n');
+
+        return `*${schoolName}*${address ? '\n' + address : ''}
+*${examTitle}*
+Date : ${dateStr}
+
+Dear Parents of *${studentName}*,
+
+Your child's result is as follows:
+
+${subjectLines}
+
+*Total Marks: ${result.total_obtained}/${result.total_max}*
+*Percentage: ${result.percentage.toFixed(2)}%*
+
+Kindly encourage your child to continue working hard and maintain good performance.`;
+    };
+
     const sendResult = (result) => {
-        const msg = `Dear Parent,\n\nExam Result: ${result.exam_id.title}\nStudent: ${result.student_id.full_name}\nObtained: ${result.total_obtained} / ${result.total_max}\nPercentage: ${result.percentage}%\nGrade: ${result.grade}\nStatus: ${result.status || (result.percentage >= 33 ? 'PASS' : 'FAIL')}\n\n- ${schoolInfo?.name || 'School'}`;
+        const msg = generateWhatsAppMessage(result);
         const mobile = getMobileNumber(result.student_id);
         sendWhatsApp(mobile, msg);
     };
@@ -167,7 +205,8 @@ const ResultGeneration = () => {
                     num = '92' + num.substring(1);
                 }
 
-                const message = `Dear Parent,\n\n📋 Result Card for ${result.student_id.full_name}\n📚 Exam: ${result.exam_id.title}\n📊 Percentage: ${result.percentage}%\n🎓 Grade: ${result.grade}\n\nPDF downloaded to your device. Please attach and send.\n\n- ${schoolInfo?.name || 'School'}`;
+                const baseMsg = generateWhatsAppMessage(result);
+                const message = `${baseMsg}\n\n(PDF downloaded to your device. Please attach and send.)`;
 
                 alert('✅ PDF downloaded successfully!\n\n📱 Opening WhatsApp now. Please attach the downloaded PDF manually.');
                 window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, '_blank');
@@ -282,7 +321,8 @@ const ResultGeneration = () => {
                         num = '92' + num.substring(1);
                     }
 
-                    const message = `Dear Parent,\n\n📋 Result Card for ${result.student_id.full_name}\n📚 Exam: ${result.exam_id.title}\n📊 Percentage: ${result.percentage}%\n🎓 Grade: ${result.grade}\n\nImage downloaded to your device. Please attach and send.\n\n- ${schoolInfo?.name || 'School'}`;
+                    const baseMsg = generateWhatsAppMessage(result);
+                    const message = `${baseMsg}\n\n(Image downloaded to your device. Please attach and send.)`;
 
                     alert('✅ Image downloaded successfully!\n\n📱 Opening WhatsApp now. Please attach the downloaded image manually.');
                     window.open(`https://wa.me/${num}?text=${encodeURIComponent(message)}`, '_blank');
