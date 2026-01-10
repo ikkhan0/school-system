@@ -74,8 +74,15 @@ const ResultGeneration = () => {
         setResults(data);
     };
 
+    const getMobileNumber = (student) => {
+        if (student.father_mobile && student.father_mobile.trim()) return student.father_mobile;
+        if (student.mother_mobile && student.mother_mobile.trim()) return student.mother_mobile;
+        if (student.student_mobile && student.student_mobile.trim()) return student.student_mobile;
+        return null;
+    };
+
     const sendWhatsApp = (mobile, message) => {
-        if (!mobile) return alert("Father Mobile Number not found!");
+        if (!mobile) return alert("No mobile number found for this student (checked Father, Mother, and Student).");
         let num = mobile.replace(/\D/g, '');
         if (num.length === 11 && num.startsWith('0')) {
             num = '92' + num.substring(1);
@@ -85,8 +92,7 @@ const ResultGeneration = () => {
 
     const sendResult = (result) => {
         const msg = `Dear Parent,\n\nExam Result: ${result.exam_id.title}\nStudent: ${result.student_id.full_name}\nObtained: ${result.total_obtained} / ${result.total_max}\nPercentage: ${result.percentage}%\nGrade: ${result.grade}\nStatus: ${result.status || (result.percentage >= 33 ? 'PASS' : 'FAIL')}\n\n- ${schoolInfo?.name || 'School'}`;
-        // Priority: father_mobile → mother_mobile (fallback)
-        const mobile = result.student_id.father_mobile || result.student_id.mother_mobile;
+        const mobile = getMobileNumber(result.student_id);
         sendWhatsApp(mobile, msg);
     };
 
@@ -150,8 +156,7 @@ const ResultGeneration = () => {
 
             // Open WhatsApp
             setTimeout(() => {
-                // Priority: father_mobile → mother_mobile (fallback)
-                const mobile = result.student_id.father_mobile || result.student_id.mother_mobile;
+                const mobile = getMobileNumber(result.student_id);
                 if (!mobile) {
                     alert('✅ PDF downloaded!\n\n⚠️ Mobile Number not found. Please manually share the PDF.');
                     return;
@@ -266,8 +271,7 @@ const ResultGeneration = () => {
 
                 // Open WhatsApp
                 setTimeout(() => {
-                    // Priority: father_mobile → mother_mobile (fallback)
-                    const mobile = result.student_id.father_mobile || result.student_id.mother_mobile;
+                    const mobile = getMobileNumber(result.student_id);
                     if (!mobile) {
                         alert('✅ Image downloaded!\n\n⚠️ Mobile Number not found. Please manually share the image.');
                         return;
